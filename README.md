@@ -171,10 +171,50 @@ Smart AI priority:
 - ✅ `forced-colors` / high-contrast mode support
 - ✅ Print stylesheet (hides controls, uses black/grey marks)
 
-## Future Enhancements
+## Potential Improvements
 
-- Add score tracking across multiple games
-- Implement difficulty levels (easy/hard AI toggle)
-- Add win-line highlighting animation
-- Multiplayer support (local or networked)
-- Sound effects with `prefers-reduced-motion` respect
+### Gameplay
+- [ ] **Activate smart AI** — `chooseCpuMoveSmart` is already exported but not wired; add a difficulty toggle (Easy/Hard) in the UI that swaps the AI function
+- [ ] **Score tracking** — persist win/loss/draw tallies across rounds (in-memory or `localStorage`)
+- [ ] **First-move toggle** — let the player choose to go first or second
+- [ ] **Undo last move** — add an undo stack (array of board snapshots) with an Undo button
+- [ ] **Variable board size** — generalize `BOARD_SIZE` to support 4×4 or 5×5 grids (requires dynamic `WIN_LINES` generation)
+- [ ] **Local two-player mode** — bypass CPU logic and alternate between two human turns
+- [ ] **Networked multiplayer** — WebSocket or WebRTC real-time play
+
+### Visual & UX
+- [ ] **Win-line highlight** — after a win, animate/glow the 3 winning cells (return winning indices from `getWinner`)
+- [ ] **Sound effects** — move placement, win, draw (respect `prefers-reduced-motion`)
+- [ ] **Confetti / particle effect** on win
+- [ ] **Move history timeline** — visual sidebar showing each move in order
+- [ ] **Theme picker** — user-selectable color schemes beyond auto light/dark
+- [ ] **Smooth board reset transition** — fade-out / fade-in on reset instead of instant clear
+- [ ] **Touch gesture support** — swipe navigation on mobile as alternative to buttons
+
+### Code Quality & Testing
+- [ ] **Unit tests** — domain functions (`board.js`, `rules.js`, `ai.js`) are pure and test-ready; add Vitest or Jest suite
+- [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, StatusBar
+- [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
+- [ ] **PropTypes or TypeScript** — add runtime prop validation (PropTypes) or migrate to TypeScript for static type safety
+- [ ] **ESLint + Prettier** — enforce consistent code style and catch common issues
+- [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
+- [ ] **`getWinner` returns winning line** — change return type to `{ token, line }` so UI can highlight winning cells
+
+### Performance
+- [ ] **`React.memo` on atoms** — `CellButton`, `XMark`, `OMark` are pure; wrapping in `memo()` would skip re-renders for unchanged cells
+- [ ] **Lazy SVG mount** — only mount `XMark`/`OMark` components when `value` changes from `null` (currently always in the tree via conditional render, which is fine, but could use `Suspense` for larger marks)
+- [ ] **Web Worker AI** — move `chooseCpuMoveSmart` to a Web Worker if board size grows or minimax is added
+
+### Architecture
+- [ ] **Extract keyboard hook** — pull document-level keydown logic from `BoardGrid` into a reusable `useGridKeyboard` hook
+- [ ] **Event bus / context** — if the app grows, replace prop drilling with React Context for game state
+- [ ] **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
+- [ ] **Minimax AI (Phase C)** — implement full minimax with alpha-beta pruning for unbeatable CPU play
+- [ ] **Configurable CPU delay** — expose the 250ms timeout as a setting (or remove for instant play)
+
+### DevOps & Deployment
+- [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
+- [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
+- [ ] **Dependabot auto-merge** — resolve the existing moderate vulnerability alert and enable auto-updates
+- [ ] **PWA support** — add `manifest.json` + service worker for offline play and home-screen install
+- [ ] **Bundle analysis** — add `rollup-plugin-visualizer` to audit production bundle size
