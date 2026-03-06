@@ -22,9 +22,16 @@ INPUT CONTROLS (MUST SUPPORT BOTH):
 - Clicking a cell selects it for the current player if the cell is empty and the game is active.
 
 2) Keyboard
-- Arrow keys move the selection focus around the 3×3 grid.
+- Arrow keys AND WASD move the selection focus around the 3×3 grid.
 - Space bar (and/or Enter) selects the currently focused cell.
 - Once selected, the cell becomes taken and can no longer be selected by either player.
+
+CRITICAL KEYBOARD IMPLEMENTATION:
+- Use `document.addEventListener('keydown', handler)` in a `useEffect` with EMPTY dependency array.
+- Store latest `focusedIndex`, `onSelect`, and `onFocusChange` in mutable refs (`useRef`) — update refs on every render.
+- This prevents stale closures and works regardless of which element has DOM focus.
+- Do NOT use `onKeyDown` on individual `<button>` elements — it fails when buttons lose focus.
+- Use `aria-disabled` instead of HTML `disabled` attribute to avoid trapping keyboard focus.
 
 TURN & MOVE RULES (MUST IMPLEMENT):
 - Human (X) always plays first.
@@ -54,7 +61,7 @@ Winning lines (single source of truth):
 Winner occurs when any line has 3 identical non-null tokens.
 Draw occurs when board is full AND winner is null.
 
-VALID WIN PATTERNS (ASTERISK MEANS “EITHER X OR O”):
+VALID WIN PATTERNS (ASTERISK MEANS "EITHER X OR O"):
 X vertical wins:
 X**      *X*     **X
 X**      *X*     **X
@@ -89,6 +96,7 @@ CPU MOVE LOGIC (PHASED IMPLEMENTATION):
 Phase A (baseline correctness — REQUIRED):
 - CPU selects a random empty cell after the human move (use availableMoves list).
 - CPU does NOT move if winner exists or draw reached after human move.
+- CPU move scheduled via `setTimeout` (250ms delay) with ref cleanup.
 
 Phase B (upgrade path — OPTIONAL if time permits):
 Replace random with deterministic priority:
@@ -108,18 +116,21 @@ Use CLEAN-style layering + Atomic Design:
    - NO DOM, NO window usage
 
 2) app/ (React hook orchestrating gameplay)
-   - state management: board, turn, winner/draw, focus index
-   - CPU scheduling, prevention of double moves, cleanup
+   - useReducer for state management (board, turn, focusedIndex)
+   - CPU scheduling via useEffect + setTimeout
+   - Stable handler refs via useCallback
+   - Derived state via useMemo (gameState, status text)
 
 3) ui/ (presentational components; no win logic)
-   - atoms: small UI primitives
-   - molecules: composed UI parts
-   - organisms: complete game assembly
+   - atoms: smallest UI primitives (CellButton, XMark, OMark, GameTitle, ResetButton)
+   - molecules: composed UI parts (BoardGrid, StatusBar, GameControls, Instructions)
+   - organisms: complete game assembly (TicTacToeGame — ZERO inline markup)
 
 DRY RULES (NON-NEGOTIABLE):
 - Define TOKENS and WIN_LINES once (domain/constants).
 - UI must never re-implement win checking.
 - No in-place mutation of board arrays; use immutable updates.
+- Organisms must ONLY compose atoms/molecules — no raw HTML elements.
 
 REQUIRED FILE STRUCTURE (CREATE THESE FILES):
 src/
@@ -133,9 +144,15 @@ src/
   ui/
     atoms/
       CellButton.jsx
+      XMark.jsx
+      OMark.jsx
+      GameTitle.jsx
+      ResetButton.jsx
     molecules/
       BoardGrid.jsx
       StatusBar.jsx
+      GameControls.jsx
+      Instructions.jsx
     organisms/
       TicTacToeGame.jsx
   index.jsx
@@ -154,94 +171,155 @@ src/domain/constants.js
 
 src/domain/board.js
 - export createEmptyBoard() => Array(9).fill(null)
-- export isCellEmpty(board, idx) => boolean
-- export applyMove(board, idx, token) => returns NEW board OR throws on invalid move (pick one and be consistent)
+- export isCellEmpty(board, idx) => boolean (bounds-checked)
+- export applyMove(board, idx, token) => returns NEW board; throws on occupied cell
+- export getEmptyCells(board) => number[]
 
 src/domain/rules.js
 - export getWinner(board) => "X" | "O" | null
 - export isBoardFull(board) => boolean
-- export isDraw(board) => boolean
+- export isDraw(board) => boolean (full AND no winner)
 - export getGameState(board) => { winner, isDraw, isOver }
-- (optional) export getAvailableMoves(board) => number[]
 
 src/domain/ai.js
 Phase A (required):
 - export chooseCpuMoveRandom(board) => idx (from empty cells)
 Phase B (optional):
-- export chooseCpuMoveSmart(board) => idx
+- export chooseCpuMoveSmart(board, cpuToken, humanToken) => idx
 - helper: findWinningMove(board, token) => idx | null
 
 HOOK REQUIREMENTS:
 
 src/app/useTicTacToe.js
-Must manage:
-- board state
-- turn state (whose turn: "X" or "O")
-- focusedIndex state (0..8) for keyboard navigation
-- status state (string) OR derived from game state
-- gameOver derived from getGameState(board)
+Must manage via useReducer:
+- board state (Array of 9)
+- turn state ("X" or "O")
+- focusedIndex state (0..8, initial: 4 for center)
+
+Reducer actions:
+- HUMAN_MOVE: validate turn + empty cell, apply X, set turn to CPU (or keep HUMAN if game over)
+- CPU_MOVE: validate turn, apply O via AI, set turn back to HUMAN
+- SET_FOCUSED_INDEX: clamp 0..8
+- RESET: return createInitialState()
 
 Must implement:
-- handleHumanSelect(index):
-  - ignore if game over OR not human’s turn
-  - ignore if cell not empty
-  - apply X move immutably
-  - compute game state; if over, stop
-  - else schedule CPU move with short delay (150–350ms)
-- handleCpuMove():
-  - compute CPU index from AI (random is OK)
-  - apply O move immutably
-  - compute game state; if over, stop
-  - set turn back to human
+- handleHumanSelect(index) via useCallback → dispatch HUMAN_MOVE
+- handleFocusChange(index) via useCallback → dispatch SET_FOCUSED_INDEX
+- handleReset() via useCallback → clear timeout + dispatch RESET
 
-Race-condition avoidance (MUST):
-- CPU should never play twice
-- CPU should not play after reset
-- CPU should not play if human move ends game
-Implementation guidance:
-- store pending CPU timeout id in a ref; clear on reset/unmount
-- re-check gameOver from latest board before CPU applies its move
+CPU scheduling:
+- useEffect watching [state.turn, gameState.isOver]
+- if turn === CPU && !isOver → setTimeout(dispatch CPU_MOVE, 250ms)
+- store timeout ID in ref; clear on cleanup and reset
+
+Derived state:
+- gameState via useMemo → getGameState(state.board)
+- status text via useMemo → winner/draw/turn message
+
+Return: { board, turn, focusedIndex, gameState, status, handleHumanSelect, handleFocusChange, handleReset }
 
 UI + ACCESSIBILITY REQUIREMENTS:
-- Board rendered as a 3×3 grid of <button> cells
+- Board rendered as a 3×3 CSS grid of <button> cells with `role="grid"`
 - Each cell:
-  - focusable (keyboard reachable)
-  - shows "X" / "O" / empty
-  - disabled if occupied or game over (avoid trapping focus)
+  - focusable (keyboard reachable via roving tabindex)
+  - shows SVG X mark or O mark (no text)
+  - uses `aria-disabled` (NOT HTML disabled) when occupied or game over
+  - `aria-label` with "Row X, Column Y, empty/X/O"
 - Keyboard behavior:
-  - ArrowUp/Down/Left/Right moves focusedIndex within grid (clamp at edges; do NOT wrap unless explicitly documented)
+  - ArrowUp/Down/Left/Right AND W/A/S/D moves focusedIndex within grid
+  - Clamp at edges (do NOT wrap)
   - Space OR Enter selects the focused cell
+  - Implemented via document.addEventListener('keydown') with mutable refs
 - Provide visible focus ring for the currently focused cell
-- StatusBar uses aria-live="polite" to announce:
-  - “X’s turn”, “O’s turn”, “X wins”, “O wins”, “Draw”
+- StatusBar uses `aria-live="polite"` and `aria-atomic="true"`
 
-ATOMIC COMPONENT RESPONSIBILITIES:
+VISUAL REQUIREMENTS:
 
-src/ui/atoms/CellButton.jsx
-- Presentational only
-- props: value, disabled, isFocused, onClick, ariaLabel, tabIndex
-- apply focus style via className when isFocused
+SVG Marks:
+- XMark: two crossing `<line>` elements in `<svg viewBox="0 0 100 100">`
+- OMark: one `<circle cx="50" cy="50" r="30">` in `<svg viewBox="0 0 100 100">`
+- Both use `className="mark mark-x"` / `className="mark mark-o"` and `aria-hidden="true"`
+- CSS animates stroke-dasharray/stroke-dashoffset for draw-on effect
 
-src/ui/molecules/BoardGrid.jsx
-- Maps board -> 9 CellButtons
-- Handles key events (Arrow keys + Space/Enter)
-- props: board, focusedIndex, onFocusChange(nextIndex), onSelect(index), isGameOver
-- Ensures arrow keys update focus index
+CSS Custom Properties:
+- Define all colors, shadows, stroke widths as CSS variables in `:root`
+- Override variables inside `@media (prefers-color-scheme: dark)` for dark mode
 
-src/ui/molecules/StatusBar.jsx
-- props: statusText
-- includes aria-live
+Animations:
+- `@keyframes draw-stroke` for SVG mark draw-on effect
+- `@keyframes cell-pop` for cell placement pop-in
+- Disable all via `@media (prefers-reduced-motion: reduce)`
 
-src/ui/organisms/TicTacToeGame.jsx
-- Uses useTicTacToe hook
-- Renders StatusBar + BoardGrid + Reset button
+Responsive Breakpoints:
+- ≤ 374px: Small phones (compact padding)
+- 375–599px: Standard phones
+- 600–899px: Tablets portrait
+- 900–1199px: Tablets landscape / small desktops
+- 1200px+: Desktops (generous spacing)
+- max-height ≤ 500px landscape: Compact side-by-side layout
+- High-DPI: geometricPrecision on SVG strokes
+- Print: hide controls, use black/grey marks
+- forced-colors: active: use system colors
 
 STYLING REQUIREMENTS:
 styles.css:
-- Use CSS grid: 3 columns × 3 rows
-- Square sizing (80–120px)
-- Distinct styling for X vs O (simple is fine)
-- Visible focus ring
+- Use CSS grid: 3 columns × 3 rows with `aspect-ratio: 1`
+- Cell sizing via `clamp()` for fluid responsiveness
+- Board has `inset box-shadow` for depth
+- Cells have hover scale transform + accent glow
+- X color: blue (#4a6cf7 light / #6c8cff dark)
+- O color: purple (#9b59b6 light / #c084fc dark)
+- Background: gradient (purple-blue light / dark navy dark)
+
+ATOMIC COMPONENT RESPONSIBILITIES:
+
+src/ui/atoms/XMark.jsx
+- SVG with two crossing lines, className="mark mark-x", aria-hidden="true"
+- CSS handles all animation
+
+src/ui/atoms/OMark.jsx
+- SVG with circle, className="mark mark-o", aria-hidden="true"
+- CSS handles all animation
+
+src/ui/atoms/CellButton.jsx
+- React.forwardRef
+- props: value, disabled, isFocused, onClick, ariaLabel, tabIndex
+- Renders XMark when value==="X", OMark when value==="O"
+- apply focus/disabled/token CSS classes
+- Uses aria-disabled (NOT HTML disabled)
+
+src/ui/atoms/GameTitle.jsx
+- props: text
+- Renders <h1>{text}</h1>
+
+src/ui/atoms/ResetButton.jsx
+- props: onClick, label (default "Reset Game")
+- Renders styled <button>
+
+src/ui/molecules/BoardGrid.jsx
+- props: board, focusedIndex, onFocusChange, onSelect, isGameOver
+- Maps board → 9 CellButtons with refs
+- Document-level keydown listener (useEffect, empty deps, mutable refs)
+- Syncs DOM focus via useEffect watching focusedIndex
+- role="grid", aria-label="Tic-Tac-Toe board"
+
+src/ui/molecules/StatusBar.jsx
+- props: statusText
+- role="status", aria-live="polite", aria-atomic="true"
+
+src/ui/molecules/GameControls.jsx
+- props: onReset
+- Wraps ResetButton in a div.game-controls
+
+src/ui/molecules/Instructions.jsx
+- No props (static content)
+- Renders how-to-play heading + list
+
+src/ui/organisms/TicTacToeGame.jsx
+- Uses useTicTacToe hook
+- Renders ONLY: GameTitle, StatusBar, BoardGrid, GameControls, Instructions
+- ZERO inline HTML — pure composition of atoms/molecules
+- Wrapping container div.game-container is the ONLY raw element
 
 DELIVERABLE OUTPUT FORMAT:
 1) Print complete code for every file in the structure above.
@@ -252,11 +330,18 @@ DELIVERABLE OUTPUT FORMAT:
 QUALITY CHECKLIST (MUST PASS):
 - Single user: Human is X, CPU is O
 - CPU moves automatically after human (unless game over)
-- Mouse + keyboard selection both work
+- Mouse + keyboard selection both work (arrows + WASD)
 - Win/draw detection correct for all 8 lines
 - Taken cells cannot be overwritten
-- Reset clears board and cancels any pending CPU move
+- Reset clears board, cancels pending CPU timeout, restores initial state
 - Domain logic is pure and not duplicated in UI
-- DRY: WIN_LINES defined once
+- DRY: WIN_LINES and TOKENS defined once
+- Organism has ZERO inline HTML beyond container div
+- SVG marks animate with draw-on effect
+- Dark mode works automatically via prefers-color-scheme
+- Animations disabled when prefers-reduced-motion: reduce
+- Responsive across phone → tablet → desktop
+- All ARIA attributes present and correct
+- Keyboard navigation works via document-level listener (not per-button onKeyDown)
 
 BEGIN IMPLEMENTATION NOW.
