@@ -1,0 +1,188 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: auto;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+  padding: clamp(8px, 2vw, 24px);
+}
+
+/* Simple block centering — no flex on body */
+#root {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* ─── Game Container ─── */
+.game-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  padding: clamp(14px, 3vw, 36px);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 2vh, 20px);
+}
+
+/* ─── Typography ─── */
+.game-container h1 {
+  color: #333;
+  font-size: clamp(1.1rem, 4.5vw, 1.8rem);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.instructions h2 {
+  color: #555;
+  font-size: clamp(0.85rem, 3vw, 1.05rem);
+  margin-bottom: clamp(4px, 1vh, 8px);
+}
+
+/* ─── Status Bar ─── */
+.status-bar {
+  background: #f0f4ff;
+  border-left: 4px solid #667eea;
+  border-radius: 4px;
+  padding: clamp(8px, 1.5vh, 14px) clamp(12px, 2vw, 16px);
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.status-bar p {
+  margin: 0;
+}
+
+/* ─── Board Grid ─── */
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: clamp(4px, 1.5vw, 8px);
+  padding: clamp(6px, 1.5vw, 12px);
+  background: #e8e8e8;
+  border-radius: 8px;
+  width: clamp(240px, 75vw, 400px);
+  aspect-ratio: 1;
+}
+
+/* ─── Cell Button ─── */
+.cell-button {
+  aspect-ratio: 1;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  font-size: clamp(1.2rem, 6vw, 2.2rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms, border-color 150ms, transform 150ms;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+}
+
+.cell-button:hover:not(.cell-disabled) {
+  background: #f0f4ff;
+  border-color: #667eea;
+  transform: scale(1.04);
+}
+
+.cell-button:focus {
+  outline: none;
+}
+
+.cell-button.cell-focused {
+  outline: 3px solid #667eea;
+  outline-offset: -3px;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.4);
+}
+
+.cell-button.cell-disabled {
+  cursor: default;
+}
+
+/* Token colors */
+.cell-button.cell-X {
+  color: #4a6cf7;
+  border-color: #4a6cf7;
+}
+
+.cell-button.cell-O {
+  color: #9b59b6;
+  border-color: #9b59b6;
+}
+
+/* ─── Controls ─── */
+.game-controls {
+  width: 100%;
+  text-align: center;
+}
+
+.reset-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: clamp(8px, 1.5vh, 12px) clamp(20px, 5vw, 32px);
+  font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 150ms, box-shadow 150ms;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+}
+
+.reset-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+
+.reset-button:active {
+  transform: translateY(0);
+}
+
+/* ─── Instructions ─── */
+.instructions {
+  background: #f0f4ff;
+  border-radius: 6px;
+  padding: clamp(8px, 2vw, 14px);
+  text-align: left;
+  font-size: clamp(0.7rem, 2vw, 0.88rem);
+  color: #555;
+  line-height: 1.4;
+  width: 100%;
+}
+
+.instructions ul {
+  margin-left: clamp(14px, 3vw, 20px);
+  margin-top: 4px;
+}
+
+.instructions li {
+  margin-bottom: clamp(2px, 0.5vh, 6px);
+}
