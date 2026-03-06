@@ -1,9 +1,11 @@
 import React from 'react'
+import XMark from './XMark.jsx'
+import OMark from './OMark.jsx'
 
 /**
  * CellButton — Atom (pure presentational)
  *
- * Renders a single board cell as a <button>.
+ * Renders a single board cell as a <button> with SVG marks.
  * Contains ZERO game logic or navigation logic.
  * Keyboard handling lives at the document level in BoardGrid.
  *
@@ -37,7 +39,8 @@ const CellButton = React.forwardRef(
         aria-disabled={disabled}
         tabIndex={tabIndex}
       >
-        {value ?? ''}
+        {value === 'X' && <XMark />}
+        {value === 'O' && <OMark />}
       </button>
     )
   }
