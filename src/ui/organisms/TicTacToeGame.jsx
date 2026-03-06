@@ -1,19 +1,32 @@
 import React from 'react'
 import { useTicTacToe } from '../../app/useTicTacToe.js'
+import GameTitle from '../atoms/GameTitle.jsx'
 import StatusBar from '../molecules/StatusBar.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
+import GameControls from '../molecules/GameControls.jsx'
+import Instructions from '../molecules/Instructions.jsx'
 
 /**
- * TicTacToeGame: Main game organism
- * Orchestrates the hook and UI molecules
+ * TicTacToeGame — Organism
+ *
+ * Top-level game component. Orchestrates the application hook
+ * and composes atoms / molecules — contains ZERO inline markup
+ * beyond the wrapping container div.
  */
 const TicTacToeGame = () => {
-  const { board, gameState, status, handleHumanSelect, handleFocusChange, focusedIndex, handleReset } =
-    useTicTacToe()
+  const {
+    board,
+    gameState,
+    status,
+    handleHumanSelect,
+    handleFocusChange,
+    focusedIndex,
+    handleReset,
+  } = useTicTacToe()
 
   return (
     <div className="game-container">
-      <h1>Tic-Tac-Toe: Human vs CPU</h1>
+      <GameTitle text="Tic-Tac-Toe: Human vs CPU" />
 
       <StatusBar statusText={status} />
 
@@ -25,21 +38,9 @@ const TicTacToeGame = () => {
         isGameOver={gameState.isOver}
       />
 
-      <div className="game-controls">
-        <button className="reset-button" onClick={handleReset}>
-          Reset Game
-        </button>
-      </div>
+      <GameControls onReset={handleReset} />
 
-      <div className="instructions">
-        <h2>How to Play</h2>
-        <ul>
-          <li>You are X, the CPU is O</li>
-          <li>You move first</li>
-          <li><strong>Click</strong> a cell, or use <strong>Arrow Keys / WASD</strong> to navigate and <strong>Space/Enter</strong> to select</li>
-          <li>First to get 3 in a row wins!</li>
-        </ul>
-      </div>
+      <Instructions />
     </div>
   )
 }

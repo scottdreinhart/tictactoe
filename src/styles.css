@@ -1,4 +1,66 @@
-* {
+/* ═══════════════════════════════════════════════════════════════════════════
+   Tic-Tac-Toe — Styles
+   • SVG animated marks (draw-on effect)
+   • Dark mode via prefers-color-scheme
+   • Reduced motion support
+   • Responsive media queries (phone → tablet → desktop → large)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── CSS Custom Properties (Light Theme) ─── */
+:root {
+  --bg-gradient-start: #667eea;
+  --bg-gradient-end: #764ba2;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.25);
+  --text-primary: #1a1a2e;
+  --text-secondary: #555;
+  --accent: #667eea;
+  --accent-glow: rgba(102, 126, 234, 0.4);
+  --cell-bg: #ffffff;
+  --cell-border: #d0d0d0;
+  --cell-hover-bg: #f0f4ff;
+  --board-bg: #e0e0e0;
+  --status-bg: #f0f4ff;
+  --status-border: #667eea;
+  --instructions-bg: #f0f4ff;
+  --x-color: #4a6cf7;
+  --o-color: #9b59b6;
+  --x-glow: rgba(74, 108, 247, 0.3);
+  --o-glow: rgba(155, 89, 182, 0.3);
+  --mark-stroke-width: 8;
+  --win-pulse-shadow: rgba(102, 126, 234, 0.6);
+}
+
+/* ─── Dark Theme ─── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --card-bg: #1e2a3a;
+    --card-shadow: rgba(0, 0, 0, 0.5);
+    --text-primary: #e0e0e0;
+    --text-secondary: #aaa;
+    --accent: #7b8cff;
+    --accent-glow: rgba(123, 140, 255, 0.35);
+    --cell-bg: #253347;
+    --cell-border: #3a4f6a;
+    --cell-hover-bg: #2e4460;
+    --board-bg: #152238;
+    --status-bg: #253347;
+    --status-border: #7b8cff;
+    --instructions-bg: #253347;
+    --x-color: #6c8cff;
+    --o-color: #c084fc;
+    --x-glow: rgba(108, 140, 255, 0.35);
+    --o-glow: rgba(192, 132, 252, 0.35);
+    --win-pulse-shadow: rgba(123, 140, 255, 0.5);
+  }
+}
+
+/* ─── Reset ─── */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -13,16 +75,18 @@ body {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   background-attachment: fixed;
+  color: var(--text-primary);
   padding: clamp(8px, 2vw, 24px);
+  transition: background-color 300ms ease, color 300ms ease;
 }
 
-/* Simple block centering — no flex on body */
+/* Block centering — no flex on body */
 #root {
   width: 100%;
   max-width: 540px;
@@ -31,44 +95,49 @@ body {
 
 /* ─── Game Container ─── */
 .game-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-  padding: clamp(14px, 3vw, 36px);
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 12px 48px var(--card-shadow);
+  padding: clamp(16px, 3vw, 36px);
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(10px, 2vh, 20px);
+  gap: clamp(12px, 2.5vh, 24px);
+  transition: background-color 300ms ease, box-shadow 300ms ease;
 }
 
 /* ─── Typography ─── */
 .game-container h1 {
-  color: #333;
+  color: var(--text-primary);
   font-size: clamp(1.1rem, 4.5vw, 1.8rem);
+  font-weight: 800;
   line-height: 1.2;
   text-align: center;
+  letter-spacing: -0.02em;
 }
 
 .instructions h2 {
-  color: #555;
+  color: var(--text-secondary);
   font-size: clamp(0.85rem, 3vw, 1.05rem);
+  font-weight: 700;
   margin-bottom: clamp(4px, 1vh, 8px);
 }
 
 /* ─── Status Bar ─── */
 .status-bar {
-  background: #f0f4ff;
-  border-left: 4px solid #667eea;
-  border-radius: 4px;
-  padding: clamp(8px, 1.5vh, 14px) clamp(12px, 2vw, 16px);
-  font-size: clamp(0.8rem, 2.5vw, 1rem);
-  font-weight: 600;
-  color: #333;
+  background: var(--status-bg);
+  border-left: 4px solid var(--status-border);
+  border-radius: 6px;
+  padding: clamp(10px, 1.5vh, 16px) clamp(14px, 2vw, 20px);
+  font-size: clamp(0.85rem, 2.5vw, 1.05rem);
+  font-weight: 700;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
+  transition: background-color 300ms ease, border-color 300ms ease;
 }
 
 .status-bar p {
@@ -80,37 +149,47 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: clamp(4px, 1.5vw, 8px);
-  padding: clamp(6px, 1.5vw, 12px);
-  background: #e8e8e8;
-  border-radius: 8px;
+  gap: clamp(5px, 1.5vw, 10px);
+  padding: clamp(8px, 1.5vw, 14px);
+  background: var(--board-bg);
+  border-radius: 12px;
   width: clamp(240px, 75vw, 400px);
   aspect-ratio: 1;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 300ms ease;
 }
 
 /* ─── Cell Button ─── */
 .cell-button {
   aspect-ratio: 1;
-  background: white;
-  border: 2px solid #ccc;
-  border-radius: 6px;
-  font-size: clamp(1.2rem, 6vw, 2.2rem);
-  font-weight: 700;
+  background: var(--cell-bg);
+  border: 2px solid var(--cell-border);
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 150ms, border-color 150ms, transform 150ms;
-  color: #333;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease,
+    box-shadow 200ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
   -webkit-appearance: none;
   appearance: none;
-  padding: 0;
+  padding: 10%;
+  position: relative;
+  overflow: hidden;
 }
 
 .cell-button:hover:not(.cell-disabled) {
-  background: #f0f4ff;
-  border-color: #667eea;
-  transform: scale(1.04);
+  background: var(--cell-hover-bg);
+  border-color: var(--accent);
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.cell-button:active:not(.cell-disabled) {
+  transform: scale(0.97);
 }
 
 .cell-button:focus {
@@ -118,24 +197,79 @@ body {
 }
 
 .cell-button.cell-focused {
-  outline: 3px solid #667eea;
+  outline: 3px solid var(--accent);
   outline-offset: -3px;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .cell-button.cell-disabled {
   cursor: default;
 }
 
-/* Token colors */
+/* Token-specific cell styling */
 .cell-button.cell-X {
-  color: #4a6cf7;
-  border-color: #4a6cf7;
+  border-color: var(--x-color);
+  box-shadow: inset 0 0 12px var(--x-glow);
 }
 
 .cell-button.cell-O {
-  color: #9b59b6;
-  border-color: #9b59b6;
+  border-color: var(--o-color);
+  box-shadow: inset 0 0 12px var(--o-glow);
+}
+
+/* ─── SVG Marks ─── */
+.mark {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* X mark — two lines */
+.mark-x line {
+  stroke: var(--x-color);
+  stroke-width: var(--mark-stroke-width);
+  stroke-dasharray: 85;
+  stroke-dashoffset: 85;
+  animation: draw-stroke 400ms ease-out forwards;
+}
+
+.mark-x line:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+/* O mark — circle */
+.mark-o circle {
+  stroke: var(--o-color);
+  stroke-width: var(--mark-stroke-width);
+  stroke-dasharray: 189;  /* 2 * π * 30 ≈ 188.5 */
+  stroke-dashoffset: 189;
+  animation: draw-stroke 450ms ease-out forwards;
+}
+
+@keyframes draw-stroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Cell placement pop-in */
+.cell-button.cell-X,
+.cell-button.cell-O {
+  animation: cell-pop 300ms ease-out;
+}
+
+@keyframes cell-pop {
+  0% {
+    transform: scale(0.85);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* ─── Controls ─── */
@@ -145,44 +279,265 @@ body {
 }
 
 .reset-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   color: white;
   border: none;
-  padding: clamp(8px, 1.5vh, 12px) clamp(20px, 5vw, 32px);
-  font-size: clamp(0.8rem, 2.5vw, 0.95rem);
-  font-weight: 600;
-  border-radius: 6px;
+  padding: clamp(10px, 1.5vh, 14px) clamp(24px, 5vw, 36px);
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+  font-weight: 700;
+  border-radius: 10px;
   cursor: pointer;
-  transition: transform 150ms, box-shadow 150ms;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.35);
+  letter-spacing: 0.02em;
 }
 
 .reset-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
 }
 
 .reset-button:active {
   transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 /* ─── Instructions ─── */
 .instructions {
-  background: #f0f4ff;
-  border-radius: 6px;
-  padding: clamp(8px, 2vw, 14px);
+  background: var(--instructions-bg);
+  border-radius: 8px;
+  padding: clamp(10px, 2vw, 16px);
   text-align: left;
-  font-size: clamp(0.7rem, 2vw, 0.88rem);
-  color: #555;
-  line-height: 1.4;
+  font-size: clamp(0.75rem, 2vw, 0.9rem);
+  color: var(--text-secondary);
+  line-height: 1.5;
   width: 100%;
+  transition: background-color 300ms ease;
 }
 
 .instructions ul {
-  margin-left: clamp(14px, 3vw, 20px);
-  margin-top: 4px;
+  margin-left: clamp(16px, 3vw, 22px);
+  margin-top: 6px;
 }
 
 .instructions li {
-  margin-bottom: clamp(2px, 0.5vh, 6px);
+  margin-bottom: clamp(3px, 0.5vh, 6px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MEDIA QUERIES — Responsive Breakpoints
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Small phones (≤ 374px — iPhone SE, Galaxy S8) ─── */
+@media (max-width: 374px) {
+  body {
+    padding: 4px;
+  }
+
+  .game-container {
+    padding: 12px;
+    gap: 8px;
+    border-radius: 10px;
+  }
+
+  .board-grid {
+    gap: 4px;
+    padding: 6px;
+    border-radius: 8px;
+  }
+
+  .cell-button {
+    border-radius: 6px;
+    padding: 8%;
+  }
+
+  .instructions {
+    font-size: 0.7rem;
+  }
+}
+
+/* ─── Standard phones (375px – 599px) ─── */
+@media (min-width: 375px) and (max-width: 599px) {
+  .board-grid {
+    width: clamp(260px, 80vw, 360px);
+  }
+}
+
+/* ─── Tablets portrait (600px – 899px) ─── */
+@media (min-width: 600px) and (max-width: 899px) {
+  #root {
+    max-width: 480px;
+  }
+
+  .board-grid {
+    width: clamp(320px, 55vw, 420px);
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .cell-button {
+    border-radius: 12px;
+    border-width: 3px;
+  }
+
+  :root {
+    --mark-stroke-width: 9;
+  }
+}
+
+/* ─── Tablets landscape & small desktops (900px – 1199px) ─── */
+@media (min-width: 900px) and (max-width: 1199px) {
+  #root {
+    max-width: 520px;
+  }
+
+  .game-container {
+    padding: 32px;
+    border-radius: 20px;
+  }
+
+  .board-grid {
+    width: 420px;
+    gap: 10px;
+    padding: 14px;
+  }
+}
+
+/* ─── Desktops (1200px+) ─── */
+@media (min-width: 1200px) {
+  body {
+    padding: 32px;
+  }
+
+  #root {
+    max-width: 560px;
+  }
+
+  .game-container {
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px var(--card-shadow);
+  }
+
+  .board-grid {
+    width: 440px;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .cell-button {
+    border-radius: 14px;
+    border-width: 3px;
+  }
+
+  :root {
+    --mark-stroke-width: 10;
+  }
+
+  .reset-button {
+    padding: 14px 40px;
+    font-size: 1rem;
+    border-radius: 12px;
+  }
+}
+
+/* ─── Landscape phones (short viewports) ─── */
+@media (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding: 4px;
+  }
+
+  .game-container {
+    padding: 8px 16px;
+    gap: 6px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .game-container h1 {
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  .board-grid {
+    width: clamp(200px, 40vh, 300px);
+  }
+
+  .instructions {
+    display: none;
+  }
+}
+
+/* ─── High-DPI / Retina displays ─── */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .mark-x line,
+  .mark-o circle {
+    shape-rendering: geometricPrecision;
+  }
+}
+
+/* ─── Print ─── */
+@media print {
+  body {
+    background: white;
+    padding: 0;
+  }
+
+  .game-container {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .reset-button,
+  .instructions {
+    display: none;
+  }
+
+  .cell-button {
+    border: 1px solid #999;
+  }
+
+  .mark-x line { stroke: #000; }
+  .mark-o circle { stroke: #666; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY — Reduced Motion
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .mark-x line,
+  .mark-o circle {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HIGH CONTRAST — forced-colors mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (forced-colors: active) {
+  .cell-button {
+    border: 2px solid ButtonText;
+  }
+
+  .cell-button.cell-focused {
+    outline: 3px solid Highlight;
+  }
+
+  .mark-x line {
+    stroke: LinkText;
+  }
+
+  .mark-o circle {
+    stroke: VisitedText;
+  }
 }
