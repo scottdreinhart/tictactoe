@@ -7,8 +7,10 @@ import React from 'react'
  *
  * @param {{ text: string }} props
  */
-const GameTitle = ({ text }) => (
+const GameTitle = React.memo(({ text }) => (
   <h1>{text}</h1>
-)
+))
+
+GameTitle.displayName = 'GameTitle'
 
 export default GameTitle

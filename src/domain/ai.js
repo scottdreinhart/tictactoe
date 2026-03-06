@@ -1,5 +1,5 @@
 import { getEmptyCells } from './board.js'
-import { getWinner } from './rules.js'
+import { getWinnerToken } from './rules.js'
 
 /**
  * PHASE A: Choose CPU move randomly from available cells
@@ -33,7 +33,7 @@ const findWinningMove = (board, token) => {
   for (const idx of empty) {
     const testBoard = [...board]
     testBoard[idx] = token
-    if (getWinner(testBoard) === token) {
+    if (getWinnerToken(testBoard) === token) {
       return idx
     }
   }

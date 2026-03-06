@@ -13,18 +13,20 @@ import OMark from './OMark.jsx'
  *   value: string|null,
  *   disabled: boolean,
  *   isFocused: boolean,
+ *   isWinning: boolean,
  *   onClick: () => void,
  *   ariaLabel: string,
  *   tabIndex: number,
  * }} props
  */
 const CellButton = React.forwardRef(
-  ({ value, disabled, isFocused, onClick, ariaLabel, tabIndex }, ref) => {
+  ({ value, disabled, isFocused, isWinning, onClick, ariaLabel, tabIndex }, ref) => {
     const classes = [
       'cell-button',
       value ? `cell-${value}` : '',
       isFocused ? 'cell-focused' : '',
       disabled ? 'cell-disabled' : '',
+      isWinning ? 'cell-winning' : '',
     ]
       .filter(Boolean)
       .join(' ')

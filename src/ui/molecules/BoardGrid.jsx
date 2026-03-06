@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { BOARD_SIZE } from '../../domain/constants.js'
 import CellButton from '../atoms/CellButton.jsx'
 
@@ -49,10 +49,13 @@ const getNextIndex = (current, key) => {
  *   onFocusChange: (index: number) => void,
  *   onSelect: (index: number) => void,
  *   isGameOver: boolean,
+ *   winLine: number[]|null,
  * }} props
  */
-const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver }) => {
+const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, winLine }) => {
   const cellRefs = useRef([])
+  const [isResetting, setIsResetting] = useState(false)
+  const prevBoardRef = useRef(board)
 
   // Keep mutable refs to latest values so the listener closure never goes stale
   const focusedRef = useRef(focusedIndex)
@@ -62,6 +65,18 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver })
   focusedRef.current = focusedIndex
   selectRef.current = onSelect
   focusChangeRef.current = onFocusChange
+
+  // Detect board reset (board went from having marks to all empty)
+  useEffect(() => {
+    const hadMarks = prevBoardRef.current.some((cell) => cell !== null)
+    const nowEmpty = board.every((cell) => cell === null)
+    if (hadMarks && nowEmpty) {
+      setIsResetting(true)
+      const timer = setTimeout(() => setIsResetting(false), 300)
+      return () => clearTimeout(timer)
+    }
+    prevBoardRef.current = board
+  }, [board])
 
   // Sync DOM focus whenever focusedIndex changes
   useEffect(() => {
@@ -99,12 +114,13 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver })
 
   return (
     <div
-      className="board-grid"
+      className={`board-grid${isResetting ? ' board-resetting' : ''}`}
       role="grid"
       aria-label="Tic-Tac-Toe board"
     >
       {board.map((value, index) => {
         const isDisabled = isGameOver || value !== null
+        const isWinning = winLine ? winLine.includes(index) : false
 
         return (
           <CellButton
@@ -113,6 +129,7 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver })
             value={value}
             disabled={isDisabled}
             isFocused={focusedIndex === index}
+            isWinning={isWinning}
             onClick={() => onSelect(index)}
             ariaLabel={`Row ${Math.floor(index / BOARD_SIZE) + 1}, Column ${(index % BOARD_SIZE) + 1}, ${value ?? 'empty'}`}
             tabIndex={focusedIndex === index ? 0 : -1}
