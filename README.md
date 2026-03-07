@@ -176,12 +176,18 @@ The random AI (`chooseCpuMoveRandom`) remains exported and is used in Easy mode.
 
 - **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
 - **React.memo** on pure atoms (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, ScoreBoard) to skip unnecessary re-renders
-- **PropTypes** runtime validation on all components that accept props
+- **PropTypes** runtime validation on all components that accept props (stripped from production builds)
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
+- **Production build optimizations**:
+  - Vendor chunk splitting — React/ReactDOM cached independently from app code
+  - PropTypes stripped from production via `babel-plugin-transform-react-remove-prop-types`
+  - Modern build target (`es2020`) — no legacy polyfills
+  - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
+  - `modulePreload` polyfill removed — modern browsers handle it natively
 - **Bundle analysis** via `rollup-plugin-visualizer` — generates `dist/bundle-report.html` on build
 - **ESLint + Prettier** for code quality (flat config, React + hooks plugins)
 - **Reusable `useGridKeyboard` hook** — document-level keyboard navigation extracted from BoardGrid
-- **Sound effects** via Web Audio API — zero audio files, synthesized tones (~2KB)
+- **Sound effects** via Web Audio API — zero audio files, synthesized tones (~1.3KB lazy chunk)
 - **CSS Grid** with `aspect-ratio: 1` for perfect square cells
 - **CSS Custom Properties** with light/dark theme sets
 - **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes

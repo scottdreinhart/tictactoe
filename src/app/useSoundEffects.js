@@ -1,5 +1,16 @@
 import { useCallback, useRef, useState } from 'react'
-import { playMoveSound, playWinSound, playDrawSound } from '../domain/sounds.js'
+
+/**
+ * Lazily load the sounds module on first play attempt.
+ * Keeps domain/sounds.js out of the critical rendering path.
+ */
+let soundsPromise = null
+const getSounds = () => {
+  if (!soundsPromise) {
+    soundsPromise = import('../domain/sounds.js')
+  }
+  return soundsPromise
+}
 
 /**
  * Check if the user prefers reduced motion.
@@ -36,15 +47,15 @@ const useSoundEffects = () => {
   }, [])
 
   const playMove = useCallback(() => {
-    if (shouldPlay()) playMoveSound()
+    if (shouldPlay()) getSounds().then((m) => m.playMoveSound())
   }, [shouldPlay])
 
   const playWin = useCallback(() => {
-    if (shouldPlay()) playWinSound()
+    if (shouldPlay()) getSounds().then((m) => m.playWinSound())
   }, [shouldPlay])
 
   const playDraw = useCallback(() => {
-    if (shouldPlay()) playDrawSound()
+    if (shouldPlay()) getSounds().then((m) => m.playDrawSound())
   }, [shouldPlay])
 
   return { soundEnabled, toggleSound, playMove, playWin, playDraw }
