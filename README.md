@@ -251,11 +251,13 @@ The app will be available at `http://localhost:5173`
 # Development: launches Vite + Electron together
 pnpm electron:dev
 
-# Production build: creates distributable in release/
+# Production build: creates distributable for current platform in release/
 pnpm electron:build
 
-# Pack without installer (for testing)
-pnpm electron:pack
+# Platform-specific builds
+pnpm electron:build:win     # Windows .exe
+pnpm electron:build:linux   # Linux .AppImage
+pnpm electron:build:mac     # macOS .dmg
 ```
 
 Electron wraps the same web app in a native desktop window. In dev mode it connects to the Vite dev server (`localhost:5173`); in production it loads the built `dist/` files directly.
@@ -276,14 +278,20 @@ The resulting `.AppImage` is automatically copied to `release/` on the Windows s
 ### Capacitor Mobile App
 
 ```bash
+# Initialize native platforms (one-time setup)
+pnpm cap:init:android       # Add Android project
+pnpm cap:init:ios            # Add iOS project
+
 # Build web app + sync to native projects
 pnpm cap:sync
 
-# Open Android project in Android Studio
-pnpm cap:android
+# Open native IDE
+pnpm cap:open:android        # Open in Android Studio
+pnpm cap:open:ios            # Open in Xcode
 
-# Open iOS project in Xcode
-pnpm cap:ios
+# Run on connected device/emulator
+pnpm cap:run:android         # Deploy to Android device
+pnpm cap:run:ios             # Deploy to iOS device
 ```
 
 Capacitor wraps the same Vite `dist/` output in native Android and iOS app shells. The web code runs in a native WebView — no code changes needed.

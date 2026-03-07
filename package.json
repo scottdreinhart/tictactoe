@@ -15,12 +15,18 @@
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
-    "electron:dev": "concurrently --kill-others \"vite --host\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "electron:build": "vite build && electron-builder",
-    "electron:pack": "electron-builder --dir",
-    "cap:sync": "vite build && cap sync",
-    "cap:android": "cap open android",
-    "cap:ios": "cap open ios"
+    "electron:build:win": "vite build && electron-builder --win",
+    "electron:build:linux": "vite build && electron-builder --linux",
+    "electron:build:mac": "vite build && electron-builder --mac",
+    "cap:init:android": "npx cap add android",
+    "cap:init:ios": "npx cap add ios",
+    "cap:sync": "vite build && npx cap sync",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios",
+    "cap:run:android": "npx cap run android",
+    "cap:run:ios": "npx cap run ios"
   },
   "dependencies": {
     "@capacitor/android": "^8.2.0",
