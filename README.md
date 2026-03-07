@@ -234,6 +234,9 @@ pnpm dev
 # Build for production
 pnpm build
 
+# Preview production build locally
+pnpm preview
+
 # Lint
 pnpm lint          # check for issues
 pnpm lint:fix      # auto-fix issues
