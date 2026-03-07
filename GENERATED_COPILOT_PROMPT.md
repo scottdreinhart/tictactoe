@@ -112,8 +112,9 @@ Use CLEAN-style layering + Atomic Design:
 
 1) domain/ (PURE — NO React imports)
    - board representation, validation, win/draw evaluation, move generation, AI choice
+   - sound synthesis via Web Audio API (sounds.js)
    - functions are pure/immutable and unit-test friendly
-   - NO DOM, NO window usage
+   - NO DOM, NO window usage (except sounds.js which uses Web Audio)
 
 2) app/ (React hook orchestrating gameplay)
    - useReducer for state management (board, turn, focusedIndex)
@@ -122,7 +123,7 @@ Use CLEAN-style layering + Atomic Design:
    - Derived state via useMemo (gameState, status text)
 
 3) ui/ (presentational components; no win logic)
-   - atoms: smallest UI primitives (CellButton, XMark, OMark, GameTitle, ResetButton)
+   - atoms: smallest UI primitives (CellButton, XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle)
    - molecules: composed UI parts (BoardGrid, StatusBar, GameControls, Instructions)
    - organisms: complete game assembly (TicTacToeGame — ZERO inline markup)
 
@@ -139,9 +140,11 @@ src/
     board.js
     rules.js
     ai.js
+    sounds.js
   app/
     useTicTacToe.js
     useGridKeyboard.js
+    useSoundEffects.js
   ui/
     atoms/
       CellButton.jsx
@@ -149,8 +152,7 @@ src/
       OMark.jsx
       GameTitle.jsx
       ResetButton.jsx
-      DifficultyToggle.jsx
-    molecules/
+      DifficultyToggle.jsx      SoundToggle.jsx    molecules/
       BoardGrid.jsx
       StatusBar.jsx
       ScoreBoard.jsx
@@ -198,6 +200,13 @@ src/domain/ai.js
   Priority: 1) win, 2) block, 3) center, 4) corner, 5) edge
 - helper: findWinningMove(board, token) => idx | null (uses getWinnerToken)
 
+src/domain/sounds.js
+- Lazy AudioContext creation (browser autoplay policy)
+- export playMoveSound() — 600Hz sine, 80ms, soft pop
+- export playWinSound() — C5-E5-G5 ascending triangle arpeggio
+- export playDrawSound() — A4-F4 descending sine two-note tone
+- Zero audio files — all synthesized via Web Audio API
+
 HOOK REQUIREMENTS:
 
 src/app/useTicTacToe.js
@@ -234,6 +243,14 @@ Must also manage:
 - handleToggleDifficulty() via useCallback → toggles difficulty
 
 Return: { board, turn, focusedIndex, gameState, status, score, difficulty, handleHumanSelect, handleFocusChange, handleReset, handleToggleDifficulty }
+
+src/app/useSoundEffects.js
+- Manages soundEnabled state (boolean, default true)
+- Uses mutable ref for soundEnabled to avoid stale closures
+- shouldPlay() checks soundEnabled AND !prefers-reduced-motion
+- toggleSound() via useCallback
+- playMove(), playWin(), playDraw() via useCallback — call domain sounds.js if shouldPlay()
+- Return: { soundEnabled, toggleSound, playMove, playWin, playDraw }
 
 UI + ACCESSIBILITY REQUIREMENTS:
 - Board rendered as a 3×3 CSS grid of <button> cells with `role="grid"`
@@ -329,6 +346,14 @@ src/ui/atoms/DifficultyToggle.jsx
 - Active button highlighted with accent color
 - role="group", aria-label="CPU difficulty", aria-pressed on each option
 
+src/ui/atoms/SoundToggle.jsx
+- React.memo
+- PropTypes validation
+- props: soundEnabled (boolean), onToggle (function)
+- Button with speaker emoji (🔊 / 🔇)
+- aria-label describes current action ("Mute sound effects" / "Enable sound effects")
+- className="sound-toggle"
+
 src/app/useGridKeyboard.js
 - Custom hook: useGridKeyboard(focusedIndex, onFocusChange, onSelect)
 - Document-level keydown listener (useEffect, empty deps, mutable refs)
@@ -368,12 +393,18 @@ src/ui/molecules/Instructions.jsx
 - Renders how-to-play heading + list
 
 src/ui/organisms/TicTacToeGame.jsx
-- Uses useTicTacToe hook
-- Renders ONLY: GameTitle, DifficultyToggle, StatusBar, ScoreBoard, BoardGrid, GameControls, Instructions
+- Uses useTicTacToe hook + useSoundEffects hook
+- Sound integration: useEffect watches board + gameState changes
+  - On board change (no game end): playMove()
+  - On game end with winner: playWin()
+  - On game end with draw: playDraw()
+- Renders ONLY: GameTitle, game-toolbar div (DifficultyToggle + SoundToggle), StatusBar, ScoreBoard, BoardGrid, GameControls, Instructions
+- game-toolbar div wraps DifficultyToggle and SoundToggle side by side
 - Passes difficulty + onToggle to DifficultyToggle
+- Passes soundEnabled + onToggle to SoundToggle
 - Passes winLine to BoardGrid and score to ScoreBoard
 - ZERO inline HTML — pure composition of atoms/molecules
-- Wrapping container div.game-container is the ONLY raw element
+- Wrapping container div.game-container is the ONLY raw element (game-toolbar is a layout wrapper)
 
 DELIVERABLE OUTPUT FORMAT:
 1) Print complete code for every file in the structure above.
@@ -397,10 +428,13 @@ QUALITY CHECKLIST (MUST PASS):
 - DRY: WIN_LINES and TOKENS defined once
 - Organism has ZERO inline HTML beyond container div
 - SVG marks animate with draw-on effect
-- Pure atoms wrapped in React.memo (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, ScoreBoard)
+- Pure atoms wrapped in React.memo (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle, ScoreBoard)
 - PropTypes validation on all components that accept props
+- Sound effects play on move, win, draw (synthesized, no audio files)
+- Sound toggle available; sounds muted when prefers-reduced-motion
 - Dark mode works automatically via prefers-color-scheme
 - Animations disabled when prefers-reduced-motion: reduce
+- Sounds disabled when prefers-reduced-motion: reduce
 - Responsive across phone → tablet → desktop
 - All ARIA attributes present and correct
 - Keyboard navigation works via useGridKeyboard hook (document-level listener, not per-button onKeyDown)

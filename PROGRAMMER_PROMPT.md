@@ -64,9 +64,11 @@ src/
     board.js                     # createEmptyBoard, isCellEmpty, applyMove, getEmptyCells
     rules.js                     # getWinner → {token, line}, getWinnerToken, isBoardFull, isDraw, getGameState
     ai.js                        # chooseCpuMoveRandom, chooseCpuMoveSmart (active)
+    sounds.js                    # Web Audio API synthesized sound effects
   app/
     useTicTacToe.js              # useReducer + useState (score, difficulty) + CPU scheduling
     useGridKeyboard.js           # Reusable document-level keyboard navigation hook
+    useSoundEffects.js           # Sound toggle + play functions (respects reduced-motion)
   ui/
     atoms/
       CellButton.jsx             # Single cell with SVG mark rendering + winning highlight
@@ -75,6 +77,7 @@ src/
       GameTitle.jsx              # Game heading atom (React.memo)
       ResetButton.jsx            # Reset button atom (React.memo)
       DifficultyToggle.jsx       # Easy/Hard AI toggle atom (React.memo)
+      SoundToggle.jsx            # Sound on/off toggle atom (React.memo)
     molecules/
       BoardGrid.jsx              # 3×3 grid + reset animation (uses useGridKeyboard hook)
       StatusBar.jsx              # Game status display (aria-live)
@@ -92,7 +95,7 @@ eslint.config.js                 # ESLint flat config (React + hooks + Prettier)
 Visual requirements:
 • SVG marks (X = two crossing lines, O = circle) with animated stroke-dasharray draw-on effect
 • Dark mode via `@media (prefers-color-scheme: dark)` with CSS custom properties
-• `@media (prefers-reduced-motion: reduce)` disables all animations
+• `@media (prefers-reduced-motion: reduce)` disables all animations and sound effects
 • Responsive media queries for phone → tablet → desktop → large screens
 • Landscape phone layout (compact, side-by-side)
 • High-contrast mode (`forced-colors: active`) support
@@ -113,9 +116,15 @@ You (X): N | Draws: N | CPU (O): N
 After a win, highlight the 3 winning cells with a pulsing glow animation.
 On reset, animate the board with a fade/scale transition.
 
+Sound effects (Web Audio API, no audio files):
+• Move placement — short pop (600Hz sine, 80ms)
+• Win — ascending C-E-G arpeggio (triangle wave)
+• Draw — descending A-F two-note tone
+• Toggleable via SoundToggle atom; muted when `prefers-reduced-motion` is active
+
 Code quality:
 • ESLint (flat config) + Prettier configured with `lint`, `lint:fix`, `format`, `format:check` scripts
-• React.memo on pure atoms (XMark, OMark, GameTitle, ResetButton, DifficultyToggle) and ScoreBoard molecule
+• React.memo on pure atoms (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle) and ScoreBoard molecule
 • PropTypes runtime validation on all components that accept props
 • `getWinner` returns `{ token, line }` — UI uses `winLine` to highlight winning cells
 • `CPU_DELAY_MS` constant in `constants.js` (currently 400ms)

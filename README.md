@@ -10,10 +10,12 @@ src/
 │   ├── constants.js               # TOKENS, WIN_LINES, BOARD_SIZE, CPU_DELAY_MS
 │   ├── board.js                   # Board operations (create, apply move, get empty cells)
 │   ├── rules.js                   # Win/draw detection (returns winning line)
-│   └── ai.js                     # CPU move selection (random + smart)
+│   ├── ai.js                     # CPU move selection (random + smart)
+│   └── sounds.js                  # Web Audio API synthesized sound effects
 ├── app/
 │   ├── useTicTacToe.js            # Game state + score + difficulty management hook
-│   └── useGridKeyboard.js         # Reusable document-level keyboard navigation hook
+│   ├── useGridKeyboard.js         # Reusable document-level keyboard navigation hook
+│   └── useSoundEffects.js         # Sound toggle + play functions (respects reduced-motion)
 ├── ui/
 │   ├── atoms/
 │   │   ├── CellButton.jsx         # Single cell with SVG mark rendering + winning highlight
@@ -21,7 +23,8 @@ src/
 │   │   ├── OMark.jsx              # Animated SVG "O" (React.memo, draw-on effect)
 │   │   ├── GameTitle.jsx          # Game heading (React.memo)
 │   │   ├── ResetButton.jsx        # Reset/new-game button (React.memo)
-│   │   └── DifficultyToggle.jsx   # Easy/Hard AI toggle (React.memo)
+│   │   ├── DifficultyToggle.jsx   # Easy/Hard AI toggle (React.memo)
+│   │   └── SoundToggle.jsx        # Sound on/off toggle (React.memo)
 │   ├── molecules/
 │   │   ├── BoardGrid.jsx          # 3×3 grid with reset animation (uses useGridKeyboard)
 │   │   ├── StatusBar.jsx          # Game status display (aria-live)
@@ -51,6 +54,7 @@ eslint.config.js                   # ESLint flat config (React + hooks + Prettie
 - **Score Tracking**: Win/loss/draw tallies persisted across rounds
 - **Win-Line Highlight**: Winning 3 cells pulse with animated glow
 - **Difficulty Toggle**: Pill-shaped Easy/Hard switch; Easy = random, Hard = smart priority
+- **Sound Effects**: Synthesized via Web Audio API — move pop, win arpeggio, draw tone (toggleable, respects `prefers-reduced-motion`)
 
 ### Visual Design
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect
@@ -150,6 +154,11 @@ getGameState(board)          // → { winner, winLine, isDraw, isOver }
 // AI
 chooseCpuMoveRandom(board)                       // Phase A — random
 chooseCpuMoveSmart(board, cpuToken, humanToken)   // Phase B — priority-based
+
+// Sound effects (Web Audio API)
+playMoveSound()   // short pop on move placement
+playWinSound()    // ascending C-E-G arpeggio
+playDrawSound()   // descending A-F two-note tone
 ```
 
 ## Smart AI (Active)
@@ -172,6 +181,7 @@ The random AI (`chooseCpuMoveRandom`) remains exported and is used in Easy mode.
 - **Bundle analysis** via `rollup-plugin-visualizer` — generates `dist/bundle-report.html` on build
 - **ESLint + Prettier** for code quality (flat config, React + hooks plugins)
 - **Reusable `useGridKeyboard` hook** — document-level keyboard navigation extracted from BoardGrid
+- **Sound effects** via Web Audio API — zero audio files, synthesized tones (~2KB)
 - **CSS Grid** with `aspect-ratio: 1` for perfect square cells
 - **CSS Custom Properties** with light/dark theme sets
 - **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes
@@ -186,7 +196,7 @@ The random AI (`chooseCpuMoveRandom`) remains exported and is used in Easy mode.
 - ✅ Semantic HTML (buttons, grid role)
 - ✅ ARIA live regions for status updates
 - ✅ Keyboard-only playable (arrows, WASD, Space, Enter)
-- ✅ `prefers-reduced-motion` respected (animations disabled)
+- ✅ `prefers-reduced-motion` respected (animations and sounds disabled)
 - ✅ `forced-colors` / high-contrast mode support
 - ✅ Print stylesheet (hides controls, uses black/grey marks)
 
@@ -203,7 +213,7 @@ The random AI (`chooseCpuMoveRandom`) remains exported and is used in Easy mode.
 - [x] ~~**Win-line highlight**~~ — done (winning cells pulse with `win-pulse` animation)
 - [x] ~~**Score tracking display**~~ — done (ScoreBoard molecule: You/Draws/CPU tallies)
 - [x] ~~**Smooth board reset transition**~~ — done (fade + scale `board-reset` animation)
-- [ ] **Sound effects** — move placement, win, draw sounds (respect `prefers-reduced-motion`)
+- [x] ~~**Sound effects**~~ — done (Web Audio API: move pop, win arpeggio, draw tone; toggleable + reduced-motion aware)
 - [ ] **Confetti / particle effect** on win
 - [ ] **Move history timeline** — visual sidebar showing each move in order
 - [ ] **Theme picker** — user-selectable color schemes beyond auto light/dark
@@ -212,7 +222,7 @@ The random AI (`chooseCpuMoveRandom`) remains exported and is used in Easy mode.
 ### Code Quality & Testing
 - [x] ~~**ESLint + Prettier**~~ — done (flat config, React + hooks plugins, `lint`/`format` scripts)
 - [x] ~~**`getWinner` returns winning line**~~ — done (returns `{ token, line }`, `getWinnerToken` convenience)
-- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, ScoreBoard)
+- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle, ScoreBoard)
 - [ ] **Unit tests** — domain functions (`board.js`, `rules.js`, `ai.js`) are pure and test-ready; add Vitest or Jest suite
 - [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, StatusBar
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
