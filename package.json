@@ -54,8 +54,9 @@
       "electron/**/*"
     ],
     "win": {
-      "target": ["nsis"],
-      "icon": "public/icon-192.png"
+      "target": ["portable"],
+      "icon": "public/icon-192.png",
+      "signAndEditExecutable": false
     },
     "mac": {
       "target": ["dmg"],

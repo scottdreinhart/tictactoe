@@ -7,10 +7,10 @@ const isDev = !app.isPackaged;
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 520,
-    height: 720,
-    minWidth: 360,
-    minHeight: 520,
+    width: 412,
+    height: 914,
+    minWidth: 412,
+    minHeight: 914,
     title: 'Tic-Tac-Toe',
     icon: path.join(__dirname, '..', 'public', 'icon-192.png'),
     webPreferences: {
