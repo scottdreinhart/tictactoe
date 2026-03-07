@@ -265,9 +265,11 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 - [x] ~~**Smooth board reset transition**~~ — done (fade + scale `board-reset` animation)
 - [x] ~~**Sound effects**~~ — done (Web Audio API: move pop, win arpeggio, draw tone; toggleable + reduced-motion aware)
 - [x] ~~**Confetti / particle effect**~~ — done (canvas-based 80-particle burst with gravity + fade on human win)
-- [ ] **Move history timeline** — visual sidebar showing each move in order
+- [ ] **Move history timeline** — visual sidebar showing each move in order with undo/redo support
 - [x] ~~**Theme picker**~~ — done (6 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage)
 - [x] ~~**Touch gesture support**~~ — done (swipe navigation via `useSwipeGesture`, haptic feedback, `touch-action` CSS)
+- [ ] **Player name customization** — editable labels for "You" and "CPU" on the scoreboard
+- [ ] **Game statistics dashboard** — track lifetime stats (total games, win rate, win streaks) persisted to localStorage
 
 ### Code Quality & Testing
 - [x] ~~**ESLint + Prettier**~~ — done (flat config, React + hooks plugins, `lint`/`format` scripts)
@@ -278,20 +280,39 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
 - [x] ~~**PropTypes**~~ — done (runtime prop validation on all components that accept props)
 - [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
+- [x] ~~**Dead code cleanup**~~ — done (removed 5 orphaned files: CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls; removed unused CSS variables and rules)
+- [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
 ### Performance
 - [ ] **Lazy SVG mount** — only mount `XMark`/`OMark` when `value` transitions from `null` (currently conditional render handles this, but `Suspense` could be used for heavier marks)
+- [ ] **CSS code-splitting** — split theme-variant CSS into on-demand chunks so unused themes don't ship in the initial stylesheet
+- [ ] **Service Worker caching** — precache built assets for instant repeat-visit loads (pairs with PWA support)
 
 ### Architecture
 - [x] ~~**Extract keyboard hook**~~ — done (`useGridKeyboard.js` — reusable document-level keydown logic)
 - [ ] **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
+- [ ] **Cross-platform dev script** — replace `fuser -k 5173/tcp` in `npm run dev` with a cross-platform port-kill (e.g. `kill-port` package) so it works on native Windows/macOS, not just WSL/Linux
+
+### Accessibility
+- [ ] **Remove `user-scalable=no`** — the viewport meta tag currently disables pinch-to-zoom, which conflicts with WCAG 2.1 SC 1.4.4 (Resize Text); removing it would make the AA compliance claim fully accurate
+- [ ] **Skip-to-content link** — hidden link that becomes visible on focus to let keyboard/screen-reader users jump past the toolbar
+- [ ] **High-contrast theme** — a dedicated theme designed for maximal contrast beyond what `forced-colors` provides
 
 ### DevOps & Deployment
+- [ ] **Add LICENSE file** — the repo is public on GitHub but has no license; add MIT (or preferred) so others can legally use/fork the code
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
 - [ ] **Dependabot auto-merge** — resolve the existing moderate vulnerability alert and enable auto-updates
 - [ ] **PWA support** — add `manifest.json` + service worker for offline play and home-screen install
 - [x] ~~**Bundle analysis**~~ — done (`rollup-plugin-visualizer` generates `dist/bundle-report.html` on build)
+- [ ] **Browser compatibility documentation** — document minimum browser versions (Chrome 80+, Firefox 80+, Safari 14+, Edge 80+) given `es2020` target, `aspect-ratio`, Web Audio API, and CSS `translate` usage
+
+### Gameplay
+- [ ] **Local multiplayer** — human vs human mode on the same device (remove CPU AI, alternate turns)
+- [ ] **Online multiplayer** — real-time two-player via WebSockets (would need a lightweight server)
+- [ ] **Undo / redo** — step backward/forward through move history (domain layer is already immutable, making this straightforward)
+- [ ] **First-move choice** — let the player choose to go first (X) or second (O) at round start
+- [ ] **Streak & best-time tracking** — track consecutive wins and fastest win, display on the scoreboard
 
 ## Future Game Ideas
 
