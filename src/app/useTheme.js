@@ -3,6 +3,39 @@ import { DEFAULT_SETTINGS } from '../domain/themes.js'
 
 const STORAGE_KEY = 'ttt-theme-settings'
 
+/* ── On-demand theme CSS ─────────────────────────────────────────────────
+   Each non-classic theme lives in its own CSS file.  import.meta.glob
+   with ?inline returns the processed CSS text lazily (code-split chunk).
+   Classic inherits from :root in the main stylesheet, so no extra file.   */
+const themeLoaders = import.meta.glob('../themes/*.css', {
+  query: '?inline',
+  import: 'default',
+})
+
+let activeThemeStyle = null
+
+/**
+ * Load a theme's CSS on demand and inject it as a <style> element.
+ * Removes any previously injected theme style first.
+ */
+const applyThemeCSS = async (themeId) => {
+  if (activeThemeStyle) {
+    activeThemeStyle.remove()
+    activeThemeStyle = null
+  }
+  if (themeId === 'classic') return
+
+  const loader = themeLoaders[`../themes/${themeId}.css`]
+  if (!loader) return
+
+  const css = await loader()
+  const el = document.createElement('style')
+  el.setAttribute('data-theme-chunk', themeId)
+  el.textContent = css
+  document.head.appendChild(el)
+  activeThemeStyle = el
+}
+
 /**
  * Read persisted settings from localStorage (or return defaults).
  */
@@ -72,6 +105,7 @@ const useTheme = () => {
   // Sync to DOM + localStorage whenever settings change
   useEffect(() => {
     applyToDOM(settings)
+    applyThemeCSS(settings.colorTheme)
     saveSettings(settings)
   }, [settings])
 

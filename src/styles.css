@@ -1,11 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Tic-Tac-Toe — Styles
-   • 6 color themes via data-theme attribute
+   • 7 color themes via data-theme attribute (including High Contrast)
    • Light / Dark mode via data-mode (falls back to prefers-color-scheme)
    • Colorblind-safe mark colors via data-colorblind
    • SVG animated marks (draw-on effect)
    • Reduced motion support
    • Responsive media queries (phone → tablet → desktop → large)
+   • PWA / marketplace-ready (safe areas, touch targets, standalone mode)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -35,81 +36,6 @@
   --o-glow: rgba(155, 89, 182, 0.3);
   --mark-stroke-width: 8;
   --win-pulse-shadow: rgba(102, 126, 234, 0.6);
-}
-
-/* ── Ocean ── */
-[data-theme='ocean'] {
-  --bg-gradient-start: #0369a1;
-  --bg-gradient-end: #0ea5e9;
-  --accent: #0ea5e9;
-  --accent-glow: rgba(14, 165, 233, 0.4);
-  --cell-hover-bg: #e0f2fe;
-  --instructions-bg: #e0f2fe;
-  --x-color: #0284c7;
-  --o-color: #06b6d4;
-  --x-glow: rgba(2, 132, 199, 0.3);
-  --o-glow: rgba(6, 182, 212, 0.3);
-  --win-pulse-shadow: rgba(14, 165, 233, 0.6);
-}
-
-/* ── Sunset ── */
-[data-theme='sunset'] {
-  --bg-gradient-start: #dc2626;
-  --bg-gradient-end: #f97316;
-  --accent: #f97316;
-  --accent-glow: rgba(249, 115, 22, 0.4);
-  --cell-hover-bg: #fff7ed;
-  --instructions-bg: #fff7ed;
-  --x-color: #ea580c;
-  --o-color: #dc2626;
-  --x-glow: rgba(234, 88, 12, 0.3);
-  --o-glow: rgba(220, 38, 38, 0.3);
-  --win-pulse-shadow: rgba(249, 115, 22, 0.6);
-}
-
-/* ── Forest ── */
-[data-theme='forest'] {
-  --bg-gradient-start: #166534;
-  --bg-gradient-end: #22c55e;
-  --accent: #22c55e;
-  --accent-glow: rgba(34, 197, 94, 0.4);
-  --cell-hover-bg: #f0fdf4;
-  --instructions-bg: #f0fdf4;
-  --x-color: #16a34a;
-  --o-color: #65a30d;
-  --x-glow: rgba(22, 163, 74, 0.3);
-  --o-glow: rgba(101, 163, 13, 0.3);
-  --win-pulse-shadow: rgba(34, 197, 94, 0.6);
-}
-
-/* ── Rose ── */
-[data-theme='rose'] {
-  --bg-gradient-start: #be123c;
-  --bg-gradient-end: #fb7185;
-  --accent: #f43f5e;
-  --accent-glow: rgba(244, 63, 94, 0.4);
-  --cell-hover-bg: #fff1f2;
-  --instructions-bg: #fff1f2;
-  --x-color: #e11d48;
-  --o-color: #db2777;
-  --x-glow: rgba(225, 29, 72, 0.3);
-  --o-glow: rgba(219, 39, 119, 0.3);
-  --win-pulse-shadow: rgba(244, 63, 94, 0.6);
-}
-
-/* ── Midnight ── */
-[data-theme='midnight'] {
-  --bg-gradient-start: #312e81;
-  --bg-gradient-end: #7c3aed;
-  --accent: #a78bfa;
-  --accent-glow: rgba(167, 139, 250, 0.4);
-  --cell-hover-bg: #ede9fe;
-  --instructions-bg: #ede9fe;
-  --x-color: #7c3aed;
-  --o-color: #a855f7;
-  --x-glow: rgba(124, 58, 237, 0.3);
-  --o-glow: rgba(168, 85, 247, 0.3);
-  --win-pulse-shadow: rgba(167, 139, 250, 0.6);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -142,66 +68,6 @@
     --o-glow: rgba(192, 132, 252, 0.35);
     --win-pulse-shadow: rgba(123, 140, 255, 0.5);
   }
-  [data-theme='ocean']:not([data-mode='light']) {
-    --bg-gradient-start: #082f49;
-    --bg-gradient-end: #0c4a6e;
-    --accent: #38bdf8;
-    --accent-glow: rgba(56, 189, 248, 0.35);
-    --instructions-bg: #253347;
-    --x-color: #38bdf8;
-    --o-color: #22d3ee;
-    --x-glow: rgba(56, 189, 248, 0.35);
-    --o-glow: rgba(34, 211, 238, 0.35);
-    --win-pulse-shadow: rgba(56, 189, 248, 0.5);
-  }
-  [data-theme='sunset']:not([data-mode='light']) {
-    --bg-gradient-start: #431407;
-    --bg-gradient-end: #7c2d12;
-    --accent: #fb923c;
-    --accent-glow: rgba(251, 146, 60, 0.35);
-    --instructions-bg: #253347;
-    --x-color: #fb923c;
-    --o-color: #f87171;
-    --x-glow: rgba(251, 146, 60, 0.35);
-    --o-glow: rgba(248, 113, 113, 0.35);
-    --win-pulse-shadow: rgba(251, 146, 60, 0.5);
-  }
-  [data-theme='forest']:not([data-mode='light']) {
-    --bg-gradient-start: #052e16;
-    --bg-gradient-end: #14532d;
-    --accent: #4ade80;
-    --accent-glow: rgba(74, 222, 128, 0.35);
-    --instructions-bg: #253347;
-    --x-color: #4ade80;
-    --o-color: #a3e635;
-    --x-glow: rgba(74, 222, 128, 0.35);
-    --o-glow: rgba(163, 230, 53, 0.35);
-    --win-pulse-shadow: rgba(74, 222, 128, 0.5);
-  }
-  [data-theme='rose']:not([data-mode='light']) {
-    --bg-gradient-start: #4c0519;
-    --bg-gradient-end: #881337;
-    --accent: #fb7185;
-    --accent-glow: rgba(251, 113, 133, 0.35);
-    --instructions-bg: #253347;
-    --x-color: #fb7185;
-    --o-color: #f472b6;
-    --x-glow: rgba(251, 113, 133, 0.35);
-    --o-glow: rgba(244, 114, 182, 0.35);
-    --win-pulse-shadow: rgba(251, 113, 133, 0.5);
-  }
-  [data-theme='midnight']:not([data-mode='light']) {
-    --bg-gradient-start: #1e1b4b;
-    --bg-gradient-end: #312e81;
-    --accent: #c4b5fd;
-    --accent-glow: rgba(196, 181, 253, 0.35);
-    --instructions-bg: #253347;
-    --x-color: #a78bfa;
-    --o-color: #c084fc;
-    --x-glow: rgba(167, 139, 250, 0.35);
-    --o-glow: rgba(192, 132, 252, 0.35);
-    --win-pulse-shadow: rgba(196, 181, 253, 0.5);
-  }
 }
 
 /* Manual dark override (data-mode="dark") — regardless of system pref */
@@ -227,66 +93,6 @@
   --x-glow: rgba(108, 140, 255, 0.35);
   --o-glow: rgba(192, 132, 252, 0.35);
   --win-pulse-shadow: rgba(123, 140, 255, 0.5);
-}
-[data-mode='dark'][data-theme='ocean'] {
-  --bg-gradient-start: #082f49;
-  --bg-gradient-end: #0c4a6e;
-  --accent: #38bdf8;
-  --accent-glow: rgba(56, 189, 248, 0.35);
-  --instructions-bg: #253347;
-  --x-color: #38bdf8;
-  --o-color: #22d3ee;
-  --x-glow: rgba(56, 189, 248, 0.35);
-  --o-glow: rgba(34, 211, 238, 0.35);
-  --win-pulse-shadow: rgba(56, 189, 248, 0.5);
-}
-[data-mode='dark'][data-theme='sunset'] {
-  --bg-gradient-start: #431407;
-  --bg-gradient-end: #7c2d12;
-  --accent: #fb923c;
-  --accent-glow: rgba(251, 146, 60, 0.35);
-  --instructions-bg: #253347;
-  --x-color: #fb923c;
-  --o-color: #f87171;
-  --x-glow: rgba(251, 146, 60, 0.35);
-  --o-glow: rgba(248, 113, 113, 0.35);
-  --win-pulse-shadow: rgba(251, 146, 60, 0.5);
-}
-[data-mode='dark'][data-theme='forest'] {
-  --bg-gradient-start: #052e16;
-  --bg-gradient-end: #14532d;
-  --accent: #4ade80;
-  --accent-glow: rgba(74, 222, 128, 0.35);
-  --instructions-bg: #253347;
-  --x-color: #4ade80;
-  --o-color: #a3e635;
-  --x-glow: rgba(74, 222, 128, 0.35);
-  --o-glow: rgba(163, 230, 53, 0.35);
-  --win-pulse-shadow: rgba(74, 222, 128, 0.5);
-}
-[data-mode='dark'][data-theme='rose'] {
-  --bg-gradient-start: #4c0519;
-  --bg-gradient-end: #881337;
-  --accent: #fb7185;
-  --accent-glow: rgba(251, 113, 133, 0.35);
-  --instructions-bg: #253347;
-  --x-color: #fb7185;
-  --o-color: #f472b6;
-  --x-glow: rgba(251, 113, 133, 0.35);
-  --o-glow: rgba(244, 114, 182, 0.35);
-  --win-pulse-shadow: rgba(251, 113, 133, 0.5);
-}
-[data-mode='dark'][data-theme='midnight'] {
-  --bg-gradient-start: #1e1b4b;
-  --bg-gradient-end: #312e81;
-  --accent: #c4b5fd;
-  --accent-glow: rgba(196, 181, 253, 0.35);
-  --instructions-bg: #253347;
-  --x-color: #a78bfa;
-  --o-color: #c084fc;
-  --x-glow: rgba(167, 139, 250, 0.35);
-  --o-glow: rgba(192, 132, 252, 0.35);
-  --win-pulse-shadow: rgba(196, 181, 253, 0.5);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -354,7 +160,10 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  /* Prevent pull-to-refresh / rubber-banding in standalone PWA */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -365,8 +174,48 @@ body {
   background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   background-attachment: fixed;
   color: var(--text-primary);
-  padding: clamp(8px, 2vw, 24px);
+  /* Safe area insets for notched / rounded devices (iPhone, Pixel) */
+  padding:
+    max(env(safe-area-inset-top, 0px), clamp(8px, 2vw, 24px))
+    max(env(safe-area-inset-right, 0px), clamp(8px, 2vw, 24px))
+    max(env(safe-area-inset-bottom, 0px), clamp(8px, 2vw, 24px))
+    max(env(safe-area-inset-left, 0px), clamp(8px, 2vw, 24px));
+  min-height: 100%;
   transition: background-color 300ms ease, color 300ms ease;
+  /* Prevent accidental text selection on UI chrome */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Prevent callout / context menu on long-press (iOS) */
+  -webkit-touch-callout: none;
+}
+
+/* ─── Skip-to-Content ─── */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 100;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 0 0 8px 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.skip-to-content:focus {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Block centering — no flex on body */
@@ -374,6 +223,10 @@ body {
   width: 100%;
   max-width: 540px;
   margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* ─── Game Container ─── */
@@ -745,7 +598,13 @@ body {
 
 .notification-banner__action {
   font-size: clamp(0.78rem, 2vw, 0.92rem);
-  padding: 8px 22px;
+  padding: 12px 24px;
+  min-height: 48px;
+  min-width: 48px;
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Variant: win — golden glow */
@@ -791,7 +650,7 @@ body {
   gap: 0;
   border-radius: 8px;
   overflow: hidden;
-  border: none;
+  border: 1px solid rgba(128, 128, 128, 0.3);
   width: fit-content;
   margin: 0 auto;
 }
@@ -800,7 +659,9 @@ body {
   background: transparent;
   color: var(--text-primary);
   border: none;
-  padding: 6px 20px;
+  border-right: 1px solid rgba(128, 128, 128, 0.3);
+  padding: 10px 20px;
+  min-height: 44px;
   font-size: clamp(0.75rem, 2vw, 0.85rem);
   font-weight: 600;
   cursor: pointer;
@@ -810,6 +671,10 @@ body {
 
 .difficulty-option:hover:not(.difficulty-active) {
   background: var(--cell-hover-bg);
+}
+
+.difficulty-option:last-child {
+  border-right: none;
 }
 
 .difficulty-active {
@@ -824,6 +689,8 @@ body {
   border: none;
   border-radius: 8px;
   padding: 4px 10px;
+  min-width: 48px;
+  min-height: 48px;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
   transition: background-color 200ms ease, transform 200ms ease;
@@ -849,6 +716,8 @@ body {
   border: none;
   border-radius: 8px;
   padding: 4px 10px;
+  min-width: 48px;
+  min-height: 48px;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
   transition: background-color 200ms ease, transform 200ms ease;
@@ -903,11 +772,14 @@ body {
 }
 
 .theme-swatch {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
+  /* 44px touch target via padding */
+  padding: 4px;
+  box-sizing: content-box;
   transition: transform 200ms ease, border-color 200ms ease;
 }
 
@@ -933,7 +805,8 @@ body {
   flex: 1;
   background: transparent;
   border: none;
-  padding: 5px 8px;
+  padding: 10px 8px;
+  min-height: 44px;
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
@@ -962,8 +835,9 @@ body {
   background: transparent;
   border: 1px solid var(--cell-border);
   border-radius: 4px;
-  padding: 3px 8px;
-  font-size: 0.65rem;
+  padding: 10px 12px;
+  min-height: 44px;
+  font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
   color: var(--text-primary);
@@ -1018,6 +892,8 @@ body {
   border: none;
   border-radius: 8px;
   padding: 6px 10px;
+  min-width: 48px;
+  min-height: 48px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1137,8 +1013,8 @@ body {
   border: none;
   color: var(--text-secondary);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   font-size: 1.1rem;
   line-height: 1;
   display: flex;
@@ -1438,5 +1314,32 @@ body {
 
   .mark-o circle {
     stroke: VisitedText;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PWA STANDALONE MODE — Native-app feel when installed
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (display-mode: standalone) {
+  /* iOS standalone: account for status bar area */
+  body {
+    padding-top: max(env(safe-area-inset-top, 0px), 20px);
+  }
+
+  /* Remove subtle web-app cues */
+  .skip-to-content {
+    display: none;
+  }
+
+  /* Tighter layout when running as installed app */
+  .game-container {
+    border-radius: 12px;
+  }
+}
+
+/* Also target iOS standalone specifically */
+@media (display-mode: standalone) and (max-width: 599px) {
+  body {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
   }
 }

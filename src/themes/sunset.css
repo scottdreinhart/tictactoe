@@ -1,0 +1,44 @@
+/* Sunset — light */
+[data-theme='sunset'] {
+  --bg-gradient-start: #dc2626;
+  --bg-gradient-end: #f97316;
+  --accent: #f97316;
+  --accent-glow: rgba(249, 115, 22, 0.4);
+  --cell-hover-bg: #fff7ed;
+  --instructions-bg: #fff7ed;
+  --x-color: #ea580c;
+  --o-color: #dc2626;
+  --x-glow: rgba(234, 88, 12, 0.3);
+  --o-glow: rgba(220, 38, 38, 0.3);
+  --win-pulse-shadow: rgba(249, 115, 22, 0.6);
+}
+
+/* Sunset — dark (system preference) */
+@media (prefers-color-scheme: dark) {
+  [data-theme='sunset']:not([data-mode='light']) {
+    --bg-gradient-start: #431407;
+    --bg-gradient-end: #7c2d12;
+    --accent: #fb923c;
+    --accent-glow: rgba(251, 146, 60, 0.35);
+    --instructions-bg: #253347;
+    --x-color: #fb923c;
+    --o-color: #f87171;
+    --x-glow: rgba(251, 146, 60, 0.35);
+    --o-glow: rgba(248, 113, 113, 0.35);
+    --win-pulse-shadow: rgba(251, 146, 60, 0.5);
+  }
+}
+
+/* Sunset — dark (manual override) */
+[data-mode='dark'][data-theme='sunset'] {
+  --bg-gradient-start: #431407;
+  --bg-gradient-end: #7c2d12;
+  --accent: #fb923c;
+  --accent-glow: rgba(251, 146, 60, 0.35);
+  --instructions-bg: #253347;
+  --x-color: #fb923c;
+  --o-color: #f87171;
+  --x-glow: rgba(251, 146, 60, 0.35);
+  --o-glow: rgba(248, 113, 113, 0.35);
+  --win-pulse-shadow: rgba(251, 146, 60, 0.5);
+}

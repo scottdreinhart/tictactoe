@@ -122,6 +122,7 @@ const TicTacToeGame = () => {
 
   return (
     <div className={containerClass}>
+      <a href="#game-board" className="skip-to-content">Skip to game board</a>
       {showConfetti && (
         <ConfettiOverlay onDone={() => setShowConfetti(false)} />
       )}
@@ -151,7 +152,7 @@ const TicTacToeGame = () => {
 
       <ScoreBoard score={score} />
 
-      <div className="board-area">
+      <div className="board-area" id="game-board">
         <BoardGrid
           board={board}
           focusedIndex={focusedIndex}
