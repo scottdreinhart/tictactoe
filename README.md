@@ -374,27 +374,68 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 
 ## Accessibility Compliance
 
-- ✅ WCAG 2.1 AA focus indicators
-- ✅ Semantic HTML (buttons, grid role, dialog role)
-- ✅ ARIA live regions for notification updates (`role="status"`, `aria-live="polite"`)
-- ✅ `aria-pressed` on all toggle/selection buttons
-- ✅ Keyboard-only playable (arrows, WASD, Space, Enter)
-- ✅ Touch/swipe playable with haptic feedback
-- ✅ `prefers-reduced-motion` respected (animations and sounds disabled)
-- ✅ `forced-colors` / high-contrast mode support
-- ✅ 4 colorblind presets (Protanopia, Deuteranopia, Tritanopia, Achromatopsia)
-- ✅ Print stylesheet (hides controls + notifications, uses black/grey marks)
+- WCAG 2.1 AA focus indicators
+- Semantic HTML (buttons, grid role, dialog role)
+- ARIA live regions for notification updates (`role="status"`, `aria-live="polite"`)
+- `aria-pressed` on all toggle/selection buttons
+- Keyboard-only playable (arrows, WASD, Space, Enter)
+- Touch/swipe playable with haptic feedback
+- `prefers-reduced-motion` respected (animations and sounds disabled)
+- `forced-colors` / high-contrast mode support
+- 4 colorblind presets (Protanopia, Deuteranopia, Tritanopia, Achromatopsia)
+- Print stylesheet (hides controls + notifications, uses black/grey marks)
+
+## Browser Compatibility
+
+| Browser | Minimum Version | Notes |
+|---------|----------------|-------|
+| Chrome | 80+ | Full support including Web Audio API, CSS Modules, Web Workers |
+| Firefox | 80+ | Full support including `color-mix()`, CSS `forced-colors` |
+| Safari | 14+ | Full support; requires WebKit prefix for some animations |
+| Edge | 80+ | Chromium-based; feature parity with Chrome |
+| Samsung Internet | 13+ | Smart TV and mobile; Chromium-based |
+| Amazon Silk | 80+ | FireStick, Fire TV, Fire tablets |
+
+### CSS Feature Requirements
+
+- `color-mix()` — used for transparent backgrounds and lightened marks
+- `forced-colors` media query — high-contrast mode support
+- `prefers-reduced-motion` media query — accessibility animations
+- CSS Custom Properties (variables) — theming system
+- CSS Modules — scoped component styles (bundled by Vite)
+
+## Device Compatibility
+
+| Device | Browser | Input Method |
+|--------|---------|-------------|
+| Desktop / Laptop | Chrome, Firefox, Safari, Edge | Mouse, keyboard, trackpad |
+| Mobile (iOS / Android) | Safari, Chrome, Samsung Internet | Touch, swipe gestures |
+| Amazon Fire TV Stick | Amazon Silk | D-pad remote (keyboard navigation) |
+| Amazon Fire TV | Amazon Silk | D-pad remote (keyboard navigation) |
+| Amazon Echo Show | Amazon Silk | Touch screen |
+| Samsung Smart TV | Samsung Internet / Tizen | D-pad remote (keyboard navigation) |
+| LG Smart TV | WebOS Browser | D-pad remote (keyboard navigation), Magic Remote (pointer) |
+| Android TV | Chrome | D-pad remote (keyboard navigation) |
+| Apple TV | Safari (via AirPlay / screen mirroring) | Siri Remote (swipe + click) |
+| Tablets (iPad, Fire, Android) | Safari, Silk, Chrome | Touch, swipe gestures |
+
+### Input Support
+
+- **Keyboard** — full arrow key, WASD, Tab, Space, Enter navigation; `Ctrl+Z`/`Ctrl+Y` for undo/redo
+- **Mouse / Pointer** — click-to-play with hover states
+- **Touch** — tap-to-play with swipe gesture navigation and haptic feedback
+- **D-pad Remote** — mapped to keyboard arrow events; focus indicators sized for 10-foot UI (minimum 48×48px touch targets)
 
 ## Completed Features
 
-### Technical — AI ✅
+### Technical — AI
 - **Activate smart AI** (priority: win → block → center → corner → edge)
 - **Minimax AI with alpha-beta pruning** — unbeatable CPU difficulty level
 - **Configurable CPU delay** — `CPU_DELAY_MS` constant (currently 400ms)
 - **Difficulty toggle** — Easy/Medium/Hard/Unbeatable; pill-shaped toggle
 - **Web Worker AI** — CPU computation off-main-thread in `ai.worker.js`, 60 FPS guaranteed
 
-### Visual & UX ✅
+### Visual & UX
 - **Win-line highlight** — winning cells pulse with `win-pulse` animation
 - **Score tracking display** — MoveTimeline drawer: You/Draws/CPU tallies, streak & best time
 - **Smooth board reset transition** — fade + scale `board-reset` animation
@@ -407,7 +448,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 - **Move history timeline** — sliding drawer with all moves, undo/redo buttons, click to jump to move
 - **Streak & best-time display** — current win streak (🔥) and fastest win time in MoveTimeline drawer
 
-### Code Quality ✅
+### Code Quality
 - **ESLint + Prettier** — flat config, React + hooks plugins, `lint`/`format` scripts
 - **`getWinner` returns winning line** — returns `{ token, line }`, `getWinnerToken` convenience
 - **`React.memo` on atoms** — XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector
@@ -415,12 +456,12 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 - **Dead code cleanup** — removed 7 orphaned files (CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls, ScoreBoard.jsx, ScoreBoard.module.css); removed ~580 lines of unused global CSS; fixed 19 ghost CSS variable references
 - **Architecture audit** — moved `sounds.js` from `domain/` to `app/` (framework-adjacent); moved `CoinFlip`, `HamburgerMenu`, `ThemeSelector` from `atoms/` to `molecules/` (composed components); moved `ui-constants.js` from `domain/` to `ui/`
 
-### Performance ✅
+### Performance
 - **Lazy SVG mount** — `React.lazy` + `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5)
 - **Service Worker caching** — precache critical shell + cache-first for `/assets/*` in [sw.js](public/sw.js)
 - **CSS code-splitting** — theme CSS split into separate chunks; classic bundled in main, others lazy-loaded on-demand; all preloaded at startup for instant switching
 
-### Gameplay ✅
+### Gameplay
 - **Undo / redo** — step backward/forward through complete game history
   - Keyboard shortcuts: `Ctrl+Z` (undo), `Ctrl+Y` or `Ctrl+Shift+Z` (redo)
   - Timeline sidebar shows all moves with move numbers and tokens
@@ -439,16 +480,16 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
   - Displayed in MoveTimeline drawer
   - Persists across game rounds (and undo/redo)
 
-### Architecture ✅
+### Architecture
 - **Extract keyboard hook** — `useGridKeyboard.js` — reusable document-level keydown logic
 - **Cross-platform dev script** — replaced `fuser -k 5173/tcp` with `kill-port` (works on Windows, macOS, Linux)
 
-### Accessibility ✅
+### Accessibility
 - **Remove `user-scalable=no`** — viewport meta tag has `user-scalable=yes` in [index.html](index.html#L5), fully WCAG 2.1 SC 1.4.4 compliant
 - **Skip-to-content link** — hidden `<a href="#game-board">Skip to game board</a>` in [TicTacToeGame.jsx](src/ui/organisms/TicTacToeGame.jsx#L125), visible on focus
 - **High-contrast theme** — dedicated [highcontrast.css](src/themes/highcontrast.css) + `@media (forced-colors: active)` support in [styles.css](src/styles.css#L1370)
 
-### DevOps & Deployment ✅
+### DevOps & Deployment
 - **Proprietary license** — LICENSE file with full terms and copyright holder identification
 - **PWA support** — `manifest.json` + service worker for offline play and home-screen install
 - **Bundle analysis** — `rollup-plugin-visualizer` generates `dist/bundle-report.html` on build
@@ -479,7 +520,6 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
 - [ ] **Dependabot auto-merge** — resolve existing moderate vulnerability alert and enable auto-updates
-- [ ] **Browser compatibility documentation** — minimum versions (Chrome 80+, Firefox 80+, Safari 14+, Edge 80+)
 
 ### Gameplay
 - [ ] **Local multiplayer** — human vs human mode on the same device (remove CPU AI, alternate turns)
