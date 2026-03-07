@@ -389,16 +389,8 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
 ### Architecture
-- ✅ **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
-  - ✅ **Phase 1 (Atoms)**: 6 atoms converted to CSS Modules with scoped class names
-  - ✅ **Phase 2 (Molecules)**: 3 molecules converted to CSS Modules with scoped class names
-  - ✅ **Phase 3 (Organisms)**: TicTacToeGame converted to CSS Modules with outcome animations
-  - ✅ **Phase 4 (Cleanup)**: Removed 560 lines of migrated component styles from global stylesheet
-    - Global stylesheet now contains: theme variables, base typography, responsive media queries
-    - All 10 UI components now use scoped CSS Modules for styling
-    - CSS bundle reduced: 34.39 KB → 25.86 KB (5.48 KB gzip, previously 6.12 KB gzip)
-  - **Result**: 100% of atomic design components now use scoped CSS Modules
-  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for migration guide and `src/ui/utils/cssModules.js` utility
+- ✅ **CSS Modules** — component styles scoped to eliminate global class name collisions
+  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for technical details
 
 ### DevOps & Deployment
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
