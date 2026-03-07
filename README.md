@@ -393,8 +393,6 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 | Firefox | 80+ | Full support including `color-mix()`, CSS `forced-colors` |
 | Safari | 14+ | Full support; requires WebKit prefix for some animations |
 | Edge | 80+ | Chromium-based; feature parity with Chrome |
-| Samsung Internet | 13+ | Smart TV and mobile; Chromium-based |
-| Amazon Silk | 80+ | FireStick, Fire TV, Fire tablets |
 
 ### CSS Feature Requirements
 
@@ -406,18 +404,43 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 
 ## Device Compatibility
 
-| Device | Browser | Input Method |
-|--------|---------|-------------|
+The app is built with React + Vite and targets packaging via **Electron** for native desktop, mobile, and smart TV distribution — not just browser-based access.
+
+### Web (Browser)
+
+| Platform | Browser | Input Method |
+|----------|---------|-------------|
 | Desktop / Laptop | Chrome, Firefox, Safari, Edge | Mouse, keyboard, trackpad |
 | Mobile (iOS / Android) | Safari, Chrome, Samsung Internet | Touch, swipe gestures |
-| Amazon Fire TV Stick | Amazon Silk | D-pad remote (keyboard navigation) |
-| Amazon Fire TV | Amazon Silk | D-pad remote (keyboard navigation) |
-| Amazon Echo Show | Amazon Silk | Touch screen |
-| Samsung Smart TV | Samsung Internet / Tizen | D-pad remote (keyboard navigation) |
-| LG Smart TV | WebOS Browser | D-pad remote (keyboard navigation), Magic Remote (pointer) |
-| Android TV | Chrome | D-pad remote (keyboard navigation) |
-| Apple TV | Safari (via AirPlay / screen mirroring) | Siri Remote (swipe + click) |
 | Tablets (iPad, Fire, Android) | Safari, Silk, Chrome | Touch, swipe gestures |
+
+### Electron — Desktop Apps
+
+| Platform | Distribution | Input Method |
+|----------|-------------|-------------|
+| Windows | `.exe` installer / Microsoft Store | Mouse, keyboard, trackpad |
+| macOS | `.dmg` / Mac App Store | Mouse, keyboard, trackpad |
+| Linux | `.AppImage` / `.deb` / `.snap` / Snap Store | Mouse, keyboard, trackpad |
+
+### Electron — Smart TV Apps & Channels
+
+| Platform | Distribution | Input Method |
+|----------|-------------|-------------|
+| Amazon Fire TV Stick | Amazon Appstore (Fire TV app) | D-pad remote (keyboard navigation) |
+| Amazon Fire TV | Amazon Appstore (Fire TV app) | D-pad remote (keyboard navigation) |
+| Amazon Echo Show | Amazon Appstore | Touch screen |
+| Samsung Smart TV (Tizen) | Samsung TV App Store (Tizen app) | D-pad remote (keyboard navigation) |
+| LG Smart TV (webOS) | LG Content Store (webOS app) | D-pad remote, Magic Remote (pointer) |
+| Android TV / Google TV | Google Play Store (Android TV app) | D-pad remote (keyboard navigation) |
+| Apple TV (tvOS) | App Store (tvOS app via Electron/capacitor) | Siri Remote (swipe + click) |
+| Roku | Roku Channel Store (future consideration) | D-pad remote |
+
+### Electron — Mobile Apps
+
+| Platform | Distribution | Input Method |
+|----------|-------------|-------------|
+| Android | Google Play Store / `.apk` sideload | Touch, swipe gestures |
+| iOS | App Store (via Capacitor or similar bridge) | Touch, swipe gestures |
 
 ### Input Support
 
