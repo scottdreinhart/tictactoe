@@ -390,7 +390,14 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 
 ### Architecture
 - [ ] **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
-  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for migration guide and `src/ui/utils/cssModules.js` utility for component-scoped styling
+  - ✅ **Phase 1 (Atoms)**: 6 atoms converted to CSS Modules:
+    - SoundToggle, DifficultyToggle, HamburgerMenu, CellButton, ThemeSelector, NotificationBanner
+    - Each component has `.module.css` file with scoped styles
+    - Uses `cx()` utility for conditional classes
+  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for migration guide and `src/ui/utils/cssModules.js` utility
+  - **Phase 2 (Molecules)**: Convert BoardGrid, ScoreBoard, Instructions
+  - **Phase 3 (Organisms)**: Convert TicTacToeGame
+  - **Phase 4**: Deprecate global BEM classes, keep shared globals (layout, animations, base styles)
 
 ### DevOps & Deployment
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
