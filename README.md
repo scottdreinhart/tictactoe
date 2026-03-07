@@ -244,7 +244,14 @@ pnpm lint:fix      # auto-fix issues
 # Format
 pnpm format        # format all source files
 pnpm format:check  # check formatting without writing
+
+# Utility
+pnpm clean         # wipe dist/ and release/ build outputs
+pnpm clean:node    # delete node_modules for a fresh install
+pnpm analyze       # production build + open bundle visualizer report
 ```
+
+> **Note**: `pnpm build` automatically runs `pnpm clean` first (via the `prebuild` lifecycle script).
 
 The app will be available at `http://localhost:5173`
 
@@ -295,6 +302,9 @@ pnpm cap:open:ios            # Open in Xcode
 # Run on connected device/emulator
 pnpm cap:run:android         # Deploy to Android device
 pnpm cap:run:ios             # Deploy to iOS device
+
+# One-command Android APK build
+pnpm cap:build:android       # Build web → sync → assemble debug APK
 ```
 
 Capacitor wraps the same Vite `dist/` output in native Android and iOS app shells. The web code runs in a native WebView — no code changes needed.
