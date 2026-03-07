@@ -49,5 +49,11 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
+    hmr: {
+      // WSL2: the dev server binds inside WSL but the browser
+      // connects from Windows via localhost, so point HMR there.
+      host: 'localhost',
+      port: 5173,
+    },
   },
 })

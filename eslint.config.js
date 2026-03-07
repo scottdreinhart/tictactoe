@@ -31,15 +31,15 @@ export default [
         Math: 'readonly',
         localStorage: 'readonly',
         navigator: 'readonly',
+        Worker: 'readonly',
+        URL: 'readonly',
+        self: 'readonly',
       },
     },
     rules: {
       // React
-      'react/jsx-uses-react': 'off',    // not needed with new JSX transform
       'react/jsx-uses-vars': 'error',    // mark JSX-used vars as used
       'react/react-in-jsx-scope': 'off', // not needed with new JSX transform
-      'react/prop-types': 'off',         // using JSDoc instead
-      'react/display-name': 'warn',
 
       // Hooks
       'react-hooks/rules-of-hooks': 'error',

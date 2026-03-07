@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import { useTicTacToe } from '../../app/useTicTacToe.js'
 import useSoundEffects from '../../app/useSoundEffects.js'
 import useTheme from '../../app/useTheme.js'
@@ -10,10 +10,12 @@ import SoundToggle from '../atoms/SoundToggle.jsx'
 import ThemeSelector from '../atoms/ThemeSelector.jsx'
 import HamburgerMenu from '../atoms/HamburgerMenu.jsx'
 import ConfettiOverlay from '../atoms/ConfettiOverlay.jsx'
+import CoinFlip from '../atoms/CoinFlip.jsx'
 import NotificationBanner from '../atoms/NotificationBanner.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
 import ScoreBoard from '../molecules/ScoreBoard.jsx'
 import Instructions from '../molecules/Instructions.jsx'
+import MoveTimeline from '../molecules/MoveTimeline.jsx'
 import styles from './TicTacToeGame.module.css'
 import { cx } from '../utils/cssModules.js'
 
@@ -34,15 +36,29 @@ const TicTacToeGame = () => {
     status,
     score,
     difficulty,
+    streak,
+    bestTime,
+    moveHistory,
+    currentMoveIndex,
+    canUndo,
+    canRedo,
     handleHumanSelect,
     handleFocusChange,
     focusedIndex,
     handleReset,
     handleSetDifficulty,
+    handleUndo,
+    handleRedo,
   } = useTicTacToe()
 
   const { soundEnabled, toggleSound, playMove, playNav, playTap, playWin, playLoss, playDraw } = useSoundEffects()
   const { settings, setColorTheme, setMode, setColorblind } = useTheme()
+
+  // Coin flip state - show at app startup
+  const [coinFlipDone, setCoinFlipDone] = useState(false)
+  const handleCoinFlipComplete = useCallback(() => {
+    setCoinFlipDone(true)
+  }, [])
 
   // Auto-reset countdown (30 s)
   const { secondsLeft, resetNow } = useAutoReset(gameState.isOver, handleReset)
@@ -116,6 +132,31 @@ const TicTacToeGame = () => {
     }
   }, [secondsLeft, notification?.variant, updateCurrent])
 
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ctrl+Z or Cmd+Z for undo
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        if (canUndo) {
+          handleUndo()
+        }
+      }
+      // Ctrl+Y or Cmd+Shift+Z for redo
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault()
+        if (canRedo) {
+          handleRedo()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [canUndo, canRedo, handleUndo, handleRedo])
+
   const containerClass = useMemo(() => {
     const outcomeClass = outcome ? styles[`outcome${outcome.charAt(0).toUpperCase() + outcome.slice(1)}`] : null
     return cx(styles.root, outcomeClass)
@@ -123,6 +164,7 @@ const TicTacToeGame = () => {
 
   return (
     <div className={containerClass}>
+      {!coinFlipDone && <CoinFlip onFlipComplete={handleCoinFlipComplete} />}
       <a href="#game-board" className={styles.skipToContent}>Skip to game board</a>
       {showConfetti && (
         <ConfettiOverlay onDone={() => setShowConfetti(false)} />
@@ -151,25 +193,36 @@ const TicTacToeGame = () => {
         </div>
       </HamburgerMenu>
 
-      <ScoreBoard score={score} />
+      <div className={styles.gameContent}>
+        <ScoreBoard score={score} streak={streak} bestTime={bestTime} />
 
-      <div className={styles.boardArea} id="game-board">
-        <BoardGrid
-          board={board}
-          focusedIndex={focusedIndex}
-          onFocusChange={handleFocusChange}
-          onSelect={handleHumanSelect}
-          isGameOver={gameState.isOver}
-          winLine={gameState.winLine}
-          onNav={playNav}
-          onTap={playTap}
-        />
-        <NotificationBanner
-          notification={notification}
-          onDismiss={dismiss}
-          onAction={resetNow}
-        />
+        <div className={styles.boardArea} id="game-board">
+          <BoardGrid
+            board={board}
+            focusedIndex={focusedIndex}
+            onFocusChange={handleFocusChange}
+            onSelect={handleHumanSelect}
+            isGameOver={gameState.isOver}
+            winLine={gameState.winLine}
+            onNav={playNav}
+            onTap={playTap}
+          />
+          <NotificationBanner
+            notification={notification}
+            onDismiss={dismiss}
+            onAction={resetNow}
+          />
+        </div>
       </div>
+
+      <MoveTimeline
+        moveHistory={moveHistory}
+        currentIndex={currentMoveIndex}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+      />
     </div>
   )
 }

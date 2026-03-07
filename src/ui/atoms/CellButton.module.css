@@ -117,15 +117,13 @@
   cursor: default;
 }
 
-/* Token-specific cell styling */
+/* Token-specific cell styling — subtle tint, no filled-disc look */
 .tokenX {
-  border-color: var(--x-color);
-  box-shadow: inset 0 0 12px var(--x-glow);
+  border-color: color-mix(in srgb, var(--x-color) 40%, var(--cell-border));
 }
 
 .tokenO {
-  border-color: var(--o-color);
-  box-shadow: inset 0 0 12px var(--o-glow);
+  border-color: color-mix(in srgb, var(--o-color) 40%, var(--cell-border));
 }
 
 /* SVG Marks */

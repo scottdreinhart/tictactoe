@@ -1,13 +1,14 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 /**
  * OMark — Atom
  * Animated SVG "O" drawn as a circle.
  * Uses CSS stroke-dasharray / stroke-dashoffset for a draw-on effect.
  */
-const OMark = React.memo(() => (
+const OMark = React.memo(({ className }) => (
   <svg
-    className="mark mark-o"
+    className={className}
     viewBox="0 0 100 100"
     aria-hidden="true"
   >
@@ -16,5 +17,9 @@ const OMark = React.memo(() => (
 ))
 
 OMark.displayName = 'OMark'
+
+OMark.propTypes = {
+  className: PropTypes.string,
+}
 
 export default OMark
