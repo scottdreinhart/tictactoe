@@ -104,6 +104,7 @@ const TicTacToeGame = () => {
           onMode={setMode}
           onColorblind={setColorblind}
         />
+        <Instructions />
       </div>
 
       <StatusBar statusText={status} />
@@ -120,8 +121,6 @@ const TicTacToeGame = () => {
       />
 
       <GameControls onReset={handleReset} />
-
-      <Instructions />
     </div>
   )
 }
