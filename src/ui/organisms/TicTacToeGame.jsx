@@ -131,11 +131,11 @@ const TicTacToeGame = () => {
       <div className="game-toolbar">
         <DifficultyToggle difficulty={difficulty} onSelect={handleSetDifficulty} />
         <HamburgerMenu>
-          <div className="menu-section" role="menuitem">
+          <div className="menu-section" role="group" aria-label="Sound">
             <span className="menu-section-label">Sound</span>
             <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
           </div>
-          <div className="menu-section" role="menuitem">
+          <div className="menu-section" role="group" aria-label="Theme">
             <span className="menu-section-label">Theme</span>
             <ThemeSelector
               settings={settings}
@@ -144,7 +144,7 @@ const TicTacToeGame = () => {
               onColorblind={setColorblind}
             />
           </div>
-          <div className="menu-section" role="menuitem">
+          <div className="menu-section" role="group" aria-label="Help">
             <span className="menu-section-label">Help</span>
             <Instructions />
           </div>

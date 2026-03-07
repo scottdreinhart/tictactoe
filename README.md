@@ -188,7 +188,6 @@ chooseCpuMoveSmart(board, cpuToken, humanToken)   // Hard — priority-based
 
 // Sound effects (Web Audio API)
 playMoveSound()   // short 600Hz pop on move placement
-playWinSound()    // legacy ascending C-E-G arpeggio
 playWinMusic()    // C-major arpeggio + sustained chord (~2s fanfare)
 playLossMusic()   // descending E-minor phrase + Bb3 drone (~2s)
 playDrawSound()   // descending A4→F4 two-note tone

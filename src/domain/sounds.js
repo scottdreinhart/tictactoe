@@ -56,31 +56,6 @@ export const playMoveSound = () => {
 }
 
 /**
- * Win — triumphant ascending arpeggio (3 notes)
- */
-export const playWinSound = () => {
-  const ctx = getContext()
-  const notes = [523.25, 659.25, 783.99] // C5, E5, G5
-  notes.forEach((freq, i) => {
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-
-    osc.type = 'triangle'
-    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12)
-
-    gain.gain.setValueAtTime(0, ctx.currentTime)
-    gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + i * 0.12)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.3)
-
-    osc.connect(gain)
-    gain.connect(ctx.destination)
-
-    osc.start(ctx.currentTime + i * 0.12)
-    osc.stop(ctx.currentTime + i * 0.12 + 0.3)
-  })
-}
-
-/**
  * Win music — triumphant fanfare with harmonics (~2 s)
  * Ascending C-major arpeggio capped by a bright sustained chord.
  */

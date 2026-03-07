@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 
 const PARTICLE_COUNT = 80
 const GRAVITY = 0.003
@@ -100,6 +101,10 @@ const ConfettiOverlay = ({ onDone }) => {
       aria-hidden="true"
     />
   )
+}
+
+ConfettiOverlay.propTypes = {
+  onDone: PropTypes.func,
 }
 
 export default ConfettiOverlay
