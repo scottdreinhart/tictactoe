@@ -1,8 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { BOARD_SIZE } from '../../domain/constants.js'
 import CellButton from '../atoms/CellButton.jsx'
 import useGridKeyboard from '../../app/useGridKeyboard.js'
+import useSwipeGesture from '../../app/useSwipeGesture.js'
 
 /**
  * BoardGrid — Molecule
@@ -21,11 +22,46 @@ import useGridKeyboard from '../../app/useGridKeyboard.js'
  */
 const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, winLine }) => {
   const cellRefs = useRef([])
+  const gridRef = useRef(null)
   const [isResetting, setIsResetting] = useState(false)
   const prevBoardRef = useRef(board)
 
   // Keyboard navigation via reusable hook
   useGridKeyboard(focusedIndex, onFocusChange, onSelect)
+
+  // Swipe gestures — map swipe direction to focus movement
+  const SWIPE_TO_KEY = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' }
+  const handleSwipe = useCallback(
+    (direction) => {
+      const row = Math.floor(focusedIndex / BOARD_SIZE)
+      const col = focusedIndex % BOARD_SIZE
+      let next = focusedIndex
+
+      switch (direction) {
+        case 'up':    next = row > 0 ? focusedIndex - BOARD_SIZE : focusedIndex; break
+        case 'down':  next = row < BOARD_SIZE - 1 ? focusedIndex + BOARD_SIZE : focusedIndex; break
+        case 'left':  next = col > 0 ? focusedIndex - 1 : focusedIndex; break
+        case 'right': next = col < BOARD_SIZE - 1 ? focusedIndex + 1 : focusedIndex; break
+      }
+
+      if (next !== focusedIndex) {
+        onFocusChange(next)
+        // Haptic feedback for swipe navigation
+        if (navigator.vibrate) navigator.vibrate(10)
+      }
+    },
+    [focusedIndex, onFocusChange]
+  )
+  useSwipeGesture(gridRef, handleSwipe)
+
+  // Wrapped onSelect with haptic feedback for touch taps
+  const handleSelect = useCallback(
+    (index) => {
+      if (navigator.vibrate) navigator.vibrate(15)
+      onSelect(index)
+    },
+    [onSelect]
+  )
 
   // Detect board reset (board went from having marks to all empty)
   useEffect(() => {
@@ -49,6 +85,7 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
 
   return (
     <div
+      ref={gridRef}
       className={`board-grid${isResetting ? ' board-resetting' : ''}`}
       role="grid"
       aria-label="Tic-Tac-Toe board"
@@ -65,7 +102,7 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
             disabled={isDisabled}
             isFocused={focusedIndex === index}
             isWinning={isWinning}
-            onClick={() => onSelect(index)}
+            onClick={() => handleSelect(index)}
             ariaLabel={`Row ${Math.floor(index / BOARD_SIZE) + 1}, Column ${(index % BOARD_SIZE) + 1}, ${value ?? 'empty'}`}
             tabIndex={focusedIndex === index ? 0 : -1}
           />
