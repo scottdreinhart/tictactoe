@@ -35,11 +35,13 @@ src/
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
 │   │   ├── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
 │   │   ├── ConfettiOverlay.jsx       # Canvas-based confetti particle animation on win
+│   │   ├── CoinFlip.jsx              # Animated virtual coin flip (X/O sides) at app start — Phase 8
 │   │   └── NotificationBanner.jsx    # Floating queued notification overlay on board center
 │   ├── molecules/
 │   │   ├── BoardGrid.jsx             # 3×3 grid with reset animation (uses useGridKeyboard)
-│   │   ├── ScoreBoard.jsx            # Win/loss/draw score display (React.memo)
-│   │   └── Instructions.jsx          # ⓘ info icon with auto-positioned tooltip
+│   │   ├── ScoreBoard.jsx            # Win/loss/draw score display + streak + best-time (React.memo, Phase 8)
+│   │   ├── Instructions.jsx          # ⓘ info icon with auto-positioned tooltip
+│   │   └── MoveTimeline.jsx          # Move history sidebar with undo/redo buttons (Phase 8)
 │   └── organisms/
 │       └── TicTacToeGame.jsx         # Top-level game component (pure composition)
 ├── index.jsx                         # React entry point
@@ -274,6 +276,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
   - Modern build target (`es2020`) — no legacy polyfills
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
+  - **Build size (Phase 8)**: 88 modules, 32.59 kB CSS (6.86 kB gzip) — +6.73 kB from Phase 4 cleanup (added undo/redo, coin flip, timeline, streak/best-time features)
 - **CSS Code-Splitting** (Vite + dynamic imports):
   - Theme CSS split into separate chunks (ocean, sunset, forest, rose, midnight, highcontrast)
   - Classic theme bundled in main stylesheet (~6 KB gzipped)
@@ -299,6 +302,8 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **Unified notification queue** — FIFO queue system for status + countdown + reset messages; auto-dismiss with configurable duration
 - **Keyboard navigation** — Arrow keys + WASD for grid movement, Space/Enter to select, Escape for menu close
 - **Touch & gesture support** — swipe navigation (30px threshold), haptic feedback, optimized `touch-action` properties for mobile
+- **Undo/Redo keyboard shortcuts** (Phase 8) — `Ctrl+Z` to undo, `Ctrl+Y` or `Ctrl+Shift+Z` to redo; works throughout full game history
+- **Move timeline interaction** (Phase 8) — click any move in the timeline sidebar to jump to that point in history; works on desktop (>900px width)
 
 ### Visuals & Animations
 - **CSS Grid** with `aspect-ratio: 1` for perfect square cells responsive across all screen sizes
@@ -307,6 +312,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **Board reset animation** — scale + fade transition (300ms cubic-bezier easing)
 - **Menu animation** — hamburger ☰→✕ icon transition + panel slide-in (250ms bounce easing)
 - **Kinetic animations** — directional slide-in effects for cell focus (up/down/left/right based on navigation direction)
+- **Coin flip animation** — 3D perspective coin flip with X and O on opposite sides, auto-flips at app start
 
 ### Theming & Customization
 - **6 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — light/dark variants + High Contrast mode
@@ -314,6 +320,29 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **4 colorblind-safe presets**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — all with distinct X/O mark colors
 - **CSS Custom Properties** with theme-driven color sets via `data-theme` / `data-mode` / `data-colorblind` attributes
 - **Smart dropdown positioning** — `useSmartPosition` hook auto-detects viewport overflow, positions menus left/right intelligently
+
+### Undo/Redo & Game Tracking
+- **Complete move history** — `moveHistory` array in `useTicTacToe` hook tracks all board states from game start
+- **Immutable history** — leverage domain layer's immutable `applyMove` function for safe state management
+- **Undo/Redo functions** — `handleUndo()` / `handleRedo()` dispatch in reducer with `UNDO` / `REDO` actions
+- **Move timeline visualization** — `MoveTimeline` molecule sidebar shows:
+  - Sequential move numbers (1, 2, 3, ...)
+  - Token icons (blue ✕ for human, pink ○ for CPU)
+  - Current position indicator (→)
+  - Clickable moves to jump to that point in history
+- **Keyboard shortcuts** (global document listeners):
+  - `Ctrl+Z` / `Cmd+Z` — undo
+  - `Ctrl+Y` / `Cmd+Shift+Z` / `Cmd+Y` — redo
+- **Streak tracking** — `useReducer`-managed streak counter
+  - Increments on human win (only if not undoing)
+  - Resets to 0 on: undo a win move, CPU win, or draw
+  - Displayed on ScoreBoard with 🔥 emoji
+- **Best-time tracking** — timestamp-based fastest win calculation
+  - `gameStartTime` set on first move
+  - Calculated as elapsed time from first move to winning move
+  - Tracks real-world seconds, not move count
+  - Updates on game end if human wins
+  - Persists across rounds
 
 ## Accessibility Compliance
 
@@ -328,7 +357,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - ✅ 4 colorblind presets (Protanopia, Deuteranopia, Tritanopia, Achromatopsia)
 - ✅ Print stylesheet (hides controls + notifications, uses black/grey marks)
 
-## Completed Features (Phases 1–7)
+## Completed Features (Phases 1–8)
 
 ### Technical — AI ✅
 - **Activate smart AI** (priority: win → block → center → corner → edge)
@@ -345,6 +374,9 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **Confetti / particle effect** — canvas-based 80-particle burst with gravity + fade on human win
 - **Theme picker** — 6 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage
 - **Touch gesture support** — swipe navigation via `useSwipeGesture`, haptic feedback, `touch-action` CSS
+- **Virtual coin flip** (Phase 8) — animated X/O coin, auto-flips at app start to determine who goes first
+- **Move history timeline** (Phase 8) — sidebar showing all moves with undo/redo buttons, click to jump to move
+- **Streak & best-time display** (Phase 8) — scoreboard shows current win streak (🔥) and fastest win time
 
 ### Code Quality ✅
 - **ESLint + Prettier** — flat config, React + hooks plugins, `lint`/`format` scripts
@@ -357,6 +389,25 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **Lazy SVG mount** — `React.lazy` + `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5)
 - **Service Worker caching** — precache critical shell + cache-first for `/assets/*` in [sw.js](public/sw.js)
 - **CSS code-splitting** — theme CSS split into separate chunks; classic bundled in main, others lazy-loaded on-demand; all preloaded at startup for instant switching
+
+### Gameplay (Phase 8) ✅
+- **Undo / redo** — step backward/forward through complete game history
+  - Keyboard shortcuts: `Ctrl+Z` (undo), `Ctrl+Y` or `Ctrl+Shift+Z` (redo)
+  - Timeline sidebar shows all moves with move numbers and tokens
+  - Click any move to jump to that position in history
+  - Works throughout full game (can undo opponent moves)
+- **First-move choice** — virtual coin flip at app start determines who (X or O) goes first
+  - Animated coin with X/O sides
+  - Auto-flips, displays result
+  - Resets on game restart
+- **Streak tracking** — consecutive human wins counter
+  - Displayed on ScoreBoard with 🔥 emoji
+  - Broken by: undo a win move, CPU win, or draw
+  - Resets to 0 on game restart
+- **Best-time tracking** (Phase 8) — fastest win time in real-world seconds
+  - Calculated from first move to winning move
+  - Displayed on ScoreBoard
+  - Persists across game rounds (and undo/redo)
 
 ### Architecture ✅
 - **Extract keyboard hook** — `useGridKeyboard.js` — reusable document-level keydown logic
@@ -376,7 +427,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 ## Remaining Work
 
 ### Visual & UX
-- [ ] **Move history timeline** — visual sidebar showing each move in order with undo/redo support
+- [ ] **Move history timeline** ✅ COMPLETED (Phase 8)
 - [ ] **Player name customization** — editable labels for "You" and "CPU" on the scoreboard
 - [ ] **Game statistics dashboard** — track lifetime stats (total games, win rate, win streaks) persisted to localStorage
 
@@ -404,9 +455,9 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 ### Gameplay
 - [ ] **Local multiplayer** — human vs human mode on the same device (remove CPU AI, alternate turns)
 - [ ] **Online multiplayer** — real-time two-player via WebSockets (would need a lightweight server)
-- [ ] **Undo / redo** — step backward/forward through move history (domain layer is already immutable, making this straightforward)
-- [ ] **First-move choice** — let the player choose to go first (X) or second (O) at round start
-- [ ] **Streak & best-time tracking** — track consecutive wins and fastest win, display on the scoreboard
+- [ ] **First-move choice** ✅ COMPLETED (Phase 8) — virtual coin flip at app start
+- [ ] **Undo / redo** ✅ COMPLETED (Phase 8) — step backward/forward through move history with timeline sidebar
+- [ ] **Streak & best-time tracking** ✅ COMPLETED (Phase 8) — track consecutive wins and fastest win time, display on the scoreboard
 
 ## Future Game Ideas
 
