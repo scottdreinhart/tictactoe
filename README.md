@@ -123,12 +123,43 @@ Also supports high-DPI/Retina displays and print media.
 - **Variant Styles**: Win (golden gradient), Loss (red gradient), Draw (blue-grey gradient), Countdown (theme accent gradient)
 
 ### Architecture
-- **CLEAN Layering**: `domain/` (pure) → `app/` (hooks) → `ui/` (components)
-- **Atomic Design**: atoms → molecules → organisms (zero inline markup in organisms)
+
+#### Design Principles (Enforced)
+
+The project enforces four complementary design patterns:
+
+1. **CLEAN Architecture** (Layer Separation)
+   - `domain/` layer: Pure, framework-agnostic logic (zero React dependencies)
+   - `app/` layer: React hooks for state management & side effects
+   - `ui/` layer: Presentational components (atoms → molecules → organisms)
+   - **Benefit**: Domain logic is testable, reusable, and framework-independent
+
+2. **Atomic Design** (Component Hierarchy)
+   - **Atoms** (9): Basic UI elements (`CellButton`, `XMark`, `OMark`, reusable toggles, etc.)
+   - **Molecules** (3): Composed atoms (`BoardGrid`, `ScoreBoard`, `Instructions`)
+   - **Organisms** (1): Full-page composition (`TicTacToeGame`)
+   - **Rule**: Organisms contain zero inline markup; all composition happens in JSX
+   - **Benefit**: Components are predictable, composable, and reusable across contexts
+
+3. **SOLID Principles** (Code-Level Design)
+   - **Single Responsibility**: Each hook, function, and component has one reason to change
+   - **Open/Closed**: Domain logic (`board.js`, `rules.js`, `ai.js`) extended without modification via rules/constants
+   - **Liskov Substitution**: Theme, sound, and difficulty toggles are interchangeable (uniform `aria-pressed` toggle interface)
+   - **Interface Segregation**: Components expose only essential props; UI constants keep config separate
+   - **Dependency Inversion**: High-level modules (components) depend on low-level abstractions (hooks, domain exports)
+   - **Benefit**: Code is maintainable, testable, and resistant to side effects
+
+4. **DRY Principle** (No Duplication)
+   - Constants extracted to single sources: `TOKENS`, `WIN_LINES`, `DIFFICULTIES`, `SOUND_PRESETS`
+   - Reusable hooks eliminate component duplication: `useSmartPosition`, `useDropdownBehavior` (Phase 6 refactor)
+   - Positioning logic previously duplicated in `ThemeSelector` & `Instructions` now centralized
+   - **Benefit**: Changes propagate consistently; less code to maintain
+
+#### Supporting Patterns
+
 - **Pure Functions**: All domain logic is immutable and deterministic
-- **DRY**: Single source of truth for constants (TOKENS, WIN_LINES)
 - **No Race Conditions**: CPU timeout managed via ref; cancelled on reset/unmount
-- **Reusable Hooks**: `useGridKeyboard`, `useSwipeGesture`, `useNotificationQueue`, `useAutoReset` — all extracted as composable application hooks
+- **Reusable Hooks**: `useGridKeyboard`, `useSwipeGesture`, `useNotificationQueue`, `useAutoReset`, `useSmartPosition`, `useDropdownBehavior` — all extracted as composable application hooks
 - **PropTypes**: Runtime prop validation on all components that accept props
 
 ## Installation & Running
