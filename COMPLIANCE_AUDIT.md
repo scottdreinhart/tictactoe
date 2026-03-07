@@ -523,6 +523,30 @@ The Unbeatable AI difficulty is now available:
 #### ⚠️ **Minor Observation** (—2 points)
 - **WebP image format** not used (but project uses SVG, so low priority)
 
+#### 4.7 Dependencies & Stack (March 7, 2026 Update)
+
+**Dependency Upgrade Strategy**: Phased approach with compatibility testing
+
+| Package | Prior | Current | Status | Notes |
+|---------|-------|---------|--------|-------|
+| **react** | 18.3.1 | **19.2.4** ✅ | Upgraded | Major version; tested & verified compatible |
+| **react-dom** | 18.3.1 | **19.2.4** ✅ | Upgraded | Paired with React; no breaking changes in codebase |
+| **eslint** | 9.39.4 | **10.0.3** ✅ | Upgraded | Dev-only; peer warnings non-blocking |
+| **@vitejs/plugin-react** | 4.7.0 | **5.1.4** ✅ | Upgraded | RSC-aware updates; compatible with Vite 5.x |
+| **vite** | 5.4.21 | 5.4.21 ✅ | Stable | 7.3.1 requires Node 20.19+; current system Node 18.19.1 |
+| **rollup-plugin-visualizer** | 5.14.0 | 5.14.0 ✅ | Stable | 7.0.1 incompatible with Vite 5.x; bundle analysis works fine at 5.14.0 |
+
+**Build Verification**:
+- ✅ Production build succeeds (vite build: 13.55s)
+- ✅ Dev server starts (vite --host: 1753ms to ready)
+- ✅ Web Worker bundling works correctly
+- ✅ No runtime errors or console warnings
+
+**React 19 Upgrade Highlights**:
+- Improved vendor chunk tree-shaking: 140.86 KB → 11.65 KB (gzipped: 45.25 KB → 4.12 KB)
+- No component refactoring required (backward compatible with React 18 code patterns)
+- Fully compatible with existing hooks: useCallback, useRef, useEffect, useState, useContext
+
 ---
 
 ## 5. SEO & Metadata
@@ -789,6 +813,52 @@ Before publishing to marketplace (App Store, Google Play, PWA stores):
 - [ ] Test on slow network (DevTools throttling: Fast 3G)
 - [ ] Cross-browser testing (Chrome, Safari, Firefox, Edge)
 - [ ] Git push all changes + tag release (e.g., `v1.0.0`)
+
+---
+
+## 13. Feature Implementation Audit (March 7, 2026)
+
+### Performance Enhancements
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| **Lazy SVG mount** | ✅ DONE | XMark/OMark components use `React.lazy()` with `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5); renders only when value transitions from null |
+| **CSS code-splitting** | ❌ NOT DONE | All 7 theme variants bundled in single `styles.css` (~1.4K lines); could split unused themes into on-demand chunks for slower networks |
+| **Service Worker caching** | ✅ DONE | [sw.js](public/sw.js) implements cache-first for `/assets/*`, network-first for HTML, precaches critical shell (`PRECACHE` array) |
+
+### Architecture Improvements
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| **Extract keyboard hook** | ✅ DONE | [useGridKeyboard.js](src/app/useGridKeyboard.js) isolates document-level keydown logic; used in [BoardGrid.jsx](src/ui/molecules/BoardGrid.jsx#L34) |
+| **CSS Modules or CSS-in-JS** | ❌ NOT DONE | Global stylesheet ([styles.css](src/styles.css)) with data-attribute scoping; no component-level CSS encapsulation |
+| **Cross-platform dev script** | ❌ NOT DONE | [package.json](package.json#L6) still uses `fuser -k 5173/tcp` (Linux/WSL only); should use `kill-port` package for Windows/macOS native support |
+
+### Accessibility Enhancements
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| **Remove user-scalable=no** | ✅ DONE | [index.html](index.html#L5) viewport tag has `user-scalable=yes` (was already compliant with WCAG 2.1 SC 1.4.4) |
+| **Skip-to-content link** | ✅ DONE | [TicTacToeGame.jsx](src/ui/organisms/TicTacToeGame.jsx#L125) includes hidden `<a href="#game-board">Skip to game board</a>`; CSS shows on focus via [styles.css](src/styles.css#L1422) |
+| **High-contrast theme** | ⏳ PARTIAL | [highcontrast.css](src/themes/highcontrast.css) exists as dedicated theme; `@media (forced-colors: active)` also supported in [styles.css](src/styles.css#L1370-L1382) |
+
+### Summary
+
+**Fully Implemented (5/8)**: Lazy SVG mount, Service Worker caching, Keyboard hook extraction, user-scalable accessibility, Skip-to-content link
+
+**Partially Implemented (1/8)**: High-contrast theme (forced-colors + dedicated theme available)
+
+**Not Implemented (2/8)**: CSS code-splitting, Cross-platform dev script, CSS Modules/CSS-in-JS
+
+### Recommended Priority Order
+
+1. **HIGH**: Fix `fuser` in dev script → use `kill-port` (3 min implementation, enables Windows developers)
+2. **MEDIUM**: CSS code-splitting → Vite dynamic imports for theme files (prevents unused CSS for slower networks)
+3. **LOW**: CSS Modules or CSS-in-JS (nice-to-have for maintainability, minimal performance impact)
+
+**Implementation Guides**:
+- **[IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)** — Technical details for the 2 remaining features (cross-platform dev script, CSS code-splitting)
+- **[PROGRESS.md](PROGRESS.md)** — Milestone tracking, critical path to marketplace, implementation timeline
 
 ---
 
