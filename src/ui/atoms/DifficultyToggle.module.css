@@ -21,8 +21,8 @@
   color: var(--text-primary);
   border: none;
   border-right: 1px solid rgba(128, 128, 128, 0.3);
-  padding: 10px 20px;
-  min-height: 44px;
+  padding: 12px 20px;
+  min-height: 48px;
   font-size: clamp(0.75rem, 2vw, 0.85rem);
   font-weight: 600;
   cursor: pointer;

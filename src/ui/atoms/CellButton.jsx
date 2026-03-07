@@ -1,10 +1,9 @@
-import React, { Suspense } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './CellButton.module.css'
 import { cx } from '../utils/cssModules.js'
-
-const XMark = React.lazy(() => import('./XMark.jsx'))
-const OMark = React.lazy(() => import('./OMark.jsx'))
+import XMark from './XMark.jsx'
+import OMark from './OMark.jsx'
 
 /**
  * CellButton — Atom (pure presentational)
@@ -46,8 +45,8 @@ const CellButton = React.forwardRef(
         aria-disabled={disabled}
         tabIndex={tabIndex}
       >
-        {value === 'X' && <Suspense fallback={null}><XMark className={cx(styles.mark, styles.markx)} /></Suspense>}
-        {value === 'O' && <Suspense fallback={null}><OMark className={cx(styles.mark, styles.marko)} /></Suspense>}
+        {value === 'X' && <XMark className={cx(styles.mark, styles.markx)} />}
+        {value === 'O' && <OMark className={cx(styles.mark, styles.marko)} />}
       </button>
     )
   }

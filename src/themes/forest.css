@@ -2,6 +2,7 @@
 [data-theme='forest'] {
   --bg-gradient-start: #166534;
   --bg-gradient-end: #22c55e;
+  --bg-image: url('/backgrounds/matrix.png');
   --accent: #22c55e;
   --accent-glow: rgba(34, 197, 94, 0.4);
   --cell-hover-bg: #f0fdf4;

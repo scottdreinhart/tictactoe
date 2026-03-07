@@ -7,13 +7,12 @@ import useNotificationQueue from '../../app/useNotificationQueue.js'
 import { TOKENS } from '../../domain/constants.js'
 import DifficultyToggle from '../atoms/DifficultyToggle.jsx'
 import SoundToggle from '../atoms/SoundToggle.jsx'
-import ThemeSelector from '../atoms/ThemeSelector.jsx'
-import HamburgerMenu from '../atoms/HamburgerMenu.jsx'
+import ThemeSelector from '../molecules/ThemeSelector.jsx'
+import HamburgerMenu from '../molecules/HamburgerMenu.jsx'
 import ConfettiOverlay from '../atoms/ConfettiOverlay.jsx'
-import CoinFlip from '../atoms/CoinFlip.jsx'
+import CoinFlip from '../molecules/CoinFlip.jsx'
 import NotificationBanner from '../atoms/NotificationBanner.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
-import ScoreBoard from '../molecules/ScoreBoard.jsx'
 import Instructions from '../molecules/Instructions.jsx'
 import MoveTimeline from '../molecules/MoveTimeline.jsx'
 import styles from './TicTacToeGame.module.css'
@@ -49,6 +48,7 @@ const TicTacToeGame = () => {
     handleSetDifficulty,
     handleUndo,
     handleRedo,
+    setFirstPlayer,
   } = useTicTacToe()
 
   const { soundEnabled, toggleSound, playMove, playNav, playTap, playWin, playLoss, playDraw } = useSoundEffects()
@@ -56,9 +56,12 @@ const TicTacToeGame = () => {
 
   // Coin flip state - show at app startup
   const [coinFlipDone, setCoinFlipDone] = useState(false)
-  const handleCoinFlipComplete = useCallback(() => {
+  const handleCoinFlipComplete = useCallback((isXFirst) => {
+    if (!isXFirst) {
+      setFirstPlayer(TOKENS.CPU)
+    }
     setCoinFlipDone(true)
-  }, [])
+  }, [setFirstPlayer])
 
   // Auto-reset countdown (30 s)
   const { secondsLeft, resetNow } = useAutoReset(gameState.isOver, handleReset)
@@ -163,38 +166,40 @@ const TicTacToeGame = () => {
   }, [outcome])
 
   return (
-    <div className={containerClass}>
-      {!coinFlipDone && <CoinFlip onFlipComplete={handleCoinFlipComplete} />}
-      <a href="#game-board" className={styles.skipToContent}>Skip to game board</a>
-      {showConfetti && (
-        <ConfettiOverlay onDone={() => setShowConfetti(false)} />
-      )}
-      <HamburgerMenu>
-        <div className="menu-section" role="group" aria-label="Difficulty">
-          <span className="menu-section-label">Difficulty</span>
-          <DifficultyToggle difficulty={difficulty} onSelect={handleSetDifficulty} />
-        </div>
-        <div className="menu-section" role="group" aria-label="Sound">
-          <span className="menu-section-label">Sound</span>
-          <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
-        </div>
-        <div className="menu-section" role="group" aria-label="Theme">
-          <span className="menu-section-label">Theme</span>
-          <ThemeSelector
-            settings={settings}
-            onColorTheme={setColorTheme}
-            onMode={setMode}
-            onColorblind={setColorblind}
-          />
-        </div>
-        <div className="menu-section" role="group" aria-label="Help">
-          <span className="menu-section-label">Help</span>
-          <Instructions />
-        </div>
-      </HamburgerMenu>
+    <div className={styles.page}>
+      <header className={styles.appBar}>
+        <h1 className={styles.title}>Tic Tac Toe</h1>
+        <HamburgerMenu>
+          <div className={styles.menuSection} role="group" aria-label="Difficulty">
+            <span className={styles.menuLabel}>Difficulty</span>
+            <DifficultyToggle difficulty={difficulty} onSelect={handleSetDifficulty} />
+          </div>
+          <div className={styles.menuSection} role="group" aria-label="Sound">
+            <span className={styles.menuLabel}>Sound</span>
+            <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
+          </div>
+          <div className={styles.menuSection} role="group" aria-label="Theme">
+            <span className={styles.menuLabel}>Theme</span>
+            <ThemeSelector
+              settings={settings}
+              onColorTheme={setColorTheme}
+              onMode={setMode}
+              onColorblind={setColorblind}
+            />
+          </div>
+          <div className={styles.menuSection} role="group" aria-label="Help">
+            <span className={styles.menuLabel}>Help</span>
+            <Instructions />
+          </div>
+        </HamburgerMenu>
+      </header>
 
-      <div className={styles.gameContent}>
-        <ScoreBoard score={score} streak={streak} bestTime={bestTime} />
+      <div className={containerClass}>
+        {!coinFlipDone && <CoinFlip onFlipComplete={handleCoinFlipComplete} />}
+        <a href="#game-board" className={styles.skipToContent}>Skip to game board</a>
+        {showConfetti && (
+          <ConfettiOverlay className={styles.confettiCanvas} onDone={() => setShowConfetti(false)} />
+        )}
 
         <div className={styles.boardArea} id="game-board">
           <BoardGrid
@@ -213,16 +218,19 @@ const TicTacToeGame = () => {
             onAction={resetNow}
           />
         </div>
-      </div>
 
-      <MoveTimeline
-        moveHistory={moveHistory}
-        currentIndex={currentMoveIndex}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        canUndo={canUndo}
-        canRedo={canRedo}
-      />
+        <MoveTimeline
+          moveHistory={moveHistory}
+          currentIndex={currentMoveIndex}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          score={score}
+          streak={streak}
+          bestTime={bestTime}
+        />
+      </div>
     </div>
   )
 }

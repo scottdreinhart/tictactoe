@@ -65,7 +65,7 @@ const NotificationBanner = ({ notification, onDismiss, onAction }) => {
       {notification.hasAction && onAction && (
         <button
           type="button"
-          className={cx(styles.action, 'reset-button')}
+          className={styles.action}
           onClick={onAction}
         >
           Reset Now

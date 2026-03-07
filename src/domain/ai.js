@@ -2,7 +2,7 @@ import { getEmptyCells } from './board.js'
 import { getWinnerToken } from './rules.js'
 
 /**
- * PHASE A: Choose CPU move randomly from available cells
+ * Choose CPU move randomly from available cells
  * @param {Array<null|string>} board
  * @returns {number} - index of chosen move (0-8)
  * @throws {Error} if no empty cells available
@@ -18,8 +18,7 @@ export const chooseCpuMoveRandom = (board) => {
 }
 
 // ============================================================================
-// PHASE B: Smart AI (helpers for deterministic priority-based selection)
-// Uncomment and use these when upgrading from Phase A
+// Smart AI (helpers for deterministic priority-based selection)
 // ============================================================================
 
 /**
@@ -41,7 +40,7 @@ const findWinningMove = (board, token) => {
 }
 
 /**
- * PHASE B: Choose CPU move with smart priority
+ * Choose CPU move with smart priority
  * 1) Win if possible this turn
  * 2) Block X if X could win next turn
  * 3) Take center if available
@@ -90,7 +89,7 @@ export const chooseCpuMoveSmart = (board, cpuToken, humanToken) => {
 }
 
 /**
- * PHASE C: Choose CPU move with medium difficulty
+ * Choose CPU move with medium difficulty
  * Plays tactically (win / block) but picks randomly otherwise.
  * Beatable but not stupid.
  *
@@ -124,12 +123,12 @@ export const chooseCpuMoveMedium = (board, cpuToken, humanToken) => {
 }
 
 // ============================================================================
-// PHASE C: Minimax with Alpha-Beta Pruning (Unbeatable)
+// Minimax with Alpha-Beta Pruning (Unbeatable)
 // RUNS IN WEB WORKER (src/workers/ai.worker.js)
 // ============================================================================
 
 /**
- * PHASE C: Minimax AI - Unbeatable bot via exhaustive search
+ * Minimax AI - Unbeatable bot via exhaustive search
  *
  * **NOTE**: This function runs in the Web Worker thread (ai.worker.js) to avoid
  * blocking the main UI thread. Documentation kept here for reference.

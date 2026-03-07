@@ -15,37 +15,60 @@ src/
 │   ├── board.js                      # Board operations (create, apply move, get empty cells)
 │   ├── rules.js                      # Win/draw detection (returns winning line)
 │   ├── ai.js                         # CPU move selection (random / medium / smart / minimax unbeatable)
-│   ├── sounds.js                     # Web Audio API synthesized SFX + jingles
-│   └── themes.js                     # Color theme, mode & colorblind definitions
+│   └── themes.js                     # Color theme, mode & colorblind definitions + DEFAULT_SETTINGS
 ├── app/
+│   ├── sounds.js                     # Web Audio API synthesized SFX + jingles
 │   ├── useTicTacToe.js               # Game state + score + difficulty management hook
 │   ├── useGridKeyboard.js            # Reusable document-level keyboard navigation hook
 │   ├── useSoundEffects.js            # Sound toggle + play functions (respects reduced-motion)
 │   ├── useTheme.js                   # Theme / mode / colorblind persistence + DOM sync
 │   ├── useAutoReset.js               # 30-second auto-reset countdown after game end
 │   ├── useSwipeGesture.js            # Touch swipe detection for mobile grid navigation
-│   └── useNotificationQueue.js       # FIFO notification queue (enqueue / dismiss / update)
+│   ├── useNotificationQueue.js       # FIFO notification queue (enqueue / dismiss / update)
+│   ├── useSmartPosition.js           # Auto-detect left/right alignment for dropdowns
+│   └── useDropdownBehavior.js        # Outside click/touch/Escape close + focus trap
 ├── ui/
 │   ├── atoms/
 │   │   ├── CellButton.jsx            # Single cell with SVG mark rendering + winning highlight
 │   │   ├── XMark.jsx                 # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx                 # Animated SVG "O" (React.memo, draw-on effect)
-│   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + animated panel
 │   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard/Unbeatable AI toggle (React.memo)
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
-│   │   ├── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
 │   │   ├── ConfettiOverlay.jsx       # Canvas-based confetti particle animation on win
-│   │   ├── CoinFlip.jsx              # Animated virtual coin flip (X/O sides) at app start — Phase 8
 │   │   └── NotificationBanner.jsx    # Floating queued notification overlay on board center
 │   ├── molecules/
-│   │   ├── BoardGrid.jsx             # 3×3 grid with reset animation (uses useGridKeyboard)
-│   │   ├── ScoreBoard.jsx            # Win/loss/draw score display + streak + best-time (React.memo, Phase 8)
+│   │   ├── BoardGrid.jsx             # 3×3 grid with background image overlay + reset animation
+│   │   ├── CoinFlip.jsx              # Animated virtual coin flip (X/O sides) at app start
+│   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + portal-based panel
 │   │   ├── Instructions.jsx          # ⓘ info icon with auto-positioned tooltip
-│   │   └── MoveTimeline.jsx          # Move history sidebar with undo/redo buttons (Phase 8)
-│   └── organisms/
-│       └── TicTacToeGame.jsx         # Top-level game component (pure composition)
+│   │   ├── MoveTimeline.jsx          # Sliding drawer with score, streak, best-time, move history & undo/redo
+│   │   └── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
+│   ├── organisms/
+│   │   └── TicTacToeGame.jsx         # Top-level game component (pure composition)
+│   ├── ui-constants.js               # UI layout constants (sizes, breakpoints)
+│   └── utils/
+│       └── cssModules.js             # cx() conditional class binding utility
+├── themes/                           # Lazy-loaded theme CSS chunks
+│   ├── forest.css
+│   ├── highcontrast.css              # High-contrast theme (default)
+│   ├── midnight.css
+│   ├── ocean.css
+│   ├── rose.css
+│   └── sunset.css
+├── workers/
+│   └── ai.worker.js                  # Off-main-thread minimax AI computation
 ├── index.jsx                         # React entry point
 └── styles.css                        # CSS with themes, animations, media queries
+
+public/
+├── backgrounds/                      # Theme background images
+│   ├── circuit.png                   # Classic theme background
+│   ├── cityscape.png                 # Midnight theme background
+│   ├── laser.png                     # Ocean theme background
+│   └── matrix.png                    # High contrast theme background
+├── manifest.json                     # PWA manifest
+├── sw.js                             # Service worker for offline play
+└── offline.html                      # Offline fallback page
 
 index.html                            # HTML entry point
 package.json                          # Dependencies & scripts
@@ -70,7 +93,8 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 
 ### Visual Design
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect
-- **6 Color Themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — each with unique accent gradient
+- **7 Color Themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight, High Contrast (default) — each with unique accent gradient
+- **Theme Background Images**: Per-theme background images (matrix, circuit, cityscape, laser) rendered as board overlays via `::before` pseudo-element
 - **Light / Dark Mode**: System (auto), Light (forced), or Dark (forced) — persisted to localStorage
 - **4 Colorblind Modes**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — overrides X/O colors for visibility
 - **CSS Custom Properties**: All colors/sizes driven by CSS variables for easy theming
@@ -79,7 +103,11 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - **Confetti Overlay**: Canvas-based 80-particle confetti burst on human win (~3s)
 - **Board Reset Animation**: Fade/scale transition when board is cleared
 - **Responsive Layout**: `clamp()` sizing adapts from small phones to large desktops
-- **Score Board**: Color-coded X/O/Draw tallies above the board
+- **Score & Stats**: Color-coded X/O/Draw tallies, win streak, and best time displayed in the sliding drawer
+- **Transparent Cell Backgrounds**: `color-mix()` CSS function for semi-transparent cell fills (8% opacity) allowing background images to show through
+- **Lightened Mark Strokes**: X and O SVG strokes mixed 50% with white via `color-mix()` for softer appearance
+- **Notification Banner**: Fixed-size (504×130px) floating overlay centered on board's middle row; variant-colored (gold/red/grey/accent) with no shadow for clean look
+- **Accent-Colored Drawer Borders**: Sliding drawer edges and handle use `var(--accent)` for theme-consistent yellow/accent border styling
 
 ### Controls
 - **Mouse**: Click any empty cell to move
@@ -141,8 +169,8 @@ The project enforces four complementary design patterns:
    - **Benefit**: Domain logic is testable, reusable, and framework-independent
 
 2. **Atomic Design** (Component Hierarchy)
-   - **Atoms** (9): Basic UI elements (`CellButton`, `XMark`, `OMark`, reusable toggles, etc.)
-   - **Molecules** (3): Composed atoms (`BoardGrid`, `ScoreBoard`, `Instructions`)
+   - **Atoms** (7): Basic UI elements (`CellButton`, `XMark`, `OMark`, `DifficultyToggle`, `SoundToggle`, `ConfettiOverlay`, `NotificationBanner`)
+   - **Molecules** (6): Composed atoms (`BoardGrid`, `CoinFlip`, `HamburgerMenu`, `Instructions`, `MoveTimeline`, `ThemeSelector`)
    - **Organisms** (1): Full-page composition (`TicTacToeGame`)
    - **Rule**: Organisms contain zero inline markup; all composition happens in JSX
    - **Benefit**: Components are predictable, composable, and reusable across contexts
@@ -157,7 +185,7 @@ The project enforces four complementary design patterns:
 
 4. **DRY Principle** (No Duplication)
    - Constants extracted to single sources: `TOKENS`, `WIN_LINES`, `DIFFICULTIES`, `SOUND_PRESETS`
-   - Reusable hooks eliminate component duplication: `useSmartPosition`, `useDropdownBehavior` (Phase 6 refactor)
+   - Reusable hooks eliminate component duplication: `useSmartPosition`, `useDropdownBehavior`
    - Positioning logic previously duplicated in `ThemeSelector` & `Instructions` now centralized
    - **Benefit**: Changes propagate consistently; less code to maintain
 
@@ -230,10 +258,10 @@ playLossMusic()   // descending E-minor phrase + Bb3 drone (~2s)
 playDrawSound()   // descending A4→F4 two-note tone
 
 // Themes
-COLOR_THEMES      // 6 themes: classic, ocean, sunset, forest, rose, midnight
+COLOR_THEMES      // 7 themes: classic, ocean, sunset, forest, rose, midnight, highcontrast
 MODES             // ['system', 'light', 'dark']
 COLORBLIND_MODES  // none, protanopia (red weakness), deuteranopia (green weakness), tritanopia (blue weakness), achromatopsia (monochrome)
-DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none' }
+DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: 'none' }
 ```
 
 ## AI Difficulty Levels
@@ -243,7 +271,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 | **Easy** | Purely random choice | `chooseCpuMoveRandom` | Weakest, beatable in 1-2 moves |
 | **Medium** | Win/block + random | `chooseCpuMoveMedium` | Defensive but tactical; loses to perfect play |
 | **Hard** | Priority-based heuristic | `chooseCpuMoveSmart` | Center → corners → edges with blocking; competent opponent |
-| **Unbeatable** | Minimax with alpha-beta pruning (Phase C) | `chooseCpuMoveUnbeatable` | Exhaustive game-tree search; cannot be beaten (best result: draw) |
+| **Unbeatable** | Minimax with alpha-beta pruning | `chooseCpuMoveUnbeatable` | Exhaustive game-tree search; cannot be beaten (best result: draw) |
 
 ### Hard AI Strategy (Priority-Based)
 1. Win if possible this turn
@@ -254,7 +282,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 
 ### Unbeatable AI Strategy (Minimax)
 - **Algorithm**: Minimax with alpha-beta pruning
-- **Execution**: Web Worker off-main-thread (Phase 7, `src/workers/ai.worker.js`)
+- **Execution**: Web Worker off-main-thread (`src/workers/ai.worker.js`)
 - **Move ordering**: Center → corners → edges (accelerates pruning)
 - **Complexity**: O(9! / (2^k)) calls with pruning; ~100K–500K evaluations per move
 - **Strength**: Perfect play against optimal defense; guaranteed draw if human also plays optimally
@@ -263,10 +291,10 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 ## Technical Highlights
 
 ### React & State Management
-- **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
-- **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
+- **React 19** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
+- **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector) to skip unnecessary re-renders
 - **PropTypes** runtime validation on all components that accept props (stripped from production builds)
-- **8 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue`, `useSmartPosition`, `useDropdownBehavior` — extracted for composability and reuse
+- **9 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue`, `useSmartPosition`, `useDropdownBehavior` — extracted for composability and reuse
 
 ### Build & Performance Optimization
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
@@ -276,13 +304,13 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
   - Modern build target (`es2020`) — no legacy polyfills
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
-  - **Build size (Phase 8)**: 88 modules, 32.59 kB CSS (6.86 kB gzip) — +6.73 kB from Phase 4 cleanup (added undo/redo, coin flip, timeline, streak/best-time features)
+  - **Build size**: 86 modules, 26.89 kB CSS (6.33 kB gzip)
 - **CSS Code-Splitting** (Vite + dynamic imports):
   - Theme CSS split into separate chunks (ocean, sunset, forest, rose, midnight, highcontrast)
   - Classic theme bundled in main stylesheet (~6 KB gzipped)
   - Non-classic themes lazy-loaded on-demand (~0.5–1 KB each, gzipped)
   - All themes preloaded at app startup for instant theme-switching (<1 ms per switch)
-- **Web Worker for AI** (Phase 7):
+- **Web Worker for AI**:
   - CPU move computation runs in `ai.worker.js` off the main thread
   - Smart/Medium AI algorithms never block UI animations or interactions
   - Maintains 60 FPS even during complex AI calculations
@@ -302,8 +330,8 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **Unified notification queue** — FIFO queue system for status + countdown + reset messages; auto-dismiss with configurable duration
 - **Keyboard navigation** — Arrow keys + WASD for grid movement, Space/Enter to select, Escape for menu close
 - **Touch & gesture support** — swipe navigation (30px threshold), haptic feedback, optimized `touch-action` properties for mobile
-- **Undo/Redo keyboard shortcuts** (Phase 8) — `Ctrl+Z` to undo, `Ctrl+Y` or `Ctrl+Shift+Z` to redo; works throughout full game history
-- **Move timeline interaction** (Phase 8) — click any move in the timeline sidebar to jump to that point in history; works on desktop (>900px width)
+- **Undo/Redo keyboard shortcuts** — `Ctrl+Z` to undo, `Ctrl+Y` or `Ctrl+Shift+Z` to redo; works throughout full game history
+- **Move timeline interaction** — click any move in the timeline sidebar to jump to that point in history
 
 ### Visuals & Animations
 - **CSS Grid** with `aspect-ratio: 1` for perfect square cells responsive across all screen sizes
@@ -315,7 +343,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **Coin flip animation** — 3D perspective coin flip with X and O on opposite sides, auto-flips at app start
 
 ### Theming & Customization
-- **6 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — light/dark variants + High Contrast mode
+- **7 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight, High Contrast (default) — light/dark variants
 - **Light / Dark / System modes** — auto-detect via `prefers-color-scheme`, manual override via selector, persisted to localStorage
 - **4 colorblind-safe presets**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — all with distinct X/O mark colors
 - **CSS Custom Properties** with theme-driven color sets via `data-theme` / `data-mode` / `data-colorblind` attributes
@@ -357,7 +385,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - ✅ 4 colorblind presets (Protanopia, Deuteranopia, Tritanopia, Achromatopsia)
 - ✅ Print stylesheet (hides controls + notifications, uses black/grey marks)
 
-## Completed Features (Phases 1–8)
+## Completed Features
 
 ### Technical — AI ✅
 - **Activate smart AI** (priority: win → block → center → corner → edge)
@@ -368,29 +396,31 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 
 ### Visual & UX ✅
 - **Win-line highlight** — winning cells pulse with `win-pulse` animation
-- **Score tracking display** — ScoreBoard molecule: You/Draws/CPU tallies
+- **Score tracking display** — MoveTimeline drawer: You/Draws/CPU tallies, streak & best time
 - **Smooth board reset transition** — fade + scale `board-reset` animation
 - **Sound effects** — Web Audio API: move pop, win arpeggio, draw tone; toggleable + reduced-motion aware
 - **Confetti / particle effect** — canvas-based 80-particle burst with gravity + fade on human win
-- **Theme picker** — 6 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage
+- **Theme picker** — 7 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage; High Contrast is the default theme
+- **Theme background images** — per-theme background images (matrix.png, circuit.png, cityscape.png, laser.png) displayed as board overlays
 - **Touch gesture support** — swipe navigation via `useSwipeGesture`, haptic feedback, `touch-action` CSS
-- **Virtual coin flip** (Phase 8) — animated X/O coin, auto-flips at app start to determine who goes first
-- **Move history timeline** (Phase 8) — sidebar showing all moves with undo/redo buttons, click to jump to move
-- **Streak & best-time display** (Phase 8) — scoreboard shows current win streak (🔥) and fastest win time
+- **Virtual coin flip** — animated X/O coin, auto-flips at app start to determine who goes first
+- **Move history timeline** — sliding drawer with all moves, undo/redo buttons, click to jump to move
+- **Streak & best-time display** — current win streak (🔥) and fastest win time in MoveTimeline drawer
 
 ### Code Quality ✅
 - **ESLint + Prettier** — flat config, React + hooks plugins, `lint`/`format` scripts
 - **`getWinner` returns winning line** — returns `{ token, line }`, `getWinnerToken` convenience
-- **`React.memo` on atoms** — XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector
+- **`React.memo` on atoms** — XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector
 - **PropTypes on all components** — runtime prop validation on all components that accept props
-- **Dead code cleanup** — removed 5 orphaned files (CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls); removed unused CSS variables and rules
+- **Dead code cleanup** — removed 7 orphaned files (CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls, ScoreBoard.jsx, ScoreBoard.module.css); removed ~580 lines of unused global CSS; fixed 19 ghost CSS variable references
+- **Architecture audit** — moved `sounds.js` from `domain/` to `app/` (framework-adjacent); moved `CoinFlip`, `HamburgerMenu`, `ThemeSelector` from `atoms/` to `molecules/` (composed components); moved `ui-constants.js` from `domain/` to `ui/`
 
 ### Performance ✅
 - **Lazy SVG mount** — `React.lazy` + `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5)
 - **Service Worker caching** — precache critical shell + cache-first for `/assets/*` in [sw.js](public/sw.js)
 - **CSS code-splitting** — theme CSS split into separate chunks; classic bundled in main, others lazy-loaded on-demand; all preloaded at startup for instant switching
 
-### Gameplay (Phase 8) ✅
+### Gameplay ✅
 - **Undo / redo** — step backward/forward through complete game history
   - Keyboard shortcuts: `Ctrl+Z` (undo), `Ctrl+Y` or `Ctrl+Shift+Z` (redo)
   - Timeline sidebar shows all moves with move numbers and tokens
@@ -401,12 +431,12 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
   - Auto-flips, displays result
   - Resets on game restart
 - **Streak tracking** — consecutive human wins counter
-  - Displayed on ScoreBoard with 🔥 emoji
+  - Displayed in MoveTimeline drawer with 🔥 emoji
   - Broken by: undo a win move, CPU win, or draw
   - Resets to 0 on game restart
-- **Best-time tracking** (Phase 8) — fastest win time in real-world seconds
+- **Best-time tracking** — fastest win time in real-world seconds
   - Calculated from first move to winning move
-  - Displayed on ScoreBoard
+  - Displayed in MoveTimeline drawer
   - Persists across game rounds (and undo/redo)
 
 ### Architecture ✅
@@ -427,7 +457,6 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 ## Remaining Work
 
 ### Visual & UX
-- [ ] **Move history timeline** ✅ COMPLETED (Phase 8)
 - [ ] **Player name customization** — editable labels for "You" and "CPU" on the scoreboard
 - [ ] **Game statistics dashboard** — track lifetime stats (total games, win rate, win streaks) persisted to localStorage
 
@@ -439,10 +468,10 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
 ### Architecture
-- ✅ **CSS Modules** — all 10 UI components (atoms, molecules, organisms) use scoped CSS Modules to eliminate global class name collisions
-  - **Theme CSS code-splitting**: 6 color themes (Ocean, Sunset, Forest, Rose, Midnight, High Contrast) are lazy-loaded into separate chunks (~0.5 KB each gzipped)
+- [x] **CSS Modules** — all 10 UI components (atoms, molecules, organisms) use scoped CSS Modules to eliminate global class name collisions
+  - **Theme CSS code-splitting**: 7 color themes (Ocean, Sunset, Forest, Rose, Midnight, High Contrast, Classic as default bundle) are lazy-loaded into separate chunks (~0.5 KB each gzipped)
   - **Theme preloading**: `useTheme.js` preloads all theme CSS on app startup asynchronously, enabling instant theme switching (<1 ms) with zero UI blocking
-  - **Global stylesheet** (`src/styles.css`): Contains shared base styles, typography, animations, and CSS custom properties. Reduced to ~25 KB (5.48 KB gzipped) after component migrations
+  - **Global stylesheet** (`src/styles.css`): Contains shared base styles, typography, animations, and CSS custom properties. Reduced to ~284 lines after dead-code cleanup (removed ~580 lines of orphaned component styles)
   - **Utility function** (`src/ui/utils/cssModules.js`): Exports `cx()` for conditional class binding in components (e.g., `cx(styles.root, isActive && styles.active)`)
 
 
@@ -455,9 +484,6 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 ### Gameplay
 - [ ] **Local multiplayer** — human vs human mode on the same device (remove CPU AI, alternate turns)
 - [ ] **Online multiplayer** — real-time two-player via WebSockets (would need a lightweight server)
-- [ ] **First-move choice** ✅ COMPLETED (Phase 8) — virtual coin flip at app start
-- [ ] **Undo / redo** ✅ COMPLETED (Phase 8) — step backward/forward through move history with timeline sidebar
-- [ ] **Streak & best-time tracking** ✅ COMPLETED (Phase 8) — track consecutive wins and fastest win time, display on the scoreboard
 
 ## Future Game Ideas
 

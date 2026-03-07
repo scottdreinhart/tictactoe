@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import styles from './MoveTimeline.module.css'
 import { cx } from '../utils/cssModules.js'
 
 /**
- * MoveTimeline - Sliding drawer from the right side showing move history
- * with undo/redo buttons. Slides over the game board when opened.
+ * MoveTimeline - Sliding drawer from the right side showing move history,
+ * score, streak, best time, and undo/redo controls.
  */
-export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRedo, canUndo, canRedo }) => {
+export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRedo, canUndo, canRedo, score, streak = 0, bestTime = null }) => {
   const [isOpen, setIsOpen] = useState(false)
   const drawerRef = useRef(null)
   const moves = moveHistory.slice(1) // skip initial empty board
@@ -51,7 +52,7 @@ export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRed
       >
         <div className={styles.container}>
           <div className={styles.header}>
-            <h3 className={styles.title}>Move History</h3>
+            <h3 className={styles.title}>Game Info</h3>
             <button
               className={styles.closeBtn}
               onClick={() => setIsOpen(false)}
@@ -60,6 +61,42 @@ export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRed
               ✕
             </button>
           </div>
+
+          {/* Score */}
+          {score && (
+            <div className={styles.scoreSection} aria-label="Score">
+              <div className={cx(styles.scoreItem, styles.humanScore)}>
+                <span className={styles.scoreLabel}>You (X)</span>
+                <span className={styles.scoreValue}>{score.X}</span>
+              </div>
+              <div className={cx(styles.scoreItem, styles.drawScore)}>
+                <span className={styles.scoreLabel}>Draw</span>
+                <span className={styles.scoreValue}>{score.draws}</span>
+              </div>
+              <div className={cx(styles.scoreItem, styles.cpuScore)}>
+                <span className={styles.scoreLabel}>CPU (O)</span>
+                <span className={styles.scoreValue}>{score.O}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Streak & Best Time */}
+          {(streak > 0 || bestTime !== null) && (
+            <div className={styles.statsRow}>
+              {streak > 0 && (
+                <div className={styles.statItem}>
+                  <span className={styles.statLabel}>Streak</span>
+                  <span className={cx(styles.statValue, styles.streakValue)}>{streak} 🔥</span>
+                </div>
+              )}
+              {bestTime !== null && (
+                <div className={styles.statItem}>
+                  <span className={styles.statLabel}>Best</span>
+                  <span className={cx(styles.statValue, styles.bestTimeValue)}>{bestTime.toFixed(1)}s</span>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className={styles.controls}>
             <button
@@ -141,6 +178,22 @@ export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRed
       </div>
     </>
   )
+}
+
+MoveTimeline.propTypes = {
+  moveHistory: PropTypes.array,
+  currentIndex: PropTypes.number,
+  onUndo: PropTypes.func.isRequired,
+  onRedo: PropTypes.func.isRequired,
+  canUndo: PropTypes.bool.isRequired,
+  canRedo: PropTypes.bool.isRequired,
+  score: PropTypes.shape({
+    X: PropTypes.number.isRequired,
+    O: PropTypes.number.isRequired,
+    draws: PropTypes.number.isRequired,
+  }),
+  streak: PropTypes.number,
+  bestTime: PropTypes.number,
 }
 
 export default MoveTimeline

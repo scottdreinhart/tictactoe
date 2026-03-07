@@ -2,6 +2,7 @@
 [data-theme='rose'] {
   --bg-gradient-start: #be123c;
   --bg-gradient-end: #fb7185;
+  --bg-image: url('/backgrounds/laser.png');
   --accent: #f43f5e;
   --accent-glow: rgba(244, 63, 94, 0.4);
   --cell-hover-bg: #fff1f2;

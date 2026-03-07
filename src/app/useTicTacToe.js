@@ -14,6 +14,7 @@ const ACTIONS = {
   REDO: 'REDO',
   SET_GAME_START_TIME: 'SET_GAME_START_TIME',
   UPDATE_STREAK: 'UPDATE_STREAK',
+  SET_FIRST_PLAYER: 'SET_FIRST_PLAYER',
 }
 
 // ── Initial state factory ────────────────────────────────────────────────────
@@ -114,6 +115,15 @@ const gameReducer = (state, action) => {
 
     case ACTIONS.RESET:
       return createInitialState()
+
+    case ACTIONS.SET_FIRST_PLAYER: {
+      // Only allow at game start (empty board)
+      if (state.history.length > 1) return state
+      return {
+        ...state,
+        turn: action.payload,
+      }
+    }
 
     default:
       return state
@@ -227,6 +237,10 @@ export const useTicTacToe = () => {
     dispatch({ type: ACTIONS.REDO })
   }, [])
 
+  const setFirstPlayer = useCallback((token) => {
+    dispatch({ type: ACTIONS.SET_FIRST_PLAYER, payload: token })
+  }, [])
+
   // ── Effects ──────────────────────────────────────────────────────────────
 
   const handleSetDifficulty = useCallback((level) => {
@@ -326,5 +340,6 @@ export const useTicTacToe = () => {
     handleSetDifficulty,
     handleUndo,
     handleRedo,
+    setFirstPlayer,
   }
 }
