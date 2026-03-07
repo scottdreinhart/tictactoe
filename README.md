@@ -180,7 +180,7 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - Roving tabindex for keyboard navigation
 - `prefers-reduced-motion: reduce` disables all animations and sounds
 - `forced-colors: active` support for high-contrast mode
-- 4 colorblind presets override X/O mark colors for improved visibility (Standard, Red Weakness, Green Weakness, Blue Weakness, Monochrome)
+- 4 colorblind presets override X/O mark colors for improved visibility (Red Weakness, Green Weakness, Blue Weakness, Monochrome)
 - SVG marks use `aria-hidden="true"` (cell label provides semantics)
 - Clear visual focus indicators with accent-colored outline + glow
 - Theme selector uses `aria-pressed` on all buttons and `role="dialog"` for the panel
@@ -473,7 +473,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 
 ### React & State Management
 - **React 19** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
-- **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector) to skip unnecessary re-renders
+- **React.memo** on pure presentational components (XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector) to skip unnecessary re-renders
 - **PropTypes** runtime validation on all components that accept props (stripped from production builds)
 - **9 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue`, `useSmartPosition`, `useDropdownBehavior` — extracted for composability and reuse
 
@@ -654,7 +654,7 @@ The app is built with React + Vite. All platforms with a web browser can run the
 ### Code Quality
 - **ESLint + Prettier** — flat config, React + hooks plugins, `check`/`fix`/`validate` chains
 - **`getWinner` returns winning line** — returns `{ token, line }`, `getWinnerToken` convenience
-- **`React.memo` on atoms** — XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector
+- **`React.memo` on presentational components** — XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector
 - **PropTypes on all components** — runtime prop validation on all components that accept props
 - **Dead code cleanup** — removed 7 orphaned files (CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls, ScoreBoard.jsx, ScoreBoard.module.css); removed ~580 lines of unused global CSS; fixed 19 ghost CSS variable references
 - **Architecture audit** — moved `sounds.js` from `domain/` to `app/` (framework-adjacent); moved `CoinFlip`, `HamburgerMenu`, `ThemeSelector` from `atoms/` to `molecules/` (composed components); moved `ui-constants.js` from `domain/` to `ui/`
@@ -712,7 +712,7 @@ The app is built with React + Vite. All platforms with a web browser can run the
 - [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
 ### Architecture
-- [x] **CSS Modules** — all 10 UI components (atoms, molecules, organisms) use scoped CSS Modules to eliminate global class name collisions
+- [x] **CSS Modules** — all 11 styled components (4 atoms, 6 molecules, 1 organism) use scoped CSS Modules to eliminate global class name collisions
   - **Theme CSS code-splitting**: 7 color themes (Ocean, Sunset, Forest, Rose, Midnight, High Contrast, Classic as default bundle) are lazy-loaded into separate chunks (~0.5 KB each gzipped)
   - **Theme preloading**: `useTheme.js` preloads all theme CSS on app startup asynchronously, enabling instant theme switching (<1 ms) with zero UI blocking
   - **Global stylesheet** (`src/styles.css`): Contains shared base styles, typography, animations, and CSS custom properties. Reduced to ~284 lines after dead-code cleanup (removed ~580 lines of orphaned component styles)
