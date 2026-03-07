@@ -8,3 +8,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <TicTacToeGame />
   </React.StrictMode>
 )
+
+/* Register service worker for offline / instant-repeat-visit caching */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+  })
+}
