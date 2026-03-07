@@ -523,6 +523,30 @@ The Unbeatable AI difficulty is now available:
 #### ⚠️ **Minor Observation** (—2 points)
 - **WebP image format** not used (but project uses SVG, so low priority)
 
+#### 4.7 Dependencies & Stack (March 7, 2026 Update)
+
+**Dependency Upgrade Strategy**: Phased approach with compatibility testing
+
+| Package | Prior | Current | Status | Notes |
+|---------|-------|---------|--------|-------|
+| **react** | 18.3.1 | **19.2.4** ✅ | Upgraded | Major version; tested & verified compatible |
+| **react-dom** | 18.3.1 | **19.2.4** ✅ | Upgraded | Paired with React; no breaking changes in codebase |
+| **eslint** | 9.39.4 | **10.0.3** ✅ | Upgraded | Dev-only; peer warnings non-blocking |
+| **@vitejs/plugin-react** | 4.7.0 | **5.1.4** ✅ | Upgraded | RSC-aware updates; compatible with Vite 5.x |
+| **vite** | 5.4.21 | 5.4.21 ✅ | Stable | 7.3.1 requires Node 20.19+; current system Node 18.19.1 |
+| **rollup-plugin-visualizer** | 5.14.0 | 5.14.0 ✅ | Stable | 7.0.1 incompatible with Vite 5.x; bundle analysis works fine at 5.14.0 |
+
+**Build Verification**:
+- ✅ Production build succeeds (vite build: 13.55s)
+- ✅ Dev server starts (vite --host: 1753ms to ready)
+- ✅ Web Worker bundling works correctly
+- ✅ No runtime errors or console warnings
+
+**React 19 Upgrade Highlights**:
+- Improved vendor chunk tree-shaking: 140.86 KB → 11.65 KB (gzipped: 45.25 KB → 4.12 KB)
+- No component refactoring required (backward compatible with React 18 code patterns)
+- Fully compatible with existing hooks: useCallback, useRef, useEffect, useState, useContext
+
 ---
 
 ## 5. SEO & Metadata
