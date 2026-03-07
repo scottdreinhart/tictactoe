@@ -193,38 +193,36 @@ const TicTacToeGame = () => {
         </div>
       </HamburgerMenu>
 
-      <div className={styles.mainContent}>
-        <div className={styles.gameContent}>
-          <ScoreBoard score={score} streak={streak} bestTime={bestTime} />
+      <div className={styles.gameContent}>
+        <ScoreBoard score={score} streak={streak} bestTime={bestTime} />
 
-          <div className={styles.boardArea} id="game-board">
-            <BoardGrid
-              board={board}
-              focusedIndex={focusedIndex}
-              onFocusChange={handleFocusChange}
-              onSelect={handleHumanSelect}
-              isGameOver={gameState.isOver}
-              winLine={gameState.winLine}
-              onNav={playNav}
-              onTap={playTap}
-            />
-            <NotificationBanner
-              notification={notification}
-              onDismiss={dismiss}
-              onAction={resetNow}
-            />
-          </div>
+        <div className={styles.boardArea} id="game-board">
+          <BoardGrid
+            board={board}
+            focusedIndex={focusedIndex}
+            onFocusChange={handleFocusChange}
+            onSelect={handleHumanSelect}
+            isGameOver={gameState.isOver}
+            winLine={gameState.winLine}
+            onNav={playNav}
+            onTap={playTap}
+          />
+          <NotificationBanner
+            notification={notification}
+            onDismiss={dismiss}
+            onAction={resetNow}
+          />
         </div>
-
-        <MoveTimeline
-          moveHistory={moveHistory}
-          currentIndex={currentMoveIndex}
-          onUndo={handleUndo}
-          onRedo={handleRedo}
-          canUndo={canUndo}
-          canRedo={canRedo}
-        />
       </div>
+
+      <MoveTimeline
+        moveHistory={moveHistory}
+        currentIndex={currentMoveIndex}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+      />
     </div>
   )
 }

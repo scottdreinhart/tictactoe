@@ -46,8 +46,8 @@ const CellButton = React.forwardRef(
         aria-disabled={disabled}
         tabIndex={tabIndex}
       >
-        {value === 'X' && <Suspense fallback={null}><XMark /></Suspense>}
-        {value === 'O' && <Suspense fallback={null}><OMark /></Suspense>}
+        {value === 'X' && <Suspense fallback={null}><XMark className={cx(styles.mark, styles.markx)} /></Suspense>}
+        {value === 'O' && <Suspense fallback={null}><OMark className={cx(styles.mark, styles.marko)} /></Suspense>}
       </button>
     )
   }

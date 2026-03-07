@@ -1,13 +1,14 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 /**
  * XMark — Atom
  * Animated SVG "X" drawn with two crossing lines.
  * Uses CSS stroke-dasharray / stroke-dashoffset for a draw-on effect.
  */
-const XMark = React.memo(() => (
+const XMark = React.memo(({ className }) => (
   <svg
-    className="mark mark-x"
+    className={className}
     viewBox="0 0 100 100"
     aria-hidden="true"
   >
@@ -17,5 +18,9 @@ const XMark = React.memo(() => (
 ))
 
 XMark.displayName = 'XMark'
+
+XMark.propTypes = {
+  className: PropTypes.string,
+}
 
 export default XMark
