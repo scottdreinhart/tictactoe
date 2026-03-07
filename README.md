@@ -123,12 +123,43 @@ Also supports high-DPI/Retina displays and print media.
 - **Variant Styles**: Win (golden gradient), Loss (red gradient), Draw (blue-grey gradient), Countdown (theme accent gradient)
 
 ### Architecture
-- **CLEAN Layering**: `domain/` (pure) → `app/` (hooks) → `ui/` (components)
-- **Atomic Design**: atoms → molecules → organisms (zero inline markup in organisms)
+
+#### Design Principles (Enforced)
+
+The project enforces four complementary design patterns:
+
+1. **CLEAN Architecture** (Layer Separation)
+   - `domain/` layer: Pure, framework-agnostic logic (zero React dependencies)
+   - `app/` layer: React hooks for state management & side effects
+   - `ui/` layer: Presentational components (atoms → molecules → organisms)
+   - **Benefit**: Domain logic is testable, reusable, and framework-independent
+
+2. **Atomic Design** (Component Hierarchy)
+   - **Atoms** (9): Basic UI elements (`CellButton`, `XMark`, `OMark`, reusable toggles, etc.)
+   - **Molecules** (3): Composed atoms (`BoardGrid`, `ScoreBoard`, `Instructions`)
+   - **Organisms** (1): Full-page composition (`TicTacToeGame`)
+   - **Rule**: Organisms contain zero inline markup; all composition happens in JSX
+   - **Benefit**: Components are predictable, composable, and reusable across contexts
+
+3. **SOLID Principles** (Code-Level Design)
+   - **Single Responsibility**: Each hook, function, and component has one reason to change
+   - **Open/Closed**: Domain logic (`board.js`, `rules.js`, `ai.js`) extended without modification via rules/constants
+   - **Liskov Substitution**: Theme, sound, and difficulty toggles are interchangeable (uniform `aria-pressed` toggle interface)
+   - **Interface Segregation**: Components expose only essential props; UI constants keep config separate
+   - **Dependency Inversion**: High-level modules (components) depend on low-level abstractions (hooks, domain exports)
+   - **Benefit**: Code is maintainable, testable, and resistant to side effects
+
+4. **DRY Principle** (No Duplication)
+   - Constants extracted to single sources: `TOKENS`, `WIN_LINES`, `DIFFICULTIES`, `SOUND_PRESETS`
+   - Reusable hooks eliminate component duplication: `useSmartPosition`, `useDropdownBehavior` (Phase 6 refactor)
+   - Positioning logic previously duplicated in `ThemeSelector` & `Instructions` now centralized
+   - **Benefit**: Changes propagate consistently; less code to maintain
+
+#### Supporting Patterns
+
 - **Pure Functions**: All domain logic is immutable and deterministic
-- **DRY**: Single source of truth for constants (TOKENS, WIN_LINES)
 - **No Race Conditions**: CPU timeout managed via ref; cancelled on reset/unmount
-- **Reusable Hooks**: `useGridKeyboard`, `useSwipeGesture`, `useNotificationQueue`, `useAutoReset` — all extracted as composable application hooks
+- **Reusable Hooks**: `useGridKeyboard`, `useSwipeGesture`, `useNotificationQueue`, `useAutoReset`, `useSmartPosition`, `useDropdownBehavior` — all extracted as composable application hooks
 - **PropTypes**: Runtime prop validation on all components that accept props
 
 ## Installation & Running
@@ -215,9 +246,13 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 
 ## Technical Highlights
 
+### React & State Management
 - **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
 - **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
 - **PropTypes** runtime validation on all components that accept props (stripped from production builds)
+- **7 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue` — extracted for composability and reuse
+
+### Build & Performance Optimization
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
 - **Production build optimizations**:
   - Vendor chunk splitting — React/ReactDOM cached independently from app code
@@ -226,20 +261,35 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
 - **Bundle analysis** via `rollup-plugin-visualizer` — generates `dist/bundle-report.html` on build
-- **ESLint + Prettier** for code quality (flat config, React + hooks plugins)
-- **7 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue`
-- **Sound effects** via Web Audio API — zero audio files, synthesized tones + music jingles (~3KB lazy chunk)
-- **Canvas confetti** — 80-particle burst with gravity, air friction, rotation, and opacity fade (~3s)
-- **Unified notification queue** — FIFO queue replaces static status bar; auto-dismiss with configurable duration
-- **6 color themes** with light/dark/system modes + 4 colorblind presets — all persisted to localStorage
-- **Touch & gesture support** — swipe navigation, haptic feedback, optimized touch-action properties
-- **CSS Grid** with `aspect-ratio: 1` for perfect square cells
+- **Sound synthesis** via Web Audio API — zero audio files, synthesized tones + music jingles (~3KB lazy chunk)
+
+### Code Quality & Maintainability
+- **ESLint + Prettier** for code quality (flat config, React + hooks plugins, `lint`/`lint:fix`/`format`/`format:check` scripts)
+- **Zero TypeScript**: Pure JavaScript for simplicity and fast iteration
+- **No external game libraries**: All logic built from scratch — board, rules, AI, sounds, themes
+- **SOLID principles** enforced: dependency inversion, single responsibility, open/closed principle via hooks and constants
+
+### Interactive Features
+- **Sound effects** — move pop (600Hz), navigation beep (800Hz), win fanfare (C-E-G arpeggio), loss jingle (A-F descending), draw tone — all synthesized, toggleable, respects `prefers-reduced-motion`
+- **Canvas confetti** — 80-particle burst with gravity, air friction, rotation, and opacity fade (~3s animation on human win)
+- **Unified notification queue** — FIFO queue system for status + countdown + reset messages; auto-dismiss with configurable duration
+- **Keyboard navigation** — Arrow keys + WASD for grid movement, Space/Enter to select, Escape for menu close
+- **Touch & gesture support** — swipe navigation (30px threshold), haptic feedback, optimized `touch-action` properties for mobile
+
+### Visuals & Animations
+- **CSS Grid** with `aspect-ratio: 1` for perfect square cells responsive across all screen sizes
+- **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes for X and O marks
+- **Outcome animations** — win glow pulse, loss shake, draw fade CSS classes + confetti canvas overlay
+- **Board reset animation** — scale + fade transition (300ms cubic-bezier easing)
+- **Menu animation** — hamburger ☰→✕ icon transition + panel slide-in (250ms bounce easing)
+- **Kinetic animations** — directional slide-in effects for cell focus (up/down/left/right based on navigation direction)
+
+### Theming & Customization
+- **6 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — light/dark variants + High Contrast mode
+- **Light / Dark / System modes** — auto-detect via `prefers-color-scheme`, manual override via selector, persisted to localStorage
+- **4 colorblind-safe presets**: Protanopia, Deuteranopia, Tritanopia, Achromatopsia — all with distinct X/O mark colors
 - **CSS Custom Properties** with theme-driven color sets via `data-theme` / `data-mode` / `data-colorblind` attributes
-- **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes
-- **Outcome animations** — win glow, loss shake, draw fade CSS classes + confetti canvas overlay
-- **Board reset animation** (scale + fade transition)
-- **Zero TypeScript**: Pure JavaScript for simplicity
-- **No external game libraries**: All logic built from scratch
+- **Smart dropdown positioning** — `useSmartPosition` hook auto-detects viewport overflow, positions menus left/right intelligently
 
 ## Accessibility Compliance
 
