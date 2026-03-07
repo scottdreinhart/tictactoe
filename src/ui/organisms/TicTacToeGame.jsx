@@ -2,15 +2,17 @@ import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useTicTacToe } from '../../app/useTicTacToe.js'
 import useSoundEffects from '../../app/useSoundEffects.js'
 import useTheme from '../../app/useTheme.js'
+import useAutoReset from '../../app/useAutoReset.js'
 import { TOKENS } from '../../domain/constants.js'
 import GameTitle from '../atoms/GameTitle.jsx'
 import DifficultyToggle from '../atoms/DifficultyToggle.jsx'
 import SoundToggle from '../atoms/SoundToggle.jsx'
 import ThemeSelector from '../atoms/ThemeSelector.jsx'
 import ConfettiOverlay from '../atoms/ConfettiOverlay.jsx'
+import CountdownOverlay from '../atoms/CountdownOverlay.jsx'
+import ResetDialog from '../atoms/ResetDialog.jsx'
 import StatusBar from '../molecules/StatusBar.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
-import GameControls from '../molecules/GameControls.jsx'
 import ScoreBoard from '../molecules/ScoreBoard.jsx'
 import Instructions from '../molecules/Instructions.jsx'
 
@@ -39,6 +41,9 @@ const TicTacToeGame = () => {
 
   const { soundEnabled, toggleSound, playMove, playWin, playLoss, playDraw } = useSoundEffects()
   const { settings, setColorTheme, setMode, setColorblind } = useTheme()
+
+  // Auto-reset countdown (30 s)
+  const { secondsLeft, resetNow } = useAutoReset(gameState.isOver, handleReset)
 
   // Outcome visual state: 'win' | 'loss' | 'draw' | null
   const [outcome, setOutcome] = useState(null)
@@ -111,16 +116,23 @@ const TicTacToeGame = () => {
 
       <ScoreBoard score={score} />
 
-      <BoardGrid
-        board={board}
-        focusedIndex={focusedIndex}
-        onFocusChange={handleFocusChange}
-        onSelect={handleHumanSelect}
-        isGameOver={gameState.isOver}
-        winLine={gameState.winLine}
-      />
+      <div className="board-area">
+        <BoardGrid
+          board={board}
+          focusedIndex={focusedIndex}
+          onFocusChange={handleFocusChange}
+          onSelect={handleHumanSelect}
+          isGameOver={gameState.isOver}
+          winLine={gameState.winLine}
+        />
+        {secondsLeft !== null && secondsLeft > 0 && (
+          <CountdownOverlay seconds={secondsLeft} />
+        )}
+      </div>
 
-      <GameControls onReset={handleReset} />
+      {secondsLeft !== null && secondsLeft > 0 && (
+        <ResetDialog seconds={secondsLeft} onReset={resetNow} />
+      )}
     </div>
   )
 }
