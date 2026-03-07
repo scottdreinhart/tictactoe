@@ -9,35 +9,48 @@ export const CoinFlip = ({ onFlipComplete }) => {
   const [isFlipping, setIsFlipping] = useState(true)
   const [result, setResult] = useState(null)
   const callbackRef = useRef(onFlipComplete)
+  const flipTimerRef = useRef(null)
+  const resultTimerRef = useRef(null)
   callbackRef.current = onFlipComplete
 
+  const stopFlip = () => {
+    if (!isFlipping) return
+    // Clear the auto-stop timer since user tapped early
+    if (flipTimerRef.current) clearTimeout(flipTimerRef.current)
+    setIsFlipping(false)
+    const isXFirst = Math.random() > 0.5
+    setResult(isXFirst ? 'X' : 'O')
+    resultTimerRef.current = setTimeout(() => {
+      callbackRef.current(isXFirst)
+    }, 1200)
+  }
+
   useEffect(() => {
-    // Flip for 1.5 seconds
-    const flipDuration = 1500
-    let resultTimer = null
-    const flipTimer = setTimeout(() => {
-      setIsFlipping(false)
-      // Randomly choose X or O to go first
-      const isXFirst = Math.random() > 0.5
-      setResult(isXFirst ? 'X' : 'O')
-      // Call callback after a short delay to show result
-      resultTimer = setTimeout(() => {
-        callbackRef.current(isXFirst)
-      }, 800)
-    }, flipDuration)
+    // Auto-stop after 3.5 seconds if user doesn't tap
+    flipTimerRef.current = setTimeout(() => {
+      stopFlip()
+    }, 3500)
 
     return () => {
-      clearTimeout(flipTimer)
-      if (resultTimer) clearTimeout(resultTimer)
+      if (flipTimerRef.current) clearTimeout(flipTimerRef.current)
+      if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
     }
-  }, []) // run once on mount
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.container}>
       <div className={styles.backdrop} />
       <div className={styles.content}>
         <h2 className={styles.title}>Who goes first?</h2>
-        <div className={styles.coinWrapper}>
+        <p className={styles.hint}>{isFlipping ? 'Tap coin to stop' : ''}</p>
+        <div
+          className={styles.coinWrapper}
+          onClick={stopFlip}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') stopFlip() }}
+          role="button"
+          tabIndex={0}
+          aria-label="Tap to stop coin flip"
+        >
           <div className={isFlipping ? styles.coinFlipping : styles.coinStatic}>
             <div className={styles.coinFace}>
               <span className={styles.xSide}>✕</span>
