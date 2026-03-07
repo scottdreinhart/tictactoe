@@ -1,0 +1,111 @@
+/* ─── Skip-to-Content ─── */
+.skipToContent {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 100;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 0 0 8px 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.skipToContent:focus {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─── Root Container ─── */
+.root {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 12px 48px var(--card-shadow);
+  padding: clamp(16px, 3vw, 36px);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2.5vh, 24px);
+  transition: background-color 300ms ease, box-shadow 300ms ease;
+}
+
+/* ─── Board Area ─── */
+.boardArea {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAME OUTCOME EFFECTS — Win / Loss / Draw animations on .root
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Confetti canvas overlay */
+.confettiCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Win — golden glow border pulse */
+.outcomeWin {
+  animation: winGlow 1.2s ease-in-out 2;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes winGlow {
+  0%, 100% {
+    box-shadow: 0 12px 48px var(--card-shadow);
+  }
+  50% {
+    box-shadow: 0 0 40px 8px rgba(250, 204, 21, 0.5), 0 12px 48px var(--card-shadow);
+  }
+}
+
+/* Loss — shake animation */
+.outcomeLoss {
+  animation: lossShake 500ms ease-in-out;
+}
+
+@keyframes lossShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-6px); }
+  20% { transform: translateX(6px); }
+  30% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  50% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+/* Draw — brief desaturation pulse */
+.outcomeDraw {
+  animation: drawFade 1s ease-in-out;
+}
+
+@keyframes drawFade {
+  0%, 100% {
+    filter: none;
+  }
+  40% {
+    filter: grayscale(0.6) brightness(0.9);
+  }
+}
