@@ -72,6 +72,10 @@ public/
 
 index.html                            # HTML entry point
 package.json                          # Dependencies & scripts
+electron/
+├── main.js                           # Electron main process (BrowserWindow, dev/prod loading)
+└── preload.js                        # Sandboxed context bridge (exposes platform info)
+
 vite.config.js                        # Vite configuration + rollup-plugin-visualizer
 eslint.config.js                      # ESLint flat config (React + hooks + Prettier)
 .prettierrc                           # Prettier formatting rules
@@ -219,6 +223,21 @@ npm run format:check  # check formatting without writing
 ```
 
 The app will be available at `http://localhost:5173`
+
+### Electron Desktop App
+
+```bash
+# Development: launches Vite + Electron together
+npm run electron:dev
+
+# Production build: creates distributable in release/
+npm run electron:build
+
+# Pack without installer (for testing)
+npm run electron:pack
+```
+
+Electron wraps the same web app in a native desktop window. In dev mode it connects to the Vite dev server (`localhost:5173`); in production it loads the built `dist/` files directly.
 
 ## Game Flow
 
@@ -404,14 +423,14 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 
 ## Device Compatibility
 
-The app is built with React + Vite. All platforms with a web browser can run the app today via URL or PWA install. Native app distribution uses **Electron** (desktop) and **Capacitor** (mobile + TV) to wrap the web build in native app shells — these are planned for future releases.
+The app is built with React + Vite. All platforms with a web browser can run the app today via URL or PWA install. Native app distribution uses **Electron** (desktop) and **Capacitor** (mobile + TV) to wrap the web build in native app shells. Electron desktop apps are ready; Capacitor mobile/TV apps are planned for future releases.
 
 | Platform | Native App Tech | Distribution | Input Method | Web (Browser) | Native App |
 |----------|----------------|-------------|-------------|--------------|-----------|
 | **Desktop** | | | | | |
-| Windows | Electron | `.exe` / Microsoft Store | Mouse, keyboard, trackpad | Supported | Planned |
-| macOS | Electron | `.dmg` / Mac App Store | Mouse, keyboard, trackpad | Supported | Planned |
-| Linux | Electron | `.AppImage` / `.deb` / `.snap` | Mouse, keyboard, trackpad | Supported | Planned |
+| Windows | Electron | `.exe` / Microsoft Store | Mouse, keyboard, trackpad | Supported | Ready |
+| macOS | Electron | `.dmg` / Mac App Store | Mouse, keyboard, trackpad | Supported | Ready |
+| Linux | Electron | `.AppImage` / `.deb` / `.snap` | Mouse, keyboard, trackpad | Supported | Ready |
 | **Mobile** | | | | | |
 | Android | Capacitor | Google Play Store / `.apk` | Touch, swipe gestures | Supported | Planned |
 | iOS | Capacitor | App Store | Touch, swipe gestures | Supported | Planned |
