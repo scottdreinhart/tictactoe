@@ -28,8 +28,6 @@
   --cell-border: #d0d0d0;
   --cell-hover-bg: #f0f4ff;
   --board-bg: #e0e0e0;
-  --status-bg: #f0f4ff;
-  --status-border: #667eea;
   --instructions-bg: #f0f4ff;
   --x-color: #4a6cf7;
   --o-color: #9b59b6;
@@ -46,8 +44,6 @@
   --accent: #0ea5e9;
   --accent-glow: rgba(14, 165, 233, 0.4);
   --cell-hover-bg: #e0f2fe;
-  --status-bg: #e0f2fe;
-  --status-border: #0ea5e9;
   --instructions-bg: #e0f2fe;
   --x-color: #0284c7;
   --o-color: #06b6d4;
@@ -63,8 +59,6 @@
   --accent: #f97316;
   --accent-glow: rgba(249, 115, 22, 0.4);
   --cell-hover-bg: #fff7ed;
-  --status-bg: #fff7ed;
-  --status-border: #f97316;
   --instructions-bg: #fff7ed;
   --x-color: #ea580c;
   --o-color: #dc2626;
@@ -80,8 +74,6 @@
   --accent: #22c55e;
   --accent-glow: rgba(34, 197, 94, 0.4);
   --cell-hover-bg: #f0fdf4;
-  --status-bg: #f0fdf4;
-  --status-border: #22c55e;
   --instructions-bg: #f0fdf4;
   --x-color: #16a34a;
   --o-color: #65a30d;
@@ -97,8 +89,6 @@
   --accent: #f43f5e;
   --accent-glow: rgba(244, 63, 94, 0.4);
   --cell-hover-bg: #fff1f2;
-  --status-bg: #fff1f2;
-  --status-border: #f43f5e;
   --instructions-bg: #fff1f2;
   --x-color: #e11d48;
   --o-color: #db2777;
@@ -114,8 +104,6 @@
   --accent: #a78bfa;
   --accent-glow: rgba(167, 139, 250, 0.4);
   --cell-hover-bg: #ede9fe;
-  --status-bg: #ede9fe;
-  --status-border: #a78bfa;
   --instructions-bg: #ede9fe;
   --x-color: #7c3aed;
   --o-color: #a855f7;
@@ -147,8 +135,6 @@
     --bg-gradient-end: #16213e;
     --accent: #7b8cff;
     --accent-glow: rgba(123, 140, 255, 0.35);
-    --status-bg: #253347;
-    --status-border: #7b8cff;
     --instructions-bg: #253347;
     --x-color: #6c8cff;
     --o-color: #c084fc;
@@ -161,8 +147,6 @@
     --bg-gradient-end: #0c4a6e;
     --accent: #38bdf8;
     --accent-glow: rgba(56, 189, 248, 0.35);
-    --status-bg: #253347;
-    --status-border: #38bdf8;
     --instructions-bg: #253347;
     --x-color: #38bdf8;
     --o-color: #22d3ee;
@@ -175,8 +159,6 @@
     --bg-gradient-end: #7c2d12;
     --accent: #fb923c;
     --accent-glow: rgba(251, 146, 60, 0.35);
-    --status-bg: #253347;
-    --status-border: #fb923c;
     --instructions-bg: #253347;
     --x-color: #fb923c;
     --o-color: #f87171;
@@ -189,8 +171,6 @@
     --bg-gradient-end: #14532d;
     --accent: #4ade80;
     --accent-glow: rgba(74, 222, 128, 0.35);
-    --status-bg: #253347;
-    --status-border: #4ade80;
     --instructions-bg: #253347;
     --x-color: #4ade80;
     --o-color: #a3e635;
@@ -203,8 +183,6 @@
     --bg-gradient-end: #881337;
     --accent: #fb7185;
     --accent-glow: rgba(251, 113, 133, 0.35);
-    --status-bg: #253347;
-    --status-border: #fb7185;
     --instructions-bg: #253347;
     --x-color: #fb7185;
     --o-color: #f472b6;
@@ -217,8 +195,6 @@
     --bg-gradient-end: #312e81;
     --accent: #c4b5fd;
     --accent-glow: rgba(196, 181, 253, 0.35);
-    --status-bg: #253347;
-    --status-border: #c4b5fd;
     --instructions-bg: #253347;
     --x-color: #a78bfa;
     --o-color: #c084fc;
@@ -245,8 +221,6 @@
   --bg-gradient-end: #16213e;
   --accent: #7b8cff;
   --accent-glow: rgba(123, 140, 255, 0.35);
-  --status-bg: #253347;
-  --status-border: #7b8cff;
   --instructions-bg: #253347;
   --x-color: #6c8cff;
   --o-color: #c084fc;
@@ -259,8 +233,6 @@
   --bg-gradient-end: #0c4a6e;
   --accent: #38bdf8;
   --accent-glow: rgba(56, 189, 248, 0.35);
-  --status-bg: #253347;
-  --status-border: #38bdf8;
   --instructions-bg: #253347;
   --x-color: #38bdf8;
   --o-color: #22d3ee;
@@ -273,8 +245,6 @@
   --bg-gradient-end: #7c2d12;
   --accent: #fb923c;
   --accent-glow: rgba(251, 146, 60, 0.35);
-  --status-bg: #253347;
-  --status-border: #fb923c;
   --instructions-bg: #253347;
   --x-color: #fb923c;
   --o-color: #f87171;
@@ -287,8 +257,6 @@
   --bg-gradient-end: #14532d;
   --accent: #4ade80;
   --accent-glow: rgba(74, 222, 128, 0.35);
-  --status-bg: #253347;
-  --status-border: #4ade80;
   --instructions-bg: #253347;
   --x-color: #4ade80;
   --o-color: #a3e635;
@@ -301,8 +269,6 @@
   --bg-gradient-end: #881337;
   --accent: #fb7185;
   --accent-glow: rgba(251, 113, 133, 0.35);
-  --status-bg: #253347;
-  --status-border: #fb7185;
   --instructions-bg: #253347;
   --x-color: #fb7185;
   --o-color: #f472b6;
@@ -315,8 +281,6 @@
   --bg-gradient-end: #312e81;
   --accent: #c4b5fd;
   --accent-glow: rgba(196, 181, 253, 0.35);
-  --status-bg: #253347;
-  --status-border: #c4b5fd;
   --instructions-bg: #253347;
   --x-color: #a78bfa;
   --o-color: #c084fc;
@@ -437,26 +401,6 @@ body {
 }
 
 /* (Instructions h2 removed — now inside tooltip) */
-
-/* ─── Status Bar ─── */
-.status-bar {
-  background: var(--status-bg);
-  border-left: 4px solid var(--status-border);
-  border-radius: 6px;
-  padding: clamp(10px, 1.5vh, 16px) clamp(14px, 2vw, 20px);
-  font-size: clamp(0.85rem, 2.5vw, 1.05rem);
-  font-weight: 700;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  transition: background-color 300ms ease, border-color 300ms ease;
-}
-
-.status-bar p {
-  margin: 0;
-}
 
 /* ─── Score Board ─── */
 .score-board {
@@ -848,12 +792,6 @@ body {
   color: var(--text-primary);
   border: 1px solid var(--cell-border);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-/* ─── Controls (kept for potential future use) ─── */
-.game-controls {
-  width: 100%;
-  text-align: center;
 }
 
 /* ─── Difficulty Toggle ─── */

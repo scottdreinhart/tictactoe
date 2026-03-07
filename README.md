@@ -280,7 +280,7 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
 - [x] ~~**PropTypes**~~ — done (runtime prop validation on all components that accept props)
 - [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
-- [ ] **Dead code cleanup** — remove 5 orphaned files no longer imported (CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls); superseded by the unified notification system
+- [x] ~~**Dead code cleanup**~~ — done (removed 5 orphaned files: CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls; removed unused CSS variables and rules)
 - [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
 ### Performance
