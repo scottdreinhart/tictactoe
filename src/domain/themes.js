@@ -13,6 +13,7 @@ export const COLOR_THEMES = [
   { id: 'forest', label: 'Forest', accent: '#22c55e', gradient: ['#166534', '#22c55e'] },
   { id: 'rose', label: 'Rose', accent: '#f43f5e', gradient: ['#be123c', '#fb7185'] },
   { id: 'midnight', label: 'Midnight', accent: '#a78bfa', gradient: ['#312e81', '#7c3aed'] },
+  { id: 'highcontrast', label: 'High Contrast', accent: '#ffcc00', gradient: ['#000000', '#1a1a1a'] },
 ]
 
 /** Display modes */
