@@ -11,6 +11,7 @@
 [![ESLint](https://img.shields.io/badge/ESLint-10-4B32C3?logo=eslint&logoColor=white)](https://eslint.org/)
 [![Prettier](https://img.shields.io/badge/Prettier-3-F7B93E?logo=prettier&logoColor=black)](https://prettier.io/)
 [![Android](https://img.shields.io/badge/Android-SDK_36-34A853?logo=android&logoColor=white)](https://developer.android.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-repo-181717?logo=github&logoColor=white)](https://github.com/scottdreinhart/tictactoe)
 
 **⚠️ PROPRIETARY SOFTWARE — All Rights Reserved**
 
