@@ -1,16 +1,18 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import useDropdownBehavior from '../../app/useDropdownBehavior.js'
 
 /**
  * Instructions — Molecule
  *
  * An (ⓘ) info icon that, when tapped/clicked, opens a tooltip with
- * "How to Play" instructions.  The tooltip automatically positions
- * itself toward whichever direction has the most available space so
- * it never overflows the viewport.
+ * "How to Play" instructions. The tooltip automatically positions
+ * itself to the direction with the most available space.
+ *
+ * Uses useDropdownBehavior for close-on-outside and Escape handling (DRY).
  */
 
 /**
- * Measure available space around the button and pick the best side.
+ * Measure available space around the button and pick the best direction.
  * Returns one of: 'above', 'below', 'left', 'right'.
  */
 const bestPlacement = (btnRect) => {
@@ -43,36 +45,13 @@ const Instructions = () => {
     setOpen((prev) => !prev)
   }, [open])
 
-  // Close when clicking outside
-  useEffect(() => {
-    if (!open) return
-
-    const handleOutside = (e) => {
-      if (
-        btnRef.current &&
-        !btnRef.current.contains(e.target) &&
-        tooltipRef.current &&
-        !tooltipRef.current.contains(e.target)
-      ) {
-        setOpen(false)
-      }
-    }
-
-    // Close on Escape
-    const handleKey = (e) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-
-    document.addEventListener('mousedown', handleOutside)
-    document.addEventListener('touchstart', handleOutside)
-    document.addEventListener('keydown', handleKey)
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutside)
-      document.removeEventListener('touchstart', handleOutside)
-      document.removeEventListener('keydown', handleKey)
-    }
-  }, [open])
+  // Close on outside click / touch / Escape + focus restoration
+  useDropdownBehavior({
+    open,
+    onClose: () => setOpen(false),
+    triggerRef: btnRef,
+    panelRef: tooltipRef,
+  })
 
   return (
     <div className="info-icon-wrapper">
@@ -84,7 +63,7 @@ const Instructions = () => {
         aria-expanded={open}
         type="button"
       >
-        &#9432; {/* ⓘ  info circle */}
+        &#9432; {/* ⓘ info circle */}
       </button>
 
       {open && (

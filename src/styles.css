@@ -797,7 +797,6 @@ body {
 .theme-panel {
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
   z-index: 100;
   background: var(--card-bg);
   border: 2px solid var(--accent);
@@ -808,6 +807,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  /* Default: right-aligned */
+  right: 0;
+  left: auto;
+}
+
+/* Left-aligned variant (when right would overflow) */
+.theme-panel[data-alignment="left"] {
+  right: auto;
+  left: 0;
 }
 
 .theme-section {

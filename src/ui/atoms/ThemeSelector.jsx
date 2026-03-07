@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { COLOR_THEMES, MODES, COLORBLIND_MODES } from '../../domain/themes.js'
+import useSmartPosition from '../../app/useSmartPosition.js'
+import useDropdownBehavior from '../../app/useDropdownBehavior.js'
+import { THEME_PANEL_LABEL } from '../../domain/ui-constants.js'
 
 /**
  * ThemeSelector — Atom (pure presentational)
@@ -9,6 +12,9 @@ import { COLOR_THEMES, MODES, COLORBLIND_MODES } from '../../domain/themes.js'
  *   - 6 color theme swatches
  *   - Light / System / Dark mode toggle
  *   - Colorblind mode selector
+ *
+ * Uses useSmartPosition + useDropdownBehavior for smart alignment & lifecycle management.
+ * SOLID: Components depend on hook abstractions, not concrete implementation.
  *
  * @param {{
  *   settings: { colorTheme: string, mode: string, colorblind: string },
@@ -19,13 +25,37 @@ import { COLOR_THEMES, MODES, COLORBLIND_MODES } from '../../domain/themes.js'
  */
 const ThemeSelector = React.memo(({ settings, onColorTheme, onMode, onColorblind }) => {
   const [open, setOpen] = useState(false)
+  const btnRef = useRef(null)
+  const panelRef = useRef(null)
+
+  // Smart positioning: auto-detect left/right to prevent viewport overflow
+  const alignment = useSmartPosition({
+    trigger: btnRef,
+    panel: panelRef,
+    minPanelWidth: 280,
+    viewportPadding: 16,
+    preferredAlignment: 'right',
+  })
+
+  const toggle = useCallback(() => {
+    setOpen((prev) => !prev)
+  }, [])
+
+  // Close on outside click / touch / Escape + focus restoration
+  useDropdownBehavior({
+    open,
+    onClose: () => setOpen(false),
+    triggerRef: btnRef,
+    panelRef: panelRef,
+  })
 
   return (
     <div className="theme-selector">
       <button
+        ref={btnRef}
         type="button"
         className="theme-selector-toggle"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={toggle}
         aria-expanded={open}
         aria-label="Theme settings"
         title="Theme settings"
@@ -34,7 +64,13 @@ const ThemeSelector = React.memo(({ settings, onColorTheme, onMode, onColorblind
       </button>
 
       {open && (
-        <div className="theme-panel" role="dialog" aria-label="Theme settings">
+        <div
+          ref={panelRef}
+          className="theme-panel"
+          data-alignment={alignment}
+          role="dialog"
+          aria-label={THEME_PANEL_LABEL}
+        >
           {/* ── Color Themes ── */}
           <fieldset className="theme-section">
             <legend>Theme</legend>
