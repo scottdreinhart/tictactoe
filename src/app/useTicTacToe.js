@@ -1,7 +1,7 @@
 import { useReducer, useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { createEmptyBoard, applyMove, isCellEmpty } from '../domain/board.js'
 import { getGameState } from '../domain/rules.js'
-import { chooseCpuMoveSmart, chooseCpuMoveRandom } from '../domain/ai.js'
+import { chooseCpuMoveSmart, chooseCpuMoveMedium, chooseCpuMoveRandom } from '../domain/ai.js'
 import { TOKENS, CPU_DELAY_MS } from '../domain/constants.js'
 
 // ── Actions ──────────────────────────────────────────────────────────────────
@@ -81,7 +81,7 @@ export const useTicTacToe = () => {
   const [state, dispatch] = useReducer(gameReducer, null, createInitialState)
   const cpuTimeoutRef = useRef(null)
   const [score, setScore] = useState({ [TOKENS.HUMAN]: 0, [TOKENS.CPU]: 0, draws: 0 })
-  const [difficulty, setDifficulty] = useState('hard')
+  const [difficulty, setDifficulty] = useState('medium')
   const prevGameOverRef = useRef(false)
 
   // Derive game state from board (pure, no side-effects)
@@ -133,8 +133,8 @@ export const useTicTacToe = () => {
 
   // ── Effects ──────────────────────────────────────────────────────────────
 
-  const handleToggleDifficulty = useCallback(() => {
-    setDifficulty((prev) => (prev === 'hard' ? 'easy' : 'hard'))
+  const handleSetDifficulty = useCallback((level) => {
+    setDifficulty(level)
   }, [])
 
   // Schedule CPU move when turn switches to CPU
@@ -142,7 +142,12 @@ export const useTicTacToe = () => {
     if (state.turn !== TOKENS.CPU) return
     if (gameState.isOver) return
 
-    const chooseFn = difficulty === 'hard' ? chooseCpuMoveSmart : chooseCpuMoveRandom
+    const chooseFn =
+      difficulty === 'hard'
+        ? chooseCpuMoveSmart
+        : difficulty === 'medium'
+          ? chooseCpuMoveMedium
+          : chooseCpuMoveRandom
     let cpuIndex
     try {
       cpuIndex = chooseFn(state.board, TOKENS.CPU, TOKENS.HUMAN)
@@ -183,6 +188,6 @@ export const useTicTacToe = () => {
     handleHumanSelect,
     handleFocusChange,
     handleReset,
-    handleToggleDifficulty,
+    handleSetDifficulty,
   }
 }

@@ -30,7 +30,7 @@ const TicTacToeGame = () => {
     handleFocusChange,
     focusedIndex,
     handleReset,
-    handleToggleDifficulty,
+    handleSetDifficulty,
   } = useTicTacToe()
 
   const { soundEnabled, toggleSound, playMove, playWin, playDraw } = useSoundEffects()
@@ -66,7 +66,7 @@ const TicTacToeGame = () => {
       <GameTitle text="Tic-Tac-Toe: Human vs CPU" />
 
       <div className="game-toolbar">
-        <DifficultyToggle difficulty={difficulty} onToggle={handleToggleDifficulty} />
+        <DifficultyToggle difficulty={difficulty} onSelect={handleSetDifficulty} />
         <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
       </div>
 
