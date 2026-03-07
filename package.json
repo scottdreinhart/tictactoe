@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Tic-Tac-Toe",
   "type": "module",
+  "private": true,
+  "license": "PROPRIETARY",
+  "author": "Scott Reinhart",
   "scripts": {
-    "dev": "fuser -k 5173/tcp 2>/dev/null; vite --host",
+    "dev": "kill-port 5173 2>/dev/null || true; vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src/",

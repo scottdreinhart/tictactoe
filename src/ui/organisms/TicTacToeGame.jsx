@@ -14,6 +14,8 @@ import NotificationBanner from '../atoms/NotificationBanner.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
 import ScoreBoard from '../molecules/ScoreBoard.jsx'
 import Instructions from '../molecules/Instructions.jsx'
+import styles from './TicTacToeGame.module.css'
+import { cx } from '../utils/cssModules.js'
 
 /**
  * TicTacToeGame — Organism
@@ -115,14 +117,13 @@ const TicTacToeGame = () => {
   }, [secondsLeft, notification?.variant, updateCurrent])
 
   const containerClass = useMemo(() => {
-    const classes = ['game-container']
-    if (outcome) classes.push(`outcome-${outcome}`)
-    return classes.join(' ')
+    const outcomeClass = outcome ? styles[`outcome${outcome.charAt(0).toUpperCase() + outcome.slice(1)}`] : null
+    return cx(styles.root, outcomeClass)
   }, [outcome])
 
   return (
     <div className={containerClass}>
-      <a href="#game-board" className="skip-to-content">Skip to game board</a>
+      <a href="#game-board" className={styles.skipToContent}>Skip to game board</a>
       {showConfetti && (
         <ConfettiOverlay onDone={() => setShowConfetti(false)} />
       )}
@@ -152,7 +153,7 @@ const TicTacToeGame = () => {
 
       <ScoreBoard score={score} />
 
-      <div className="board-area" id="game-board">
+      <div className={styles.boardArea} id="game-board">
         <BoardGrid
           board={board}
           focusedIndex={focusedIndex}

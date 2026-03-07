@@ -4,6 +4,8 @@ import { BOARD_SIZE } from '../../domain/constants.js'
 import CellButton from '../atoms/CellButton.jsx'
 import useGridKeyboard from '../../app/useGridKeyboard.js'
 import useSwipeGesture from '../../app/useSwipeGesture.js'
+import styles from './BoardGrid.module.css'
+import { cx } from '../utils/cssModules.js'
 
 /**
  * BoardGrid — Molecule
@@ -112,7 +114,7 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
   return (
     <div
       ref={gridRef}
-      className={`board-grid${isResetting ? ' board-resetting' : ''}`}
+      className={cx(styles.root, isResetting && styles.resetting)}
       role="grid"
       aria-label="Tic-Tac-Toe board"
     >

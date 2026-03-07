@@ -4,6 +4,8 @@ import { COLOR_THEMES, MODES, COLORBLIND_MODES } from '../../domain/themes.js'
 import useSmartPosition from '../../app/useSmartPosition.js'
 import useDropdownBehavior from '../../app/useDropdownBehavior.js'
 import { THEME_PANEL_LABEL } from '../../domain/ui-constants.js'
+import styles from './ThemeSelector.module.css'
+import { cx } from '../utils/cssModules.js'
 
 /**
  * ThemeSelector — Atom (pure presentational)
@@ -50,11 +52,11 @@ const ThemeSelector = React.memo(({ settings, onColorTheme, onMode, onColorblind
   })
 
   return (
-    <div className="theme-selector">
+    <div className={styles.root}>
       <button
         ref={btnRef}
         type="button"
-        className="theme-selector-toggle"
+        className={styles.toggle}
         onClick={toggle}
         aria-expanded={open}
         aria-label="Theme settings"
@@ -66,20 +68,19 @@ const ThemeSelector = React.memo(({ settings, onColorTheme, onMode, onColorblind
       {open && (
         <div
           ref={panelRef}
-          className="theme-panel"
-          data-alignment={alignment}
+          className={alignment === 'left' ? styles.panelLeft : styles.panel}
           role="dialog"
           aria-label={THEME_PANEL_LABEL}
         >
           {/* ── Color Themes ── */}
-          <fieldset className="theme-section">
-            <legend>Theme</legend>
-            <div className="theme-swatches">
+          <fieldset className={styles.section}>
+            <legend className={styles.sectionLegend}>Theme</legend>
+            <div className={styles.swatches}>
               {COLOR_THEMES.map((t) => (
                 <button
                   key={t.id}
                   type="button"
-                  className={`theme-swatch${settings.colorTheme === t.id ? ' swatch-active' : ''}`}
+                  className={cx(styles.swatch, settings.colorTheme === t.id && styles.swatchActive)}
                   style={{ background: `linear-gradient(135deg, ${t.gradient[0]}, ${t.gradient[1]})` }}
                   onClick={() => onColorTheme(t.id)}
                   aria-label={t.label}
@@ -91,14 +92,14 @@ const ThemeSelector = React.memo(({ settings, onColorTheme, onMode, onColorblind
           </fieldset>
 
           {/* ── Light / Dark Mode ── */}
-          <fieldset className="theme-section">
-            <legend>Mode</legend>
-            <div className="theme-mode-group">
+          <fieldset className={styles.section}>
+            <legend className={styles.sectionLegend}>Mode</legend>
+            <div className={styles.modeGroup}>
               {MODES.map((m) => (
                 <button
                   key={m}
                   type="button"
-                  className={`theme-mode-btn${settings.mode === m ? ' mode-active' : ''}`}
+                  className={cx(styles.modeBtn, settings.mode === m && styles.modeActive)}
                   onClick={() => onMode(m)}
                   aria-pressed={settings.mode === m}
                 >
@@ -110,14 +111,14 @@ const ThemeSelector = React.memo(({ settings, onColorTheme, onMode, onColorblind
           </fieldset>
 
           {/* ── Colorblind ── */}
-          <fieldset className="theme-section">
-            <legend>Colorblind</legend>
-            <div className="theme-colorblind-group">
+          <fieldset className={styles.section}>
+            <legend className={styles.sectionLegend}>Colorblind</legend>
+            <div className={styles.colorblindGroup}>
               {COLORBLIND_MODES.map((cb) => (
                 <button
                   key={cb.id}
                   type="button"
-                  className={`theme-cb-btn${settings.colorblind === cb.id ? ' cb-active' : ''}`}
+                  className={cx(styles.colorblindBtn, settings.colorblind === cb.id && styles.colorblindActive)}
                   onClick={() => onColorblind(cb.id)}
                   aria-pressed={settings.colorblind === cb.id}
                   title={cb.description || cb.label}

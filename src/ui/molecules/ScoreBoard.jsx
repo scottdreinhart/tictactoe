@@ -1,5 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import styles from './ScoreBoard.module.css'
+import { cx } from '../utils/cssModules.js'
 
 /**
  * ScoreBoard — Molecule
@@ -9,18 +11,18 @@ import PropTypes from 'prop-types'
  * @param {{ score: { X: number, O: number, draws: number } }} props
  */
 const ScoreBoard = React.memo(({ score }) => (
-  <div className="score-board" aria-label="Score">
-    <div className="score-item score-human">
-      <span className="score-label">You (X)</span>
-      <span className="score-value">{score.X}</span>
+  <div className={styles.root} aria-label="Score">
+    <div className={cx(styles.item, styles.humanScore)}>
+      <span className={styles.label}>You (X)</span>
+      <span className={styles.value}>{score.X}</span>
     </div>
-    <div className="score-item score-draws">
-      <span className="score-label">Draws</span>
-      <span className="score-value">{score.draws}</span>
+    <div className={cx(styles.item, styles.drawScore)}>
+      <span className={styles.label}>Draws</span>
+      <span className={styles.value}>{score.draws}</span>
     </div>
-    <div className="score-item score-cpu">
-      <span className="score-label">CPU (O)</span>
-      <span className="score-value">{score.O}</span>
+    <div className={cx(styles.item, styles.cpuScore)}>
+      <span className={styles.label}>CPU (O)</span>
+      <span className={styles.value}>{score.O}</span>
     </div>
   </div>
 ))

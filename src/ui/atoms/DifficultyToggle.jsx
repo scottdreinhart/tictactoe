@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import styles from './DifficultyToggle.module.css'
 
 const LEVELS = ['easy', 'medium', 'hard', 'unbeatable']
 
@@ -11,12 +12,12 @@ const LEVELS = ['easy', 'medium', 'hard', 'unbeatable']
  * @param {{ difficulty: string, onSelect: (level: string) => void }} props
  */
 const DifficultyToggle = React.memo(({ difficulty, onSelect }) => (
-  <div className="difficulty-toggle" role="group" aria-label="CPU difficulty">
+  <div className={styles.root} role="group" aria-label="CPU difficulty">
     {LEVELS.map((level) => (
       <button
         key={level}
         type="button"
-        className={`difficulty-option${difficulty === level ? ' difficulty-active' : ''}`}
+        className={`${styles.option}${difficulty === level ? ` ${styles.active}` : ''}`}
         onClick={difficulty !== level ? () => onSelect(level) : undefined}
         aria-pressed={difficulty === level}
       >

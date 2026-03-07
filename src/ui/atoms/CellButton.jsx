@@ -1,5 +1,7 @@
 import React, { Suspense } from 'react'
 import PropTypes from 'prop-types'
+import styles from './CellButton.module.css'
+import { cx } from '../utils/cssModules.js'
 
 const XMark = React.lazy(() => import('./XMark.jsx'))
 const OMark = React.lazy(() => import('./OMark.jsx'))
@@ -24,22 +26,21 @@ const OMark = React.lazy(() => import('./OMark.jsx'))
  */
 const CellButton = React.forwardRef(
   ({ value, disabled, isFocused, isWinning, focusDirection, onClick, ariaLabel, tabIndex }, ref) => {
-    const classes = [
-      'cell-button',
-      value ? `cell-${value}` : '',
-      isFocused ? 'cell-focused' : '',
-      disabled ? 'cell-disabled' : '',
-      isWinning ? 'cell-winning' : '',
-    ]
-      .filter(Boolean)
-      .join(' ')
-
+    const focusClassName = isFocused && focusDirection ? styles[`focus${focusDirection.charAt(0).toUpperCase() + focusDirection.slice(1)}`] : ''
+    
     return (
       <button
         ref={ref}
         type="button"
-        className={classes}
-        data-focus-direction={isFocused && focusDirection ? focusDirection : undefined}
+        className={cx(
+          styles.root,
+          value === 'X' && styles.tokenX,
+          value === 'O' && styles.tokenO,
+          isFocused && styles.focused,
+          focusClassName,
+          disabled && styles.disabled,
+          isWinning && styles.winning
+        )}
         onClick={disabled ? undefined : onClick}
         aria-label={ariaLabel}
         aria-disabled={disabled}

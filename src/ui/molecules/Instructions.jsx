@@ -1,5 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react'
 import useDropdownBehavior from '../../app/useDropdownBehavior.js'
+import styles from './Instructions.module.css'
+import { cx } from '../utils/cssModules.js'
 
 /**
  * Instructions — Molecule
@@ -54,10 +56,10 @@ const Instructions = () => {
   })
 
   return (
-    <div className="info-icon-wrapper">
+    <div className={styles.wrapper}>
       <button
         ref={btnRef}
-        className="info-icon-btn"
+        className={styles.btn}
         onClick={toggle}
         aria-label="How to play"
         aria-expanded={open}
@@ -69,19 +71,19 @@ const Instructions = () => {
       {open && (
         <div
           ref={tooltipRef}
-          className={`info-tooltip info-tooltip--${placement}`}
+          className={cx(styles.tooltip, styles[placement])}
           role="tooltip"
         >
-          <h3 className="info-tooltip__title">How to Play</h3>
-          <ul className="info-tooltip__list">
-            <li>You are <strong>X</strong>, the CPU is <strong>O</strong></li>
-            <li>You move first</li>
-            <li>
+          <h3 className={styles.title}>How to Play</h3>
+          <ul className={styles.list}>
+            <li className={styles.listItem}>You are <strong>X</strong>, the CPU is <strong>O</strong></li>
+            <li className={styles.listItem}>You move first</li>
+            <li className={styles.listItem}>
               <strong>Click</strong> a cell, or use{' '}
               <strong>Arrow Keys / WASD</strong> to navigate and{' '}
               <strong>Space/Enter</strong> to select
             </li>
-            <li>First to get 3 in a row wins!</li>
+            <li className={styles.listItem}>First to get 3 in a row wins!</li>
           </ul>
         </div>
       )}
