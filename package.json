@@ -1,7 +1,7 @@
 {
   "name": "tictactoe-game",
   "version": "1.0.0",
-  "description": "Tic-Tac-Toe game with animated marks, themes, sound effects, and accessible controls",
+  "description": "Tic-Tac-Toe",
   "type": "module",
   "scripts": {
     "dev": "fuser -k 5173/tcp 2>/dev/null; vite --host",
