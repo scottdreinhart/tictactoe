@@ -1,4 +1,4 @@
-# Tic-Tac-Toe: Human vs CPU
+# Tic-Tac-Toe
 
 A clean, modular React Tic-Tac-Toe game with animated SVG marks, 6 color themes (light/dark + colorblind modes), keyboard/mouse/touch controls, synthesized sound effects, and a unified notification queue — built with **CLEAN Architecture** and **Atomic Design**.
 
@@ -26,8 +26,7 @@ src/
 │   │   ├── CellButton.jsx            # Single cell with SVG mark rendering + winning highlight
 │   │   ├── XMark.jsx                 # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx                 # Animated SVG "O" (React.memo, draw-on effect)
-│   │   ├── GameTitle.jsx             # Game heading (React.memo)
-│   │   ├── ResetButton.jsx           # Reset/new-game button (React.memo)
+│   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + animated panel
 │   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard AI toggle (React.memo)
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
 │   │   ├── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
@@ -78,6 +77,12 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 
 ### Controls
 - **Mouse**: Click any empty cell to move
+- **Hamburger Menu** (☰): Sound, Theme, and Help settings organized in a dropdown panel with:
+  - `aria-haspopup` + `aria-expanded` on trigger button
+  - `role="menu"` on panel with labeled sections
+  - Focus trap (Tab/Shift+Tab cycle within panel)
+  - Close on Escape, outside click, or outside touch
+  - Animated ☰ → ✕ transition on open/close
 - **Keyboard**: 
   - **Arrow Keys** or **WASD**: Navigate (↑/W up, ↓/S down, ←/A left, →/D right)
   - **Space** or **Enter**: Select focused cell
@@ -182,7 +187,6 @@ chooseCpuMoveSmart(board, cpuToken, humanToken)   // Hard — priority-based
 
 // Sound effects (Web Audio API)
 playMoveSound()   // short 600Hz pop on move placement
-playWinSound()    // legacy ascending C-E-G arpeggio
 playWinMusic()    // C-major arpeggio + sustained chord (~2s fanfare)
 playLossMusic()   // descending E-minor phrase + Bb3 drone (~2s)
 playDrawSound()   // descending A4→F4 two-note tone
@@ -212,7 +216,7 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 ## Technical Highlights
 
 - **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
-- **React.memo** on pure atoms (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
+- **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
 - **PropTypes** runtime validation on all components that accept props (stripped from production builds)
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
 - **Production build optimizations**:
@@ -274,7 +278,7 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 ### Code Quality & Testing
 - [x] ~~**ESLint + Prettier**~~ — done (flat config, React + hooks plugins, `lint`/`format` scripts)
 - [x] ~~**`getWinner` returns winning line**~~ — done (returns `{ token, line }`, `getWinnerToken` convenience)
-- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle, ScoreBoard)
+- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard)
 - [ ] **Unit tests** — domain functions (`board.js`, `rules.js`, `ai.js`) are pure and test-ready; add Vitest or Jest suite
 - [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, NotificationBanner
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification

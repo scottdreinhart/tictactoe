@@ -30,7 +30,6 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
   useGridKeyboard(focusedIndex, onFocusChange, onSelect)
 
   // Swipe gestures — map swipe direction to focus movement
-  const SWIPE_TO_KEY = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' }
   const handleSwipe = useCallback(
     (direction) => {
       const row = Math.floor(focusedIndex / BOARD_SIZE)
