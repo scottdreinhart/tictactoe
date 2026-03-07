@@ -394,10 +394,13 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
     - SoundToggle, DifficultyToggle, HamburgerMenu, CellButton, ThemeSelector, NotificationBanner
     - Each component has `.module.css` file with scoped styles
     - Uses `cx()` utility for conditional classes
-  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for migration guide and `src/ui/utils/cssModules.js` utility
-  - **Phase 2 (Molecules)**: Convert BoardGrid, ScoreBoard, Instructions
+  - ✅ **Phase 2 (Molecules)**: 3 molecules converted to CSS Modules:
+    - BoardGrid (grid layout + reset animation), ScoreBoard (score display), Instructions (info icon + tooltip)
+    - BoardGrid.module.css, ScoreBoard.module.css, Instructions.module.css created
+    - Build verified: 32.76 KB (5.97 KB gzip) with 83 modules
   - **Phase 3 (Organisms)**: Convert TicTacToeGame
   - **Phase 4**: Deprecate global BEM classes, keep shared globals (layout, animations, base styles)
+  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for migration guide and `src/ui/utils/cssModules.js` utility
 
 ### DevOps & Deployment
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
