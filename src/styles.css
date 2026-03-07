@@ -436,12 +436,7 @@ body {
   letter-spacing: -0.02em;
 }
 
-.instructions h2 {
-  color: var(--text-secondary);
-  font-size: clamp(0.85rem, 3vw, 1.05rem);
-  font-weight: 700;
-  margin-bottom: clamp(4px, 1vh, 8px);
-}
+/* (Instructions h2 removed — now inside tooltip) */
 
 /* ─── Status Bar ─── */
 .status-bar {
@@ -461,6 +456,60 @@ body {
 
 .status-bar p {
   margin: 0;
+}
+
+/* ─── Status Bar — Floating Overlay (win / loss / draw) ─── */
+.status-bar--overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 9;
+  width: auto;
+  min-width: 60%;
+  max-width: 90%;
+  border-left: none;
+  border-radius: 14px;
+  padding: clamp(14px, 2.5vh, 24px) clamp(20px, 4vw, 36px);
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  animation: status-slide-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes status-slide-in {
+  0% {
+    opacity: 0;
+    translate: -50% -30%;
+    scale: 0.8;
+  }
+  100% {
+    opacity: 1;
+    translate: -50% -50%;
+    scale: 1;
+  }
+}
+
+/* Win: golden glow */
+.status-bar--win {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #1a1a2e;
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.5), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Loss: muted red */
+.status-bar--loss {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Draw: neutral blue-grey */
+.status-bar--draw {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(100, 116, 139, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 /* ─── Score Board ─── */
@@ -668,7 +717,197 @@ body {
   }
 }
 
-/* ─── Controls ─── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAME OUTCOME EFFECTS — Win / Loss / Draw animations on .game-container
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Confetti canvas overlay */
+.confetti-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Win — golden glow border pulse */
+.game-container.outcome-win {
+  animation: win-glow 1.2s ease-in-out 2;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes win-glow {
+  0%, 100% {
+    box-shadow: 0 12px 48px var(--card-shadow);
+  }
+  50% {
+    box-shadow: 0 0 40px 8px rgba(250, 204, 21, 0.5), 0 12px 48px var(--card-shadow);
+  }
+}
+
+/* Loss — shake + red flash */
+.game-container.outcome-loss {
+  animation: loss-shake 500ms ease-in-out;
+}
+
+@keyframes loss-shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-6px); }
+  20% { transform: translateX(6px); }
+  30% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  50% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+.game-container.outcome-loss .board-grid {
+  animation: loss-flash 600ms ease-out;
+}
+
+@keyframes loss-flash {
+  0% {
+    box-shadow: inset 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+  30% {
+    box-shadow: inset 0 0 30px 5px rgba(220, 38, 38, 0.3);
+  }
+  100% {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Draw — brief desaturation pulse */
+.game-container.outcome-draw {
+  animation: draw-fade 1s ease-in-out;
+}
+
+@keyframes draw-fade {
+  0%, 100% {
+    filter: none;
+  }
+  40% {
+    filter: grayscale(0.6) brightness(0.9);
+  }
+}
+
+.game-container.outcome-draw .board-grid {
+  animation: draw-board-pulse 800ms ease-in-out;
+}
+
+@keyframes draw-board-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ─── Board Area (positions countdown overlay over the grid) ─── */
+.board-area {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* ─── Countdown Overlay (on top of the board) ─── */
+.countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 12px;
+  z-index: 8;
+  pointer-events: none;
+  animation: overlay-fade-in 400ms ease;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.countdown-overlay__number {
+  font-size: clamp(2.5rem, 10vw, 4.5rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+@keyframes countdown-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.08); opacity: 0.85; }
+}
+
+.countdown-overlay__label {
+  font-size: clamp(0.7rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ─── Reset Dialog ─── */
+.reset-dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  background: var(--card-bg, #fff);
+  color: var(--text-primary);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+  max-width: 340px;
+  width: calc(100% - 32px);
+  animation: dialog-pop 250ms ease;
+}
+
+.reset-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  animation: overlay-fade-in 300ms ease;
+}
+
+@keyframes dialog-pop {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.reset-dialog__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 24px;
+}
+
+.reset-dialog__text {
+  font-size: clamp(0.95rem, 3vw, 1.15rem);
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.reset-dialog__countdown {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.reset-dialog__btn {
+  min-width: 160px;
+}
+
+/* ─── Controls (kept for potential future use) ─── */
 .game-controls {
   width: 100%;
   text-align: center;
@@ -903,26 +1142,104 @@ body {
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
-/* ─── Instructions ─── */
-.instructions {
-  background: var(--instructions-bg);
-  border-radius: 8px;
-  padding: clamp(10px, 2vw, 16px);
-  text-align: left;
-  font-size: clamp(0.75rem, 2vw, 0.9rem);
+/* ─── Info Icon + Tooltip (replaces old Instructions block) ─── */
+.info-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-self: center;
+}
+
+.info-icon-btn {
+  background: none;
+  border: 2px solid var(--text-secondary);
   color: var(--text-secondary);
-  line-height: 1.5;
-  width: 100%;
-  transition: background-color 300ms ease;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 200ms, border-color 200ms, background-color 200ms;
+  padding: 0;
 }
 
-.instructions ul {
-  margin-left: clamp(16px, 3vw, 22px);
-  margin-top: 6px;
+.info-icon-btn:hover,
+.info-icon-btn:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--instructions-bg);
+  outline: none;
 }
 
-.instructions li {
-  margin-bottom: clamp(3px, 0.5vh, 6px);
+/* ─── Tooltip panel ─── */
+.info-tooltip {
+  position: absolute;
+  z-index: 20;
+  width: max(220px, 60vw);
+  max-width: 340px;
+  background: var(--instructions-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--board-bg);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
+  line-height: 1.55;
+  text-align: left;
+  animation: tooltip-pop 200ms ease;
+}
+
+@keyframes tooltip-pop {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Placement modifiers */
+.info-tooltip--below {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform-origin: top center;
+  translate: -50% 0;
+}
+
+.info-tooltip--above {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform-origin: bottom center;
+  translate: -50% 0;
+}
+
+.info-tooltip--right {
+  left: calc(100% + 8px);
+  top: 50%;
+  transform-origin: center left;
+  translate: 0 -50%;
+}
+
+.info-tooltip--left {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform-origin: center right;
+  translate: 0 -50%;
+}
+
+.info-tooltip__title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 6px;
+  color: var(--text-primary);
+}
+
+.info-tooltip__list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.info-tooltip__list li {
+  margin-bottom: 4px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -952,7 +1269,7 @@ body {
     padding: 8%;
   }
 
-  .instructions {
+  .info-tooltip {
     font-size: 0.7rem;
   }
 }
@@ -1066,7 +1383,8 @@ body {
     width: clamp(200px, 40vh, 300px);
   }
 
-  .instructions {
+  .info-icon-wrapper,
+  .reset-dialog {
     display: none;
   }
 }
@@ -1092,7 +1410,9 @@ body {
   }
 
   .reset-button,
-  .instructions {
+  .info-icon-wrapper,
+  .reset-dialog,
+  .countdown-overlay {
     display: none;
   }
 
