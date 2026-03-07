@@ -402,7 +402,9 @@ getGameState(board)          // → { winner, winLine, isDraw, isOver }
 
 // AI
 chooseCpuMoveRandom(board)                       // Easy — random
+chooseCpuMoveMedium(board, cpuToken, humanToken)  // Medium — win/block + random
 chooseCpuMoveSmart(board, cpuToken, humanToken)   // Hard — priority-based
+chooseCpuMoveUnbeatable(board, cpuToken, humanToken) // Unbeatable — minimax (Web Worker)
 
 // Sound effects (Web Audio API)
 playMoveSound()   // short 600Hz pop on move placement
@@ -543,7 +545,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 - **Streak tracking** — `useReducer`-managed streak counter
   - Increments on human win (only if not undoing)
   - Resets to 0 on: undo a win move, CPU win, or draw
-  - Displayed on ScoreBoard with 🔥 emoji
+  - Displayed in MoveTimeline drawer with 🔥 emoji
 - **Best-time tracking** — timestamp-based fastest win calculation
   - `gameStartTime` set on first move
   - Calculated as elapsed time from first move to winning move
