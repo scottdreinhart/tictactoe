@@ -15,9 +15,9 @@ src/
 │   ├── board.js                      # Board operations (create, apply move, get empty cells)
 │   ├── rules.js                      # Win/draw detection (returns winning line)
 │   ├── ai.js                         # CPU move selection (random / medium / smart / minimax unbeatable)
-│   ├── sounds.js                     # Web Audio API synthesized SFX + jingles
-│   └── themes.js                     # Color theme, mode & colorblind definitions
+│   └── themes.js                     # Color theme, mode & colorblind definitions + DEFAULT_SETTINGS
 ├── app/
+│   ├── sounds.js                     # Web Audio API synthesized SFX + jingles
 │   ├── useTicTacToe.js               # Game state + score + difficulty management hook
 │   ├── useGridKeyboard.js            # Reusable document-level keyboard navigation hook
 │   ├── useSoundEffects.js            # Sound toggle + play functions (respects reduced-motion)
@@ -32,21 +32,43 @@ src/
 │   │   ├── CellButton.jsx            # Single cell with SVG mark rendering + winning highlight
 │   │   ├── XMark.jsx                 # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx                 # Animated SVG "O" (React.memo, draw-on effect)
-│   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + animated panel
 │   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard/Unbeatable AI toggle (React.memo)
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
-│   │   ├── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
 │   │   ├── ConfettiOverlay.jsx       # Canvas-based confetti particle animation on win
-│   │   ├── CoinFlip.jsx              # Animated virtual coin flip (X/O sides) at app start
 │   │   └── NotificationBanner.jsx    # Floating queued notification overlay on board center
 │   ├── molecules/
-│   │   ├── BoardGrid.jsx             # 3×3 grid with reset animation (uses useGridKeyboard)
+│   │   ├── BoardGrid.jsx             # 3×3 grid with background image overlay + reset animation
+│   │   ├── CoinFlip.jsx              # Animated virtual coin flip (X/O sides) at app start
+│   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + portal-based panel
 │   │   ├── Instructions.jsx          # ⓘ info icon with auto-positioned tooltip
-│   │   └── MoveTimeline.jsx          # Sliding drawer with score, streak, best-time, move history & undo/redo
-│   └── organisms/
-│       └── TicTacToeGame.jsx         # Top-level game component (pure composition)
+│   │   ├── MoveTimeline.jsx          # Sliding drawer with score, streak, best-time, move history & undo/redo
+│   │   └── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
+│   ├── organisms/
+│   │   └── TicTacToeGame.jsx         # Top-level game component (pure composition)
+│   ├── ui-constants.js               # UI layout constants (sizes, breakpoints)
+│   └── utils/
+│       └── cssModules.js             # cx() conditional class binding utility
+├── themes/                           # Lazy-loaded theme CSS chunks
+│   ├── forest.css
+│   ├── highcontrast.css              # High-contrast theme (default)
+│   ├── midnight.css
+│   ├── ocean.css
+│   ├── rose.css
+│   └── sunset.css
+├── workers/
+│   └── ai.worker.js                  # Off-main-thread minimax AI computation
 ├── index.jsx                         # React entry point
 └── styles.css                        # CSS with themes, animations, media queries
+
+public/
+├── backgrounds/                      # Theme background images
+│   ├── circuit.png                   # Classic theme background
+│   ├── cityscape.png                 # Midnight theme background
+│   ├── laser.png                     # Ocean theme background
+│   └── matrix.png                    # High contrast theme background
+├── manifest.json                     # PWA manifest
+├── sw.js                             # Service worker for offline play
+└── offline.html                      # Offline fallback page
 
 index.html                            # HTML entry point
 package.json                          # Dependencies & scripts
@@ -71,7 +93,8 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 
 ### Visual Design
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect
-- **6 Color Themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — each with unique accent gradient
+- **7 Color Themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight, High Contrast (default) — each with unique accent gradient
+- **Theme Background Images**: Per-theme background images (matrix, circuit, cityscape, laser) rendered as board overlays via `::before` pseudo-element
 - **Light / Dark Mode**: System (auto), Light (forced), or Dark (forced) — persisted to localStorage
 - **4 Colorblind Modes**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — overrides X/O colors for visibility
 - **CSS Custom Properties**: All colors/sizes driven by CSS variables for easy theming
@@ -81,6 +104,10 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - **Board Reset Animation**: Fade/scale transition when board is cleared
 - **Responsive Layout**: `clamp()` sizing adapts from small phones to large desktops
 - **Score & Stats**: Color-coded X/O/Draw tallies, win streak, and best time displayed in the sliding drawer
+- **Transparent Cell Backgrounds**: `color-mix()` CSS function for semi-transparent cell fills (8% opacity) allowing background images to show through
+- **Lightened Mark Strokes**: X and O SVG strokes mixed 50% with white via `color-mix()` for softer appearance
+- **Notification Banner**: Fixed-size (504×130px) floating overlay centered on board's middle row; variant-colored (gold/red/grey/accent) with no shadow for clean look
+- **Accent-Colored Drawer Borders**: Sliding drawer edges and handle use `var(--accent)` for theme-consistent yellow/accent border styling
 
 ### Controls
 - **Mouse**: Click any empty cell to move
@@ -142,8 +169,8 @@ The project enforces four complementary design patterns:
    - **Benefit**: Domain logic is testable, reusable, and framework-independent
 
 2. **Atomic Design** (Component Hierarchy)
-   - **Atoms** (9): Basic UI elements (`CellButton`, `XMark`, `OMark`, reusable toggles, etc.)
-   - **Molecules** (3): Composed atoms (`BoardGrid`, `Instructions`, `MoveTimeline`)
+   - **Atoms** (7): Basic UI elements (`CellButton`, `XMark`, `OMark`, `DifficultyToggle`, `SoundToggle`, `ConfettiOverlay`, `NotificationBanner`)
+   - **Molecules** (6): Composed atoms (`BoardGrid`, `CoinFlip`, `HamburgerMenu`, `Instructions`, `MoveTimeline`, `ThemeSelector`)
    - **Organisms** (1): Full-page composition (`TicTacToeGame`)
    - **Rule**: Organisms contain zero inline markup; all composition happens in JSX
    - **Benefit**: Components are predictable, composable, and reusable across contexts
@@ -231,10 +258,10 @@ playLossMusic()   // descending E-minor phrase + Bb3 drone (~2s)
 playDrawSound()   // descending A4→F4 two-note tone
 
 // Themes
-COLOR_THEMES      // 6 themes: classic, ocean, sunset, forest, rose, midnight
+COLOR_THEMES      // 7 themes: classic, ocean, sunset, forest, rose, midnight, highcontrast
 MODES             // ['system', 'light', 'dark']
 COLORBLIND_MODES  // none, protanopia (red weakness), deuteranopia (green weakness), tritanopia (blue weakness), achromatopsia (monochrome)
-DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none' }
+DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: 'none' }
 ```
 
 ## AI Difficulty Levels
@@ -316,7 +343,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **Coin flip animation** — 3D perspective coin flip with X and O on opposite sides, auto-flips at app start
 
 ### Theming & Customization
-- **6 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — light/dark variants + High Contrast mode
+- **7 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight, High Contrast (default) — light/dark variants
 - **Light / Dark / System modes** — auto-detect via `prefers-color-scheme`, manual override via selector, persisted to localStorage
 - **4 colorblind-safe presets**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — all with distinct X/O mark colors
 - **CSS Custom Properties** with theme-driven color sets via `data-theme` / `data-mode` / `data-colorblind` attributes
@@ -373,7 +400,8 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **Smooth board reset transition** — fade + scale `board-reset` animation
 - **Sound effects** — Web Audio API: move pop, win arpeggio, draw tone; toggleable + reduced-motion aware
 - **Confetti / particle effect** — canvas-based 80-particle burst with gravity + fade on human win
-- **Theme picker** — 6 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage
+- **Theme picker** — 7 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage; High Contrast is the default theme
+- **Theme background images** — per-theme background images (matrix.png, circuit.png, cityscape.png, laser.png) displayed as board overlays
 - **Touch gesture support** — swipe navigation via `useSwipeGesture`, haptic feedback, `touch-action` CSS
 - **Virtual coin flip** — animated X/O coin, auto-flips at app start to determine who goes first
 - **Move history timeline** — sliding drawer with all moves, undo/redo buttons, click to jump to move
@@ -385,6 +413,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - **`React.memo` on atoms** — XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector
 - **PropTypes on all components** — runtime prop validation on all components that accept props
 - **Dead code cleanup** — removed 7 orphaned files (CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls, ScoreBoard.jsx, ScoreBoard.module.css); removed ~580 lines of unused global CSS; fixed 19 ghost CSS variable references
+- **Architecture audit** — moved `sounds.js` from `domain/` to `app/` (framework-adjacent); moved `CoinFlip`, `HamburgerMenu`, `ThemeSelector` from `atoms/` to `molecules/` (composed components); moved `ui-constants.js` from `domain/` to `ui/`
 
 ### Performance ✅
 - **Lazy SVG mount** — `React.lazy` + `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5)
@@ -440,7 +469,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 
 ### Architecture
 - [x] **CSS Modules** — all 10 UI components (atoms, molecules, organisms) use scoped CSS Modules to eliminate global class name collisions
-  - **Theme CSS code-splitting**: 6 color themes (Ocean, Sunset, Forest, Rose, Midnight, High Contrast) are lazy-loaded into separate chunks (~0.5 KB each gzipped)
+  - **Theme CSS code-splitting**: 7 color themes (Ocean, Sunset, Forest, Rose, Midnight, High Contrast, Classic as default bundle) are lazy-loaded into separate chunks (~0.5 KB each gzipped)
   - **Theme preloading**: `useTheme.js` preloads all theme CSS on app startup asynchronously, enabling instant theme switching (<1 ms) with zero UI blocking
   - **Global stylesheet** (`src/styles.css`): Contains shared base styles, typography, animations, and CSS custom properties. Reduced to ~284 lines after dead-code cleanup (removed ~580 lines of orphaned component styles)
   - **Utility function** (`src/ui/utils/cssModules.js`): Exports `cx()` for conditional class binding in components (e.g., `cx(styles.root, isActive && styles.active)`)
