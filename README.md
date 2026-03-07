@@ -404,43 +404,42 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 
 ## Device Compatibility
 
-The app is built with React + Vite and targets packaging via **Electron** for native desktop, mobile, and smart TV distribution — not just browser-based access.
+The app is built with React + Vite. Distribution uses **Electron** (desktop) and **Capacitor** (mobile + TV) to wrap the web build in native app shells. Each platform's packaging technology, distribution channel, and support status are listed below.
 
-### Web (Browser)
+| Platform | Technology | Distribution | Input Method | Status |
+|----------|-----------|-------------|-------------|--------|
+| **Desktop** | | | | |
+| Windows | Electron | `.exe` installer / Microsoft Store | Mouse, keyboard, trackpad | Planned |
+| macOS | Electron | `.dmg` / Mac App Store | Mouse, keyboard, trackpad | Planned |
+| Linux | Electron | `.AppImage` / `.deb` / `.snap` | Mouse, keyboard, trackpad | Planned |
+| **Mobile** | | | | |
+| Android | Capacitor | Google Play Store / `.apk` sideload | Touch, swipe gestures | Planned |
+| iOS | Capacitor | App Store | Touch, swipe gestures | Planned |
+| **Tablets** | | | | |
+| iPad | Capacitor (iOS) | App Store | Touch, swipe gestures | Planned |
+| Android tablets | Capacitor (Android) | Google Play Store | Touch, swipe gestures | Planned |
+| Amazon Fire tablets | Capacitor (Android) | Amazon Appstore | Touch, swipe gestures | Planned |
+| **Smart TV / Streaming** | | | | |
+| Amazon Fire TV Stick | Capacitor (Android) | Amazon Appstore | D-pad remote | Planned |
+| Amazon Fire TV | Capacitor (Android) | Amazon Appstore | D-pad remote | Planned |
+| Amazon Echo Show | Capacitor (Android) | Amazon Appstore | Touch screen | Planned |
+| Android TV / Google TV | Capacitor (Android) | Google Play Store | D-pad remote | Planned |
+| Samsung Smart TV (Tizen) | Tizen Web SDK | Samsung TV App Store | D-pad remote | Gap |
+| LG Smart TV (webOS) | webOS Web SDK | LG Content Store | D-pad remote, Magic Remote | Gap |
+| Apple TV (tvOS) | — | — | — | Gap |
+| Roku | — | — | — | Gap |
+| **Web (Browser)** | | | | |
+| Desktop browsers | None (direct) | URL / PWA install | Mouse, keyboard, trackpad | Current |
+| Mobile browsers | None (direct) | URL / PWA install | Touch, swipe gestures | Current |
 
-| Platform | Browser | Input Method |
-|----------|---------|-------------|
-| Desktop / Laptop | Chrome, Firefox, Safari, Edge | Mouse, keyboard, trackpad |
-| Mobile (iOS / Android) | Safari, Chrome, Samsung Internet | Touch, swipe gestures |
-| Tablets (iPad, Fire, Android) | Safari, Silk, Chrome | Touch, swipe gestures |
+### Support Gaps
 
-### Electron — Desktop Apps
-
-| Platform | Distribution | Input Method |
-|----------|-------------|-------------|
-| Windows | `.exe` installer / Microsoft Store | Mouse, keyboard, trackpad |
-| macOS | `.dmg` / Mac App Store | Mouse, keyboard, trackpad |
-| Linux | `.AppImage` / `.deb` / `.snap` / Snap Store | Mouse, keyboard, trackpad |
-
-### Electron — Smart TV Apps & Channels
-
-| Platform | Distribution | Input Method |
-|----------|-------------|-------------|
-| Amazon Fire TV Stick | Amazon Appstore (Fire TV app) | D-pad remote (keyboard navigation) |
-| Amazon Fire TV | Amazon Appstore (Fire TV app) | D-pad remote (keyboard navigation) |
-| Amazon Echo Show | Amazon Appstore | Touch screen |
-| Samsung Smart TV (Tizen) | Samsung TV App Store (Tizen app) | D-pad remote (keyboard navigation) |
-| LG Smart TV (webOS) | LG Content Store (webOS app) | D-pad remote, Magic Remote (pointer) |
-| Android TV / Google TV | Google Play Store (Android TV app) | D-pad remote (keyboard navigation) |
-| Apple TV (tvOS) | App Store (tvOS app via Electron/capacitor) | Siri Remote (swipe + click) |
-| Roku | Roku Channel Store (future consideration) | D-pad remote |
-
-### Electron — Mobile Apps
-
-| Platform | Distribution | Input Method |
-|----------|-------------|-------------|
-| Android | Google Play Store / `.apk` sideload | Touch, swipe gestures |
-| iOS | App Store (via Capacitor or similar bridge) | Touch, swipe gestures |
+| Platform | Issue | Workaround |
+|----------|-------|-----------|
+| **Samsung Tizen TV** | No Electron or Capacitor support. Requires Tizen Web SDK, which uses a proprietary webview. | App code runs as-is in Tizen's webview; needs Tizen Studio tooling for packaging and store submission. Moderate effort. |
+| **LG webOS TV** | No Electron or Capacitor support. Requires webOS Web SDK with LG's proprietary webview. | App code runs as-is in webOS's webview; needs webOS CLI tooling for packaging and store submission. Moderate effort. |
+| **Apple TV (tvOS)** | No web runtime. No Electron, no Capacitor, no webview. tvOS apps require native Swift/UIKit or TVML. | Would require a full native rewrite or TVML port. **Not feasible** with current web-based architecture. |
+| **Roku** | No web runtime. Roku apps require BrightScript/SceneGraph (proprietary language). | Would require a complete rewrite in BrightScript. **Not feasible** with current web-based architecture. |
 
 ### Input Support
 
