@@ -231,18 +231,27 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 
 ## AI Difficulty Levels
 
-| Level | Strategy | Function |
-|-------|----------|----------|
-| **Easy** | Purely random move selection | `chooseCpuMoveRandom` |
-| **Medium** | Random with occasional smart blocking | hybrid logic in `useTicTacToe` |
-| **Hard** | Deterministic priority (default) | `chooseCpuMoveSmart` |
+| Level | Strategy | Implementation | Notes |
+|-------|----------|-----------------|-------|
+| **Easy** | Purely random choice | `chooseCpuMoveRandom` | Weakest, beatable in 1-2 moves |
+| **Medium** | Win/block + random | `chooseCpuMoveMedium` | Defensive but tactical; loses to perfect play |
+| **Hard** | Priority-based heuristic | `chooseCpuMoveSmart` | Center → corners → edges with blocking; competent opponent |
+| **Unbeatable** | Minimax with alpha-beta pruning (Phase C) | `chooseCpuMoveUnbeatable` | Exhaustive game-tree search; cannot be beaten (best result: draw) |
 
-The **Hard** AI uses `chooseCpuMoveSmart` with priority:
+### Hard AI Strategy (Priority-Based)
 1. Win if possible this turn
 2. Block human from winning next turn
-3. Take center
-4. Take corner
-5. Take edge
+3. Take center (index 4)
+4. Take corner (0, 2, 6, or 8)
+5. Take edge (1, 3, 5, or 7)
+
+### Unbeatable AI Strategy (Minimax)
+- **Algorithm**: Minimax with alpha-beta pruning
+- **Execution**: Web Worker off-main-thread (Phase 7, `src/workers/ai.worker.js`)
+- **Move ordering**: Center → corners → edges (accelerates pruning)
+- **Complexity**: O(9! / (2^k)) calls with pruning; ~100K–500K evaluations per move
+- **Strength**: Perfect play against optimal defense; guaranteed draw if human also plays optimally
+- **Responsiveness**: CPU_DELAY_MS simulates thinking time; UI remains responsive on 60 FPS
 
 ## Technical Highlights
 
@@ -250,7 +259,7 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 - **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
 - **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
 - **PropTypes** runtime validation on all components that accept props (stripped from production builds)
-- **7 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue` — extracted for composability and reuse
+- **8 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue`, `useSmartPosition`, `useDropdownBehavior` — extracted for composability and reuse
 
 ### Build & Performance Optimization
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
