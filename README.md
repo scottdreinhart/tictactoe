@@ -1,4 +1,4 @@
-# Tic-Tac-Toe
+# 🎮 Tic-Tac-Toe
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://github.com/facebook/react)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://github.com/vitejs/vite)
@@ -14,6 +14,8 @@
 [![All Rights Reserved](https://img.shields.io/badge/License-All%20Rights%20Reserved-red.svg)](LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-scottdreinhart%2Ftictactoe-181717?logo=github&logoColor=white)](https://github.com/scottdreinhart/tictactoe)
 
+A cross-platform Tic-Tac-Toe game with 4 AI difficulty levels, 7 color themes, full accessibility support, and native desktop + mobile builds — powered by React, Vite, Electron, and Capacitor.
+
 > [!CAUTION]
 > CURRENTLY FOCUSED ON UI/UX AESTHETICS AND STANDARDIZING THEM ACROSS ALL SUPPORTED PLATFORMS BY WAY OF MEDIA TYPES
 
@@ -23,7 +25,7 @@
 Unauthorized reproduction, distribution, or use is strictly prohibited.
 See [LICENSE](LICENSE) file for complete terms and conditions.
 
-[Project Structure](#project-structure) · [Installation & Running](#installation--running) · [Game Flow](#game-flow) · [Remaining Work](#remaining-work)
+[Project Structure](#project-structure) · [Getting Started](#getting-started) · [Tech Stack](#tech-stack) · [Game Flow](#game-flow) · [Contributing](#contributing) · [Remaining Work](#remaining-work)
 
 ## Project Structure
 
@@ -214,9 +216,14 @@ The project enforces four complementary design patterns:
    - **Benefit**: Domain logic is testable, reusable, and framework-independent
 
 2. **Atomic Design** (Component Hierarchy)
-   - **Atoms** (7): Basic UI elements (`CellButton`, `XMark`, `OMark`, `DifficultyToggle`, `SoundToggle`, `ConfettiOverlay`, `NotificationBanner`)
-   - **Molecules** (6): Composed atoms (`BoardGrid`, `CoinFlip`, `HamburgerMenu`, `Instructions`, `MoveTimeline`, `ThemeSelector`)
-   - **Organisms** (1): Full-page composition (`TicTacToeGame`)
+
+   | Layer | Count | Components |
+   |-------|------:|------------|
+   | **Atoms** | 7 | `CellButton`, `XMark`, `OMark`, `DifficultyToggle`, `SoundToggle`, `ConfettiOverlay`, `NotificationBanner` |
+   | **Molecules** | 6 | `BoardGrid`, `CoinFlip`, `HamburgerMenu`, `Instructions`, `MoveTimeline`, `ThemeSelector` |
+   | **Organisms** | 1 | `TicTacToeGame` |
+
+   Data flows unidirectionally: **Hooks → Organism → Molecules → Atoms**
    - **Rule**: Organisms contain zero inline markup; all composition happens in JSX
    - **Benefit**: Components are predictable, composable, and reusable across contexts
 
@@ -241,7 +248,14 @@ The project enforces four complementary design patterns:
 - **Reusable Hooks**: `useGridKeyboard`, `useSwipeGesture`, `useNotificationQueue`, `useAutoReset`, `useSmartPosition`, `useDropdownBehavior` — all extracted as composable application hooks
 - **PropTypes**: Runtime prop validation on all components that accept props
 
-## Installation & Running
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v24+ (pin via [nvm](https://github.com/nvm-sh/nvm) — see `.nvmrc`)
+- [pnpm](https://pnpm.io/) v10+
+
+### Install & Run
 
 ```bash
 # Install dependencies
@@ -426,6 +440,32 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 - **Complexity**: O(9! / (2^k)) calls with pruning; ~100K–500K evaluations per move
 - **Strength**: Perfect play against optimal defense; guaranteed draw if human also plays optimally
 - **Responsiveness**: CPU_DELAY_MS simulates thinking time; UI remains responsive on 60 FPS
+
+## Tech Stack
+
+| Technology | Version | Purpose |
+|------------|---------|--------|
+| [React](https://github.com/facebook/react) | 19 | UI library (hooks, memo, lazy) |
+| [Vite](https://github.com/vitejs/vite) | 7 | Build tool & dev server |
+| [Electron](https://github.com/electron/electron) | 40 | Desktop app (Windows / Linux / macOS) |
+| [Capacitor](https://github.com/ionic-team/capacitor) | 8 | Native mobile / tablet apps (Android / iOS) |
+| [electron-builder](https://github.com/electron-userland/electron-builder) | 26 | Desktop packaging & installers |
+| [CSS Modules](https://github.com/css-modules/css-modules) | — | Scoped component styling |
+| [ESLint](https://github.com/eslint/eslint) | 10 | Linting (flat config, React + hooks plugins) |
+| [Prettier](https://github.com/prettier/prettier) | 3 | Code formatting |
+| [pnpm](https://github.com/pnpm/pnpm) | 10 | Fast, disk-efficient package manager |
+| [Node.js](https://github.com/nodejs/node) | 24 | Runtime (pinned via `.nvmrc`) |
+
+### Build Output
+
+| Chunk | Purpose | Notes |
+|-------|---------|-------|
+| `index` (app) | Game logic + UI components | 81 modules total |
+| `vendor-react` | React + ReactDOM | Cached independently from app code |
+| CSS | Styles + theme base | 27.70 kB raw (6.60 kB gzip) |
+| Theme chunks (×6) | Ocean, Sunset, Forest, Rose, Midnight, High Contrast | ~0.5–1 kB each (gzip), lazy-loaded |
+| `ai.worker` | Minimax AI (Web Worker) | ~1.2 kB gzip, loaded on demand |
+| Sounds | Web Audio API synthesis | ~3 kB lazy chunk |
 
 ## Technical Highlights
 
@@ -709,6 +749,25 @@ Simple browser games of similar scope and effort that could be built with the sa
 | **Monchola** | Traditional dice/board race game with capture mechanics | Similar — dice roll + board path + capture rules |
 | **Rock Paper Scissors** | Best-of-N rounds against the CPU with hand animations | Simpler — minimal state, animation-focused |
 
+## Contributing
+
+This is proprietary software. Contributions are accepted by invitation only.
+
+If you have been granted contributor access:
+
+1. Create a feature branch from `main`
+2. Make focused, single-purpose commits with clear messages
+3. Run `pnpm validate` before pushing (lint + format + build gate)
+4. Submit a pull request with a description of the change
+
+See the [LICENSE](LICENSE) file for usage restrictions.
+
+## License
+
+Copyright © 2026 Scott Reinhart. All Rights Reserved.
+
+This project is proprietary software. No permission is granted to use, copy, modify, or distribute this software without the prior written consent of the owner. See the [LICENSE](LICENSE) file for full terms.
+
 ---
 
-[⬆ Back to top](#tic-tac-toe)
+[⬆ Back to top](#-tic-tac-toe)
