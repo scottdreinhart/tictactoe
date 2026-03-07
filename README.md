@@ -436,8 +436,8 @@ The app is built with React + Vite. Distribution uses **Electron** (desktop) and
 
 | Platform | Issue | Workaround |
 |----------|-------|-----------|
-| **Samsung Tizen TV** | No Electron or Capacitor support. Requires Tizen Web SDK, which uses a proprietary webview. | App code runs as-is in Tizen's webview; needs Tizen Studio tooling for packaging and store submission. Moderate effort. |
-| **LG webOS TV** | No Electron or Capacitor support. Requires webOS Web SDK with LG's proprietary webview. | App code runs as-is in webOS's webview; needs webOS CLI tooling for packaging and store submission. Moderate effort. |
+| **Samsung Tizen TV** | No Electron or Capacitor support. Requires Tizen Web SDK, which uses a proprietary webview. | App code runs as-is in Tizen's webview; needs **Tizen Studio IDE** + **Tizen CLI** (`tizen` command) for packaging `.wgt` bundles and Samsung TV App Store submission. Moderate effort. |
+| **LG webOS TV** | No Electron or Capacitor support. Requires webOS Web SDK with LG's proprietary webview. | App code runs as-is in webOS's webview; needs **webOS SDK** + **ares CLI tools** (`ares-package`, `ares-install`, `ares-launch`) for packaging `.ipk` bundles and LG Content Store submission. Moderate effort. |
 | **Apple TV (tvOS)** | No web runtime. No Electron, no Capacitor, no webview. tvOS apps require native Swift/UIKit or TVML. | Would require a full native rewrite or TVML port. **Not feasible** with current web-based architecture. |
 | **Roku** | No web runtime. Roku apps require BrightScript/SceneGraph (proprietary language). | Would require a complete rewrite in BrightScript. **Not feasible** with current web-based architecture. |
 
