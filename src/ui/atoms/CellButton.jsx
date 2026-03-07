@@ -16,13 +16,14 @@ const OMark = React.lazy(() => import('./OMark.jsx'))
  *   disabled: boolean,
  *   isFocused: boolean,
  *   isWinning: boolean,
+ *   focusDirection: 'up'|'down'|'left'|'right'|null,
  *   onClick: () => void,
  *   ariaLabel: string,
  *   tabIndex: number,
  * }} props
  */
 const CellButton = React.forwardRef(
-  ({ value, disabled, isFocused, isWinning, onClick, ariaLabel, tabIndex }, ref) => {
+  ({ value, disabled, isFocused, isWinning, focusDirection, onClick, ariaLabel, tabIndex }, ref) => {
     const classes = [
       'cell-button',
       value ? `cell-${value}` : '',
@@ -38,6 +39,7 @@ const CellButton = React.forwardRef(
         ref={ref}
         type="button"
         className={classes}
+        data-focus-direction={isFocused && focusDirection ? focusDirection : undefined}
         onClick={disabled ? undefined : onClick}
         aria-label={ariaLabel}
         aria-disabled={disabled}
@@ -57,6 +59,7 @@ CellButton.propTypes = {
   disabled: PropTypes.bool.isRequired,
   isFocused: PropTypes.bool.isRequired,
   isWinning: PropTypes.bool.isRequired,
+  focusDirection: PropTypes.oneOf(['up', 'down', 'left', 'right', null]),
   onClick: PropTypes.func.isRequired,
   ariaLabel: PropTypes.string.isRequired,
   tabIndex: PropTypes.number.isRequired,

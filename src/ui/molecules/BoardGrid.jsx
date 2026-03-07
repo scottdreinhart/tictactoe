@@ -18,16 +18,41 @@ import useSwipeGesture from '../../app/useSwipeGesture.js'
  *   onSelect: (index: number) => void,
  *   isGameOver: boolean,
  *   winLine: number[]|null,
+ *   onNav: () => void,
+ *   onTap: () => void,
  * }} props
  */
-const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, winLine }) => {
+const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, winLine, onNav, onTap }) => {
   const cellRefs = useRef([])
   const gridRef = useRef(null)
   const [isResetting, setIsResetting] = useState(false)
+  const [focusDirection, setFocusDirection] = useState(null)
   const prevBoardRef = useRef(board)
+  const prevFocusedRef = useRef(focusedIndex)
 
   // Keyboard navigation via reusable hook
-  useGridKeyboard(focusedIndex, onFocusChange, onSelect)
+  useGridKeyboard(focusedIndex, onFocusChange, onSelect, onNav)
+
+  // Track focus direction for kinetic animation
+  useEffect(() => {
+    if (focusedIndex !== prevFocusedRef.current) {
+      const prev = prevFocusedRef.current
+      const curr = focusedIndex
+      const prevRow = Math.floor(prev / BOARD_SIZE)
+      const prevCol = prev % BOARD_SIZE
+      const currRow = Math.floor(curr / BOARD_SIZE)
+      const currCol = curr % BOARD_SIZE
+
+      let direction = null
+      if (currRow < prevRow) direction = 'up'
+      else if (currRow > prevRow) direction = 'down'
+      else if (currCol < prevCol) direction = 'left'
+      else if (currCol > prevCol) direction = 'right'
+
+      setFocusDirection(direction)
+      prevFocusedRef.current = focusedIndex
+    }
+  }, [focusedIndex])
 
   // Swipe gestures — map swipe direction to focus movement
   const handleSwipe = useCallback(
@@ -45,21 +70,23 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
 
       if (next !== focusedIndex) {
         onFocusChange(next)
+        onNav()
         // Haptic feedback for swipe navigation
         if (navigator.vibrate) navigator.vibrate(10)
       }
     },
-    [focusedIndex, onFocusChange]
+    [focusedIndex, onFocusChange, onNav]
   )
   useSwipeGesture(gridRef, handleSwipe)
 
-  // Wrapped onSelect with haptic feedback for touch taps
+  // Wrapped onSelect with haptic feedback and sound for touch taps
   const handleSelect = useCallback(
     (index) => {
+      onTap()
       if (navigator.vibrate) navigator.vibrate(15)
       onSelect(index)
     },
-    [onSelect]
+    [onSelect, onTap]
   )
 
   // Detect board reset (board went from having marks to all empty)
@@ -101,6 +128,7 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
             disabled={isDisabled}
             isFocused={focusedIndex === index}
             isWinning={isWinning}
+            focusDirection={focusedIndex === index ? focusDirection : null}
             onClick={() => handleSelect(index)}
             ariaLabel={`Row ${Math.floor(index / BOARD_SIZE) + 1}, Column ${(index % BOARD_SIZE) + 1}, ${value ?? 'empty'}`}
             tabIndex={focusedIndex === index ? 0 : -1}
