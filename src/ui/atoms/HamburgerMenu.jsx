@@ -1,5 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
+import useSmartPosition from '../../app/useSmartPosition.js'
+import useDropdownBehavior from '../../app/useDropdownBehavior.js'
 
 /**
  * HamburgerMenu — Atom
@@ -18,102 +20,29 @@ import PropTypes from 'prop-types'
  */
 const HamburgerMenu = ({ children }) => {
   const [open, setOpen] = useState(false)
-  const [alignment, setAlignment] = useState('right') // 'left' or 'right'
   const btnRef = useRef(null)
   const panelRef = useRef(null)
+
+  // Smart positioning: depends on DIP abstraction
+  const alignment = useSmartPosition({
+    trigger: btnRef,
+    panel: panelRef,
+    minPanelWidth: 240,
+    viewportPadding: 16,
+    preferredAlignment: 'right',
+  })
 
   const toggle = useCallback(() => {
     setOpen((prev) => !prev)
   }, [])
 
-  // Detect alignment when menu opens
-  useEffect(() => {
-    if (!open || !btnRef.current) return
-
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      const btnRect = btnRef.current.getBoundingClientRect()
-      const minPanelWidth = 240 // matches .menu-panel min-width in CSS
-      const padding = 16 // safe margin from viewport edge
-
-      // Check if right-aligned would fit
-      const rightEdge = btnRect.right + minPanelWidth
-      const wouldOverflowRight = rightEdge + padding > window.innerWidth
-
-      // Check if left-aligned would fit
-      const leftEdge = btnRect.left - minPanelWidth
-      const wouldOverflowLeft = leftEdge - padding < 0
-
-      // Smart logic: prefer right, but flip to left if right would overflow
-      const newAlignment = wouldOverflowRight && !wouldOverflowLeft ? 'left' : 'right'
-      setAlignment(newAlignment)
-    }, 0)
-
-    return () => clearTimeout(timer)
-  }, [open])
-
-
-  // Close on outside click / touch / Escape
-  useEffect(() => {
-    if (!open) return
-
-    const handleOutside = (e) => {
-      if (
-        btnRef.current &&
-        !btnRef.current.contains(e.target) &&
-        panelRef.current &&
-        !panelRef.current.contains(e.target)
-      ) {
-        setOpen(false)
-      }
-    }
-
-    const handleKey = (e) => {
-      if (e.key === 'Escape') {
-        setOpen(false)
-        btnRef.current?.focus()
-      }
-    }
-
-    document.addEventListener('mousedown', handleOutside)
-    document.addEventListener('touchstart', handleOutside)
-    document.addEventListener('keydown', handleKey)
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutside)
-      document.removeEventListener('touchstart', handleOutside)
-      document.removeEventListener('keydown', handleKey)
-    }
-  }, [open])
-
-  // Focus trap: cycle Tab within the panel
-  useEffect(() => {
-    if (!open || !panelRef.current) return
-
-    const handleTrap = (e) => {
-      if (e.key !== 'Tab') return
-
-      const focusable = panelRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      )
-      if (focusable.length === 0) return
-
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault()
-        last.focus()
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault()
-        first.focus()
-      }
-    }
-
-    panelRef.current.addEventListener('keydown', handleTrap)
-    const panel = panelRef.current
-    return () => panel.removeEventListener('keydown', handleTrap)
-  }, [open])
+  // Close on outside click / touch / Escape + focus trap via shared hook
+  useDropdownBehavior({
+    open,
+    onClose: () => setOpen(false),
+    triggerRef: btnRef,
+    panelRef: panelRef,
+  })
 
   return (
     <div className="hamburger-menu">
