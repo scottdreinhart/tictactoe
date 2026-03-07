@@ -1,13 +1,21 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Tic-Tac-Toe — Styles
+   • 6 color themes via data-theme attribute
+   • Light / Dark mode via data-mode (falls back to prefers-color-scheme)
+   • Colorblind-safe mark colors via data-colorblind
    • SVG animated marks (draw-on effect)
-   • Dark mode via prefers-color-scheme
    • Reduced motion support
    • Responsive media queries (phone → tablet → desktop → large)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ─── CSS Custom Properties (Light Theme) ─── */
-:root {
+/* ═══════════════════════════════════════════════════════════════════════════
+   COLOR THEMES — Light variants (default)
+   Each theme sets: accent, gradients, X/O colors, glows
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Classic (default) ── */
+:root,
+[data-theme='classic'] {
   --bg-gradient-start: #667eea;
   --bg-gradient-end: #764ba2;
   --card-bg: #ffffff;
@@ -31,21 +39,114 @@
   --win-pulse-shadow: rgba(102, 126, 234, 0.6);
 }
 
-/* ─── Dark Theme ─── */
+/* ── Ocean ── */
+[data-theme='ocean'] {
+  --bg-gradient-start: #0369a1;
+  --bg-gradient-end: #0ea5e9;
+  --accent: #0ea5e9;
+  --accent-glow: rgba(14, 165, 233, 0.4);
+  --cell-hover-bg: #e0f2fe;
+  --status-bg: #e0f2fe;
+  --status-border: #0ea5e9;
+  --instructions-bg: #e0f2fe;
+  --x-color: #0284c7;
+  --o-color: #06b6d4;
+  --x-glow: rgba(2, 132, 199, 0.3);
+  --o-glow: rgba(6, 182, 212, 0.3);
+  --win-pulse-shadow: rgba(14, 165, 233, 0.6);
+}
+
+/* ── Sunset ── */
+[data-theme='sunset'] {
+  --bg-gradient-start: #dc2626;
+  --bg-gradient-end: #f97316;
+  --accent: #f97316;
+  --accent-glow: rgba(249, 115, 22, 0.4);
+  --cell-hover-bg: #fff7ed;
+  --status-bg: #fff7ed;
+  --status-border: #f97316;
+  --instructions-bg: #fff7ed;
+  --x-color: #ea580c;
+  --o-color: #dc2626;
+  --x-glow: rgba(234, 88, 12, 0.3);
+  --o-glow: rgba(220, 38, 38, 0.3);
+  --win-pulse-shadow: rgba(249, 115, 22, 0.6);
+}
+
+/* ── Forest ── */
+[data-theme='forest'] {
+  --bg-gradient-start: #166534;
+  --bg-gradient-end: #22c55e;
+  --accent: #22c55e;
+  --accent-glow: rgba(34, 197, 94, 0.4);
+  --cell-hover-bg: #f0fdf4;
+  --status-bg: #f0fdf4;
+  --status-border: #22c55e;
+  --instructions-bg: #f0fdf4;
+  --x-color: #16a34a;
+  --o-color: #65a30d;
+  --x-glow: rgba(22, 163, 74, 0.3);
+  --o-glow: rgba(101, 163, 13, 0.3);
+  --win-pulse-shadow: rgba(34, 197, 94, 0.6);
+}
+
+/* ── Rose ── */
+[data-theme='rose'] {
+  --bg-gradient-start: #be123c;
+  --bg-gradient-end: #fb7185;
+  --accent: #f43f5e;
+  --accent-glow: rgba(244, 63, 94, 0.4);
+  --cell-hover-bg: #fff1f2;
+  --status-bg: #fff1f2;
+  --status-border: #f43f5e;
+  --instructions-bg: #fff1f2;
+  --x-color: #e11d48;
+  --o-color: #db2777;
+  --x-glow: rgba(225, 29, 72, 0.3);
+  --o-glow: rgba(219, 39, 119, 0.3);
+  --win-pulse-shadow: rgba(244, 63, 94, 0.6);
+}
+
+/* ── Midnight ── */
+[data-theme='midnight'] {
+  --bg-gradient-start: #312e81;
+  --bg-gradient-end: #7c3aed;
+  --accent: #a78bfa;
+  --accent-glow: rgba(167, 139, 250, 0.4);
+  --cell-hover-bg: #ede9fe;
+  --status-bg: #ede9fe;
+  --status-border: #a78bfa;
+  --instructions-bg: #ede9fe;
+  --x-color: #7c3aed;
+  --o-color: #a855f7;
+  --x-glow: rgba(124, 58, 237, 0.3);
+  --o-glow: rgba(168, 85, 247, 0.3);
+  --win-pulse-shadow: rgba(167, 139, 250, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK MODE — System preference (fallback) + manual override
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* System-level dark preference (when data-mode is absent / 'system') */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg-gradient-start: #1a1a2e;
-    --bg-gradient-end: #16213e;
+  :root:not([data-mode='light']) {
     --card-bg: #1e2a3a;
     --card-shadow: rgba(0, 0, 0, 0.5);
     --text-primary: #e0e0e0;
     --text-secondary: #aaa;
-    --accent: #7b8cff;
-    --accent-glow: rgba(123, 140, 255, 0.35);
     --cell-bg: #253347;
     --cell-border: #3a4f6a;
     --cell-hover-bg: #2e4460;
     --board-bg: #152238;
+  }
+  /* Per-theme dark tweaks */
+  [data-theme='classic']:not([data-mode='light']),
+  :root:not([data-theme]):not([data-mode='light']) {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --accent: #7b8cff;
+    --accent-glow: rgba(123, 140, 255, 0.35);
     --status-bg: #253347;
     --status-border: #7b8cff;
     --instructions-bg: #253347;
@@ -55,6 +156,224 @@
     --o-glow: rgba(192, 132, 252, 0.35);
     --win-pulse-shadow: rgba(123, 140, 255, 0.5);
   }
+  [data-theme='ocean']:not([data-mode='light']) {
+    --bg-gradient-start: #082f49;
+    --bg-gradient-end: #0c4a6e;
+    --accent: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.35);
+    --status-bg: #253347;
+    --status-border: #38bdf8;
+    --instructions-bg: #253347;
+    --x-color: #38bdf8;
+    --o-color: #22d3ee;
+    --x-glow: rgba(56, 189, 248, 0.35);
+    --o-glow: rgba(34, 211, 238, 0.35);
+    --win-pulse-shadow: rgba(56, 189, 248, 0.5);
+  }
+  [data-theme='sunset']:not([data-mode='light']) {
+    --bg-gradient-start: #431407;
+    --bg-gradient-end: #7c2d12;
+    --accent: #fb923c;
+    --accent-glow: rgba(251, 146, 60, 0.35);
+    --status-bg: #253347;
+    --status-border: #fb923c;
+    --instructions-bg: #253347;
+    --x-color: #fb923c;
+    --o-color: #f87171;
+    --x-glow: rgba(251, 146, 60, 0.35);
+    --o-glow: rgba(248, 113, 113, 0.35);
+    --win-pulse-shadow: rgba(251, 146, 60, 0.5);
+  }
+  [data-theme='forest']:not([data-mode='light']) {
+    --bg-gradient-start: #052e16;
+    --bg-gradient-end: #14532d;
+    --accent: #4ade80;
+    --accent-glow: rgba(74, 222, 128, 0.35);
+    --status-bg: #253347;
+    --status-border: #4ade80;
+    --instructions-bg: #253347;
+    --x-color: #4ade80;
+    --o-color: #a3e635;
+    --x-glow: rgba(74, 222, 128, 0.35);
+    --o-glow: rgba(163, 230, 53, 0.35);
+    --win-pulse-shadow: rgba(74, 222, 128, 0.5);
+  }
+  [data-theme='rose']:not([data-mode='light']) {
+    --bg-gradient-start: #4c0519;
+    --bg-gradient-end: #881337;
+    --accent: #fb7185;
+    --accent-glow: rgba(251, 113, 133, 0.35);
+    --status-bg: #253347;
+    --status-border: #fb7185;
+    --instructions-bg: #253347;
+    --x-color: #fb7185;
+    --o-color: #f472b6;
+    --x-glow: rgba(251, 113, 133, 0.35);
+    --o-glow: rgba(244, 114, 182, 0.35);
+    --win-pulse-shadow: rgba(251, 113, 133, 0.5);
+  }
+  [data-theme='midnight']:not([data-mode='light']) {
+    --bg-gradient-start: #1e1b4b;
+    --bg-gradient-end: #312e81;
+    --accent: #c4b5fd;
+    --accent-glow: rgba(196, 181, 253, 0.35);
+    --status-bg: #253347;
+    --status-border: #c4b5fd;
+    --instructions-bg: #253347;
+    --x-color: #a78bfa;
+    --o-color: #c084fc;
+    --x-glow: rgba(167, 139, 250, 0.35);
+    --o-glow: rgba(192, 132, 252, 0.35);
+    --win-pulse-shadow: rgba(196, 181, 253, 0.5);
+  }
+}
+
+/* Manual dark override (data-mode="dark") — regardless of system pref */
+[data-mode='dark'] {
+  --card-bg: #1e2a3a;
+  --card-shadow: rgba(0, 0, 0, 0.5);
+  --text-primary: #e0e0e0;
+  --text-secondary: #aaa;
+  --cell-bg: #253347;
+  --cell-border: #3a4f6a;
+  --cell-hover-bg: #2e4460;
+  --board-bg: #152238;
+}
+[data-mode='dark'][data-theme='classic'],
+[data-mode='dark']:not([data-theme]) {
+  --bg-gradient-start: #1a1a2e;
+  --bg-gradient-end: #16213e;
+  --accent: #7b8cff;
+  --accent-glow: rgba(123, 140, 255, 0.35);
+  --status-bg: #253347;
+  --status-border: #7b8cff;
+  --instructions-bg: #253347;
+  --x-color: #6c8cff;
+  --o-color: #c084fc;
+  --x-glow: rgba(108, 140, 255, 0.35);
+  --o-glow: rgba(192, 132, 252, 0.35);
+  --win-pulse-shadow: rgba(123, 140, 255, 0.5);
+}
+[data-mode='dark'][data-theme='ocean'] {
+  --bg-gradient-start: #082f49;
+  --bg-gradient-end: #0c4a6e;
+  --accent: #38bdf8;
+  --accent-glow: rgba(56, 189, 248, 0.35);
+  --status-bg: #253347;
+  --status-border: #38bdf8;
+  --instructions-bg: #253347;
+  --x-color: #38bdf8;
+  --o-color: #22d3ee;
+  --x-glow: rgba(56, 189, 248, 0.35);
+  --o-glow: rgba(34, 211, 238, 0.35);
+  --win-pulse-shadow: rgba(56, 189, 248, 0.5);
+}
+[data-mode='dark'][data-theme='sunset'] {
+  --bg-gradient-start: #431407;
+  --bg-gradient-end: #7c2d12;
+  --accent: #fb923c;
+  --accent-glow: rgba(251, 146, 60, 0.35);
+  --status-bg: #253347;
+  --status-border: #fb923c;
+  --instructions-bg: #253347;
+  --x-color: #fb923c;
+  --o-color: #f87171;
+  --x-glow: rgba(251, 146, 60, 0.35);
+  --o-glow: rgba(248, 113, 113, 0.35);
+  --win-pulse-shadow: rgba(251, 146, 60, 0.5);
+}
+[data-mode='dark'][data-theme='forest'] {
+  --bg-gradient-start: #052e16;
+  --bg-gradient-end: #14532d;
+  --accent: #4ade80;
+  --accent-glow: rgba(74, 222, 128, 0.35);
+  --status-bg: #253347;
+  --status-border: #4ade80;
+  --instructions-bg: #253347;
+  --x-color: #4ade80;
+  --o-color: #a3e635;
+  --x-glow: rgba(74, 222, 128, 0.35);
+  --o-glow: rgba(163, 230, 53, 0.35);
+  --win-pulse-shadow: rgba(74, 222, 128, 0.5);
+}
+[data-mode='dark'][data-theme='rose'] {
+  --bg-gradient-start: #4c0519;
+  --bg-gradient-end: #881337;
+  --accent: #fb7185;
+  --accent-glow: rgba(251, 113, 133, 0.35);
+  --status-bg: #253347;
+  --status-border: #fb7185;
+  --instructions-bg: #253347;
+  --x-color: #fb7185;
+  --o-color: #f472b6;
+  --x-glow: rgba(251, 113, 133, 0.35);
+  --o-glow: rgba(244, 114, 182, 0.35);
+  --win-pulse-shadow: rgba(251, 113, 133, 0.5);
+}
+[data-mode='dark'][data-theme='midnight'] {
+  --bg-gradient-start: #1e1b4b;
+  --bg-gradient-end: #312e81;
+  --accent: #c4b5fd;
+  --accent-glow: rgba(196, 181, 253, 0.35);
+  --status-bg: #253347;
+  --status-border: #c4b5fd;
+  --instructions-bg: #253347;
+  --x-color: #a78bfa;
+  --o-color: #c084fc;
+  --x-glow: rgba(167, 139, 250, 0.35);
+  --o-glow: rgba(192, 132, 252, 0.35);
+  --win-pulse-shadow: rgba(196, 181, 253, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COLORBLIND-SAFE MARK COLORS
+   Override --x-color / --o-color with distinguishable pairs per condition.
+   Applied via data-colorblind attribute on <html>.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Protanopia (red-blind): blue vs orange */
+[data-colorblind='protanopia'] {
+  --x-color: #2563eb;
+  --o-color: #ea580c;
+  --x-glow: rgba(37, 99, 235, 0.3);
+  --o-glow: rgba(234, 88, 12, 0.3);
+}
+
+/* Deuteranopia (green-blind): blue vs orange-yellow */
+[data-colorblind='deuteranopia'] {
+  --x-color: #2563eb;
+  --o-color: #d97706;
+  --x-glow: rgba(37, 99, 235, 0.3);
+  --o-glow: rgba(217, 119, 6, 0.3);
+}
+
+/* Tritanopia (blue-blind): red vs cyan */
+[data-colorblind='tritanopia'] {
+  --x-color: #dc2626;
+  --o-color: #06b6d4;
+  --x-glow: rgba(220, 38, 38, 0.3);
+  --o-glow: rgba(6, 182, 212, 0.3);
+}
+
+/* Achromatopsia (total color blindness): high-contrast black vs gray */
+[data-colorblind='achromatopsia'] {
+  --x-color: #1a1a1a;
+  --o-color: #888888;
+  --x-glow: rgba(0, 0, 0, 0.2);
+  --o-glow: rgba(136, 136, 136, 0.2);
+}
+/* Dark-mode achromatopsia: invert for contrast */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode='light'])[data-colorblind='achromatopsia'] {
+    --x-color: #ffffff;
+    --o-color: #888888;
+    --x-glow: rgba(255, 255, 255, 0.2);
+  }
+}
+[data-mode='dark'][data-colorblind='achromatopsia'] {
+  --x-color: #ffffff;
+  --o-color: #888888;
+  --x-glow: rgba(255, 255, 255, 0.2);
 }
 
 /* ─── Reset ─── */
@@ -416,6 +735,148 @@ body {
 
 .sound-toggle:active {
   transform: scale(0.95);
+}
+
+/* ─── Theme Selector ─── */
+.theme-selector {
+  position: relative;
+}
+
+.theme-selector-toggle {
+  background: transparent;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  cursor: pointer;
+  transition: background-color 200ms ease, transform 200ms ease;
+  line-height: 1;
+}
+
+.theme-selector-toggle:hover {
+  background: var(--cell-hover-bg);
+  transform: scale(1.1);
+}
+
+.theme-selector-toggle:active {
+  transform: scale(0.95);
+}
+
+.theme-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  background: var(--card-bg);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 32px var(--card-shadow);
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.theme-section {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.theme-section legend {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+/* Color theme swatches */
+.theme-swatches {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.theme-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+
+.theme-swatch:hover {
+  transform: scale(1.15);
+}
+
+.theme-swatch.swatch-active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--text-primary);
+}
+
+/* Mode buttons */
+.theme-mode-group {
+  display: flex;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--cell-border);
+}
+
+.theme-mode-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 5px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background-color 200ms ease;
+}
+
+.theme-mode-btn:hover:not(.mode-active) {
+  background: var(--cell-hover-bg);
+}
+
+.theme-mode-btn.mode-active {
+  background: var(--accent);
+  color: #fff;
+  cursor: default;
+}
+
+/* Colorblind buttons */
+.theme-colorblind-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.theme-cb-btn {
+  background: transparent;
+  border: 1px solid var(--cell-border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.theme-cb-btn:hover:not(.cb-active) {
+  background: var(--cell-hover-bg);
+}
+
+.theme-cb-btn.cb-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  cursor: default;
 }
 
 .reset-button {

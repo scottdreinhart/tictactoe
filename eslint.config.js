@@ -25,6 +25,7 @@ export default [
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         Math: 'readonly',
+        localStorage: 'readonly',
       },
     },
     rules: {
