@@ -66,7 +66,7 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect
 - **6 Color Themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — each with unique accent gradient
 - **Light / Dark Mode**: System (auto), Light (forced), or Dark (forced) — persisted to localStorage
-- **4 Colorblind Modes**: Protanopia, Deuteranopia, Tritanopia, Achromatopsia — overrides X/O colors for visibility
+- **4 Colorblind Modes**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — overrides X/O colors for visibility
 - **CSS Custom Properties**: All colors/sizes driven by CSS variables for easy theming
 - **Cell Animations**: Pop-in effect when marks are placed; winning cells pulse
 - **Outcome Animations**: Win glow, loss shake, draw fade — CSS class applied to game container
@@ -99,7 +99,7 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - Roving tabindex for keyboard navigation
 - `prefers-reduced-motion: reduce` disables all animations and sounds
 - `forced-colors: active` support for high-contrast mode
-- 4 colorblind presets override X/O mark colors for improved visibility
+- 4 colorblind presets override X/O mark colors for improved visibility (Standard, Red Weakness, Green Weakness, Blue Weakness, Monochrome)
 - SVG marks use `aria-hidden="true"` (cell label provides semantics)
 - Clear visual focus indicators with accent-colored outline + glow
 - Theme selector uses `aria-pressed` on all buttons and `role="dialog"` for the panel
@@ -225,7 +225,7 @@ playDrawSound()   // descending A4→F4 two-note tone
 // Themes
 COLOR_THEMES      // 6 themes: classic, ocean, sunset, forest, rose, midnight
 MODES             // ['system', 'light', 'dark']
-COLORBLIND_MODES  // none, protanopia, deuteranopia, tritanopia, achromatopsia
+COLORBLIND_MODES  // none, protanopia (red weakness), deuteranopia (green weakness), tritanopia (blue weakness), achromatopsia (monochrome)
 DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none' }
 ```
 
@@ -301,7 +301,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 ### Theming & Customization
 - **6 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — light/dark variants + High Contrast mode
 - **Light / Dark / System modes** — auto-detect via `prefers-color-scheme`, manual override via selector, persisted to localStorage
-- **4 colorblind-safe presets**: Protanopia, Deuteranopia, Tritanopia, Achromatopsia — all with distinct X/O mark colors
+- **4 colorblind-safe presets**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — all with distinct X/O mark colors
 - **CSS Custom Properties** with theme-driven color sets via `data-theme` / `data-mode` / `data-colorblind` attributes
 - **Smart dropdown positioning** — `useSmartPosition` hook auto-detects viewport overflow, positions menus left/right intelligently
 

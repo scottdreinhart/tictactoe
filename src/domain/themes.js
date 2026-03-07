@@ -21,11 +21,11 @@ export const MODES = ['system', 'light', 'dark']
 
 /** Colorblind presets — null means "none" (default) */
 export const COLORBLIND_MODES = [
-  { id: 'none', label: 'None' },
-  { id: 'protanopia', label: 'Protanopia', description: 'Red-blind' },
-  { id: 'deuteranopia', label: 'Deuteranopia', description: 'Green-blind' },
-  { id: 'tritanopia', label: 'Tritanopia', description: 'Blue-blind' },
-  { id: 'achromatopsia', label: 'Achromatopsia', description: 'Total color blindness' },
+  { id: 'none', label: 'Standard' },
+  { id: 'protanopia', label: 'Red Weakness', description: 'Protanopia' },
+  { id: 'deuteranopia', label: 'Green Weakness', description: 'Deuteranopia' },
+  { id: 'tritanopia', label: 'Blue Weakness', description: 'Tritanopia' },
+  { id: 'achromatopsia', label: 'Monochrome', description: 'Complete Achromatopsia' },
 ]
 
 /** Default settings */

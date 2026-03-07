@@ -136,9 +136,10 @@ The project is **marketplace-ready** with excellent compliance across PWA, acces
   - Ocean, Sunset, Forest, Rose, Midnight (light/dark variants)
   - High Contrast (WCAG AAA level) ✓
 - ✅ Colorblind-safe modes:
-  - Protanopia (red-blind) ✓
-  - Deuteranopia (green-blind) ✓
-  - Tritanopia (blue-blind) ✓
+  - Red Weakness (Protanopia) ✓
+  - Green Weakness (Deuteranopia) ✓
+  - Blue Weakness (Tritanopia) ✓
+  - Monochrome (Achromatopsia) ✓
   - All mark colors (X/O) distinct in all modes ✓
 - ✅ Text contrast: All text meets WCAG AA (4.5:1 for normal, 3:1 for large)
 - ✅ Not relying on color alone to convey information ✓
