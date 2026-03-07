@@ -8,7 +8,7 @@ import React from 'react'
  *
  * @param {{ onClick: () => void, label: string }} props
  */
-const ResetButton = ({ onClick, label = 'Reset Game' }) => (
+const ResetButton = React.memo(({ onClick, label = 'Reset Game' }) => (
   <button
     type="button"
     className="reset-button"
@@ -16,6 +16,8 @@ const ResetButton = ({ onClick, label = 'Reset Game' }) => (
   >
     {label}
   </button>
-)
+))
+
+ResetButton.displayName = 'ResetButton'
 
 export default ResetButton

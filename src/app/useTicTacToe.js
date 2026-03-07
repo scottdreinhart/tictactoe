@@ -1,8 +1,8 @@
-import { useReducer, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useReducer, useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { createEmptyBoard, applyMove, isCellEmpty } from '../domain/board.js'
 import { getGameState } from '../domain/rules.js'
-import { chooseCpuMoveRandom } from '../domain/ai.js'
-import { TOKENS } from '../domain/constants.js'
+import { chooseCpuMoveSmart } from '../domain/ai.js'
+import { TOKENS, CPU_DELAY_MS } from '../domain/constants.js'
 
 // ── Actions ──────────────────────────────────────────────────────────────────
 
@@ -52,7 +52,7 @@ const gameReducer = (state, action) => {
 
       let cpuIndex
       try {
-        cpuIndex = chooseCpuMoveRandom(state.board)
+        cpuIndex = chooseCpuMoveSmart(state.board, TOKENS.CPU, TOKENS.HUMAN)
       } catch {
         return state // no moves available
       }
@@ -90,9 +90,24 @@ const gameReducer = (state, action) => {
 export const useTicTacToe = () => {
   const [state, dispatch] = useReducer(gameReducer, null, createInitialState)
   const cpuTimeoutRef = useRef(null)
+  const [score, setScore] = useState({ [TOKENS.HUMAN]: 0, [TOKENS.CPU]: 0, draws: 0 })
+  const prevGameOverRef = useRef(false)
 
   // Derive game state from board (pure, no side-effects)
   const gameState = useMemo(() => getGameState(state.board), [state.board])
+
+  // Track score when game ends
+  useEffect(() => {
+    if (gameState.isOver && !prevGameOverRef.current) {
+      setScore((prev) => {
+        if (gameState.winner) {
+          return { ...prev, [gameState.winner]: prev[gameState.winner] + 1 }
+        }
+        return { ...prev, draws: prev.draws + 1 }
+      })
+    }
+    prevGameOverRef.current = gameState.isOver
+  }, [gameState.isOver, gameState.winner])
 
   // Derive status text
   const status = useMemo(() => {
@@ -135,7 +150,7 @@ export const useTicTacToe = () => {
     cpuTimeoutRef.current = setTimeout(() => {
       dispatch({ type: ACTIONS.CPU_MOVE })
       cpuTimeoutRef.current = null
-    }, 250)
+    }, CPU_DELAY_MS)
 
     return () => {
       if (cpuTimeoutRef.current !== null) {
@@ -160,6 +175,7 @@ export const useTicTacToe = () => {
     focusedIndex: state.focusedIndex,
     gameState,
     status,
+    score,
     handleHumanSelect,
     handleFocusChange,
     handleReset,

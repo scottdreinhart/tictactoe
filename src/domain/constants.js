@@ -6,6 +6,9 @@ export const TOKENS = {
 
 export const BOARD_SIZE = 3
 
+/** CPU move delay in milliseconds */
+export const CPU_DELAY_MS = 400
+
 // All 8 winning lines for a 3x3 board
 // Indices: 0 1 2
 //          3 4 5

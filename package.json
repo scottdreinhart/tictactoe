@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "fuser -k 5173/tcp 2>/dev/null; vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write src/",
+    "format:check": "prettier --check src/"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -14,6 +18,11 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "prettier": "^3.8.1",
     "vite": "^7.3.1"
   }
 }

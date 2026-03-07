@@ -4,6 +4,7 @@ import GameTitle from '../atoms/GameTitle.jsx'
 import StatusBar from '../molecules/StatusBar.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
 import GameControls from '../molecules/GameControls.jsx'
+import ScoreBoard from '../molecules/ScoreBoard.jsx'
 import Instructions from '../molecules/Instructions.jsx'
 
 /**
@@ -18,6 +19,7 @@ const TicTacToeGame = () => {
     board,
     gameState,
     status,
+    score,
     handleHumanSelect,
     handleFocusChange,
     focusedIndex,
@@ -30,12 +32,15 @@ const TicTacToeGame = () => {
 
       <StatusBar statusText={status} />
 
+      <ScoreBoard score={score} />
+
       <BoardGrid
         board={board}
         focusedIndex={focusedIndex}
         onFocusChange={handleFocusChange}
         onSelect={handleHumanSelect}
         isGameOver={gameState.isOver}
+        winLine={gameState.winLine}
       />
 
       <GameControls onReset={handleReset} />
