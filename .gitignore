@@ -31,6 +31,10 @@ npm-debug.log*
 # Debug
 coverage/
 
+# Capacitor native projects
+android/
+ios/
+
 # Misc
 *.tgz
 .cache/
