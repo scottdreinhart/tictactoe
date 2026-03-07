@@ -10,7 +10,7 @@ src/
 │   ├── constants.js                  # TOKENS, WIN_LINES, BOARD_SIZE, CPU_DELAY_MS
 │   ├── board.js                      # Board operations (create, apply move, get empty cells)
 │   ├── rules.js                      # Win/draw detection (returns winning line)
-│   ├── ai.js                         # CPU move selection (random / medium / smart)
+│   ├── ai.js                         # CPU move selection (random / medium / smart / minimax unbeatable)
 │   ├── sounds.js                     # Web Audio API synthesized SFX + jingles
 │   └── themes.js                     # Color theme, mode & colorblind definitions
 ├── app/
@@ -27,7 +27,7 @@ src/
 │   │   ├── XMark.jsx                 # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx                 # Animated SVG "O" (React.memo, draw-on effect)
 │   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + animated panel
-│   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard AI toggle (React.memo)
+│   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard/Unbeatable AI toggle (React.memo)
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
 │   │   ├── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
 │   │   ├── ConfettiOverlay.jsx       # Canvas-based confetti particle animation on win
@@ -55,10 +55,10 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - **Board Representation**: 9-cell array with immutable updates
 - **Win Detection**: All 8 winning lines checked (3 rows, 3 columns, 2 diagonals)
 - **Draw Detection**: Board full + no winner = draw
-- **CPU Move**: Three difficulty levels — Easy (random), Medium (random + occasional blocking), Hard (deterministic priority: win → block → center → corner → edge)
+- **CPU Move**: Four difficulty levels — Easy (random), Medium (win/block + random), Hard (heuristic priority: win → block → center → corner → edge), Unbeatable (minimax with alpha-beta pruning, cannot be beaten)
 - **Score Tracking**: Win/loss/draw tallies persisted across rounds
 - **Win-Line Highlight**: Winning 3 cells pulse with animated glow
-- **Difficulty Toggle**: Pill-shaped Easy/Medium/Hard switch
+- **Difficulty Toggle**: Pill-shaped Easy/Medium/Hard/Unbeatable switch
 - **Auto-Reset**: 30-second countdown after game end; auto-starts a new round ("Reset Now" button available)
 - **Sound Effects**: Synthesized via Web Audio API — move pop, win fanfare (C-major arpeggio + chord ~2s), loss jingle (descending E-minor ~2s), draw tone (toggleable, respects `prefers-reduced-motion`)
 
