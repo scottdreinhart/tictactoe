@@ -389,22 +389,15 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
 ### Architecture
-- [ ] **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
-  - ✅ **Phase 1 (Atoms)**: 6 atoms converted to CSS Modules:
-    - SoundToggle, DifficultyToggle, HamburgerMenu, CellButton, ThemeSelector, NotificationBanner
-    - Each component has `.module.css` file with scoped styles
-    - Uses `cx()` utility for conditional classes
-  - ✅ **Phase 2 (Molecules)**: 3 molecules converted to CSS Modules:
-    - BoardGrid (grid layout + reset animation), ScoreBoard (score display), Instructions (info icon + tooltip)
-    - BoardGrid.module.css, ScoreBoard.module.css, Instructions.module.css created
-    - Build verified: 32.76 KB (5.97 KB gzip) with 83 modules
-  - ✅ **Phase 3 (Organisms)**: TicTacToeGame converted to CSS Modules:
-    - Root game container with outcome animations (win glow, loss shake, draw fade)
-    - Outcome classes dynamically bound via `cx(styles.root, outcomeClass)`
-    - TicTacToeGame.module.css with all outcome and accessibility styles
-    - Build verified: 34.39 KB (6.12 KB gzip) with 84 modules
-  - **Phase 4**: Deprecate global BEM classes, keep shared globals (layout, animations, base styles)
-    - Global outcome effects on board-grid (cross-module animations) can be consolidated
+- ✅ **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
+  - ✅ **Phase 1 (Atoms)**: 6 atoms converted to CSS Modules with scoped class names
+  - ✅ **Phase 2 (Molecules)**: 3 molecules converted to CSS Modules with scoped class names
+  - ✅ **Phase 3 (Organisms)**: TicTacToeGame converted to CSS Modules with outcome animations
+  - ✅ **Phase 4 (Cleanup)**: Removed 560 lines of migrated component styles from global stylesheet
+    - Global stylesheet now contains: theme variables, base typography, responsive media queries
+    - All 10 UI components now use scoped CSS Modules for styling
+    - CSS bundle reduced: 34.39 KB → 25.86 KB (5.48 KB gzip, previously 6.12 KB gzip)
+  - **Result**: 100% of atomic design components now use scoped CSS Modules
   - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for migration guide and `src/ui/utils/cssModules.js` utility
 
 ### DevOps & Deployment
