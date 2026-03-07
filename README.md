@@ -12,16 +12,18 @@ src/
 │   ├── rules.js                   # Win/draw detection (returns winning line)
 │   └── ai.js                     # CPU move selection (random + smart)
 ├── app/
-│   └── useTicTacToe.js            # Game state + score management hook (useReducer + useState)
+│   ├── useTicTacToe.js            # Game state + score + difficulty management hook
+│   └── useGridKeyboard.js         # Reusable document-level keyboard navigation hook
 ├── ui/
 │   ├── atoms/
 │   │   ├── CellButton.jsx         # Single cell with SVG mark rendering + winning highlight
 │   │   ├── XMark.jsx              # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx              # Animated SVG "O" (React.memo, draw-on effect)
 │   │   ├── GameTitle.jsx          # Game heading (React.memo)
-│   │   └── ResetButton.jsx        # Reset/new-game button (React.memo)
+│   │   ├── ResetButton.jsx        # Reset/new-game button (React.memo)
+│   │   └── DifficultyToggle.jsx   # Easy/Hard AI toggle (React.memo)
 │   ├── molecules/
-│   │   ├── BoardGrid.jsx          # 3×3 grid with keyboard nav + reset animation
+│   │   ├── BoardGrid.jsx          # 3×3 grid with reset animation (uses useGridKeyboard)
 │   │   ├── StatusBar.jsx          # Game status display (aria-live)
 │   │   ├── ScoreBoard.jsx         # Win/loss/draw score display (React.memo)
 │   │   ├── GameControls.jsx       # Action buttons (composes ResetButton)
@@ -33,7 +35,7 @@ src/
 
 index.html                         # HTML entry point
 package.json                       # Dependencies & scripts
-vite.config.js                     # Vite configuration (host, port, strictPort)
+vite.config.js                     # Vite configuration + rollup-plugin-visualizer
 eslint.config.js                   # ESLint flat config (React + hooks + Prettier)
 .prettierrc                        # Prettier formatting rules
 ```
@@ -45,9 +47,10 @@ eslint.config.js                   # ESLint flat config (React + hooks + Prettie
 - **Board Representation**: 9-cell array with immutable updates
 - **Win Detection**: All 8 winning lines checked (3 rows, 3 columns, 2 diagonals)
 - **Draw Detection**: Board full + no winner = draw
-- **CPU Move**: Smart priority AI active (win → block → center → corner → edge)
+- **CPU Move**: Smart priority AI (default Hard) or random Easy mode — switchable via toggle
 - **Score Tracking**: Win/loss/draw tallies persisted across rounds
 - **Win-Line Highlight**: Winning 3 cells pulse with animated glow
+- **Difficulty Toggle**: Pill-shaped Easy/Hard switch; Easy = random, Hard = smart priority
 
 ### Visual Design
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect
@@ -92,7 +95,8 @@ Also supports high-DPI/Retina displays and print media.
 - **Pure Functions**: All domain logic is immutable and deterministic
 - **DRY**: Single source of truth for constants (TOKENS, WIN_LINES)
 - **No Race Conditions**: CPU timeout managed via ref; cancelled on reset/unmount
-- **Document-Level Keyboard**: Uses `document.addEventListener('keydown')` with mutable refs to avoid stale closures
+- **Reusable Hooks**: `useGridKeyboard` extracted from BoardGrid for document-level keyboard navigation
+- **PropTypes**: Runtime prop validation on all components that accept props
 
 ## Installation & Running
 
@@ -157,14 +161,17 @@ The CPU uses `chooseCpuMoveSmart` with deterministic priority:
 4. Take corner
 5. Take edge
 
-The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode use.
+The random AI (`chooseCpuMoveRandom`) remains exported and is used in Easy mode.
 
 ## Technical Highlights
 
-- **React 18** with Hooks (`useReducer` for state, `useState` for score, `useCallback`/`useMemo` for stable refs)
-- **React.memo** on pure atoms (XMark, OMark, GameTitle, ResetButton, ScoreBoard) to skip unnecessary re-renders
+- **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
+- **React.memo** on pure atoms (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, ScoreBoard) to skip unnecessary re-renders
+- **PropTypes** runtime validation on all components that accept props
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
+- **Bundle analysis** via `rollup-plugin-visualizer` — generates `dist/bundle-report.html` on build
 - **ESLint + Prettier** for code quality (flat config, React + hooks plugins)
+- **Reusable `useGridKeyboard` hook** — document-level keyboard navigation extracted from BoardGrid
 - **CSS Grid** with `aspect-ratio: 1` for perfect square cells
 - **CSS Custom Properties** with light/dark theme sets
 - **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes
@@ -189,7 +196,7 @@ The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode 
 - [x] ~~**Activate smart AI**~~ — done (priority: win → block → center → corner → edge)
 - [ ] **Minimax AI (Phase C)** — implement full minimax with alpha-beta pruning for unbeatable CPU play
 - [x] ~~**Configurable CPU delay**~~ — done (`CPU_DELAY_MS` constant, currently 400ms)
-- [ ] **Difficulty toggle** — UI switch between Easy (random) and Hard (smart) AI
+- [x] ~~**Difficulty toggle**~~ — done (Easy = random, Hard = smart; pill-shaped toggle)
 - [ ] **Web Worker AI** — move CPU computation to a Web Worker so the UI thread never blocks
 
 ### Visual & UX
@@ -205,18 +212,18 @@ The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode 
 ### Code Quality & Testing
 - [x] ~~**ESLint + Prettier**~~ — done (flat config, React + hooks plugins, `lint`/`format` scripts)
 - [x] ~~**`getWinner` returns winning line**~~ — done (returns `{ token, line }`, `getWinnerToken` convenience)
-- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, ScoreBoard)
+- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, ScoreBoard)
 - [ ] **Unit tests** — domain functions (`board.js`, `rules.js`, `ai.js`) are pure and test-ready; add Vitest or Jest suite
 - [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, StatusBar
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
-- [ ] **PropTypes or TypeScript** — add runtime prop validation (PropTypes) or migrate to TypeScript for static type safety
+- [x] ~~**PropTypes**~~ — done (runtime prop validation on all components that accept props)
 - [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
 
 ### Performance
 - [ ] **Lazy SVG mount** — only mount `XMark`/`OMark` when `value` transitions from `null` (currently conditional render handles this, but `Suspense` could be used for heavier marks)
 
 ### Architecture
-- [ ] **Extract keyboard hook** — pull document-level keydown logic from `BoardGrid` into a reusable `useGridKeyboard` hook
+- [x] ~~**Extract keyboard hook**~~ — done (`useGridKeyboard.js` — reusable document-level keydown logic)
 - [ ] **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
 
 ### DevOps & Deployment
@@ -224,4 +231,4 @@ The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode 
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
 - [ ] **Dependabot auto-merge** — resolve the existing moderate vulnerability alert and enable auto-updates
 - [ ] **PWA support** — add `manifest.json` + service worker for offline play and home-screen install
-- [ ] **Bundle analysis** — add `rollup-plugin-visualizer` to audit production bundle size
+- [x] ~~**Bundle analysis**~~ — done (`rollup-plugin-visualizer` generates `dist/bundle-report.html` on build)

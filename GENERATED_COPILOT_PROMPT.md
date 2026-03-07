@@ -93,7 +93,7 @@ O**      **O
 **O      O**
 
 CPU MOVE LOGIC:
-Smart AI (ACTIVE — chooseCpuMoveSmart):
+Smart AI (ACTIVE by default — chooseCpuMoveSmart):
 Deterministic priority:
 1) Win if possible this turn
 2) Block X if X could win next turn
@@ -102,7 +102,9 @@ Deterministic priority:
 5) Else take an edge
 - CPU does NOT move if winner exists or draw reached after human move.
 - CPU move scheduled via `setTimeout` (CPU_DELAY_MS = 400ms) with ref cleanup.
-- Random AI (`chooseCpuMoveRandom`) remains exported for easy-mode or testing use.
+- Random AI (`chooseCpuMoveRandom`) is used in Easy mode.
+- Difficulty is managed via useState in the hook (not in reducer — survives resets).
+- AI function is selected in the scheduling effect, then the computed index is dispatched.
 Keep CPU logic isolated in /domain as pure functions.
 
 ARCHITECTURE REQUIREMENTS (SOC + CLEAN + ATOMIC + DRY):
@@ -139,6 +141,7 @@ src/
     ai.js
   app/
     useTicTacToe.js
+    useGridKeyboard.js
   ui/
     atoms/
       CellButton.jsx
@@ -146,6 +149,7 @@ src/
       OMark.jsx
       GameTitle.jsx
       ResetButton.jsx
+      DifficultyToggle.jsx
     molecules/
       BoardGrid.jsx
       StatusBar.jsx
@@ -158,6 +162,10 @@ src/
   styles.css
 eslint.config.js
 .prettierrc
+
+DEPENDENCIES:
+- prop-types (runtime prop validation)
+- rollup-plugin-visualizer (bundle analysis, generates dist/bundle-report.html)
 
 DOMAIN CONTRACTS:
 - board: Array(9) where each value is null | "X" | "O"
@@ -200,7 +208,7 @@ Must manage via useReducer:
 
 Reducer actions:
 - HUMAN_MOVE: validate turn + empty cell, apply X, set turn to CPU (or keep HUMAN if game over)
-- CPU_MOVE: validate turn, apply O via AI, set turn back to HUMAN
+- CPU_MOVE: takes { index } payload; apply O at given index, set turn back to HUMAN
 - SET_FOCUSED_INDEX: clamp 0..8
 - RESET: return createInitialState()
 
@@ -210,8 +218,8 @@ Must implement:
 - handleReset() via useCallback → clear timeout + dispatch RESET
 
 CPU scheduling:
-- useEffect watching [state.turn, gameState.isOver]
-- if turn === CPU && !isOver → setTimeout(dispatch CPU_MOVE, CPU_DELAY_MS)
+- useEffect watching [state.turn, gameState.isOver, difficulty, state.board]
+- if turn === CPU && !isOver → choose AI fn based on difficulty, compute move, setTimeout(dispatch CPU_MOVE with index, CPU_DELAY_MS)
 - store timeout ID in ref; clear on cleanup and reset
 
 Derived state:
@@ -220,10 +228,12 @@ Derived state:
 
 Must also manage:
 - score state via useState: { X: number, O: number, draws: number }
+- difficulty state via useState: 'easy' | 'hard' (default 'hard')
 - useEffect to track game-over transitions and increment score
-- score persists across resets (only resets on page refresh)
+- score and difficulty persist across resets (only reset on page refresh)
+- handleToggleDifficulty() via useCallback → toggles difficulty
 
-Return: { board, turn, focusedIndex, gameState, status, score, handleHumanSelect, handleFocusChange, handleReset }
+Return: { board, turn, focusedIndex, gameState, status, score, difficulty, handleHumanSelect, handleFocusChange, handleReset, handleToggleDifficulty }
 
 UI + ACCESSIBILITY REQUIREMENTS:
 - Board rendered as a 3×3 CSS grid of <button> cells with `role="grid"`
@@ -294,6 +304,7 @@ src/ui/atoms/OMark.jsx
 
 src/ui/atoms/CellButton.jsx
 - React.forwardRef
+- PropTypes validation
 - props: value, disabled, isFocused, isWinning, onClick, ariaLabel, tabIndex
 - Renders XMark when value==="X", OMark when value==="O"
 - apply focus/disabled/token/winning CSS classes (cell-winning)
@@ -306,28 +317,49 @@ src/ui/atoms/GameTitle.jsx
 
 src/ui/atoms/ResetButton.jsx
 - React.memo
+- PropTypes validation
 - props: onClick, label (default "Reset Game")
 - Renders styled <button>
 
+src/ui/atoms/DifficultyToggle.jsx
+- React.memo
+- PropTypes validation
+- props: difficulty ('easy'|'hard'), onToggle (function)
+- Pill-shaped toggle with two buttons (Easy / Hard)
+- Active button highlighted with accent color
+- role="group", aria-label="CPU difficulty", aria-pressed on each option
+
+src/app/useGridKeyboard.js
+- Custom hook: useGridKeyboard(focusedIndex, onFocusChange, onSelect)
+- Document-level keydown listener (useEffect, empty deps, mutable refs)
+- Handles ArrowUp/Down/Left/Right and W/A/S/D for navigation
+- Handles Space/Enter for selection
+- Clamps at grid edges (no wrapping)
+- Imported by BoardGrid
+
 src/ui/molecules/BoardGrid.jsx
+- PropTypes validation
 - props: board, focusedIndex, onFocusChange, onSelect, isGameOver, winLine
 - Maps board → 9 CellButtons with refs; passes isWinning based on winLine
-- Document-level keydown listener (useEffect, empty deps, mutable refs)
+- Uses useGridKeyboard hook for keyboard navigation
 - Syncs DOM focus via useEffect watching focusedIndex
 - Detects board reset and applies board-resetting class (300ms fade/scale animation)
 - role="grid", aria-label="Tic-Tac-Toe board"
 
 src/ui/molecules/ScoreBoard.jsx
 - React.memo
+- PropTypes validation
 - props: score ({ X: number, O: number, draws: number })
 - Displays 3 score items: You (X), Draws, CPU (O) with color-coded values
 - aria-label="Score"
 
 src/ui/molecules/StatusBar.jsx
+- PropTypes validation
 - props: statusText
 - role="status", aria-live="polite", aria-atomic="true"
 
 src/ui/molecules/GameControls.jsx
+- PropTypes validation
 - props: onReset
 - Wraps ResetButton in a div.game-controls
 
@@ -337,7 +369,8 @@ src/ui/molecules/Instructions.jsx
 
 src/ui/organisms/TicTacToeGame.jsx
 - Uses useTicTacToe hook
-- Renders ONLY: GameTitle, StatusBar, ScoreBoard, BoardGrid, GameControls, Instructions
+- Renders ONLY: GameTitle, DifficultyToggle, StatusBar, ScoreBoard, BoardGrid, GameControls, Instructions
+- Passes difficulty + onToggle to DifficultyToggle
 - Passes winLine to BoardGrid and score to ScoreBoard
 - ZERO inline HTML — pure composition of atoms/molecules
 - Wrapping container div.game-container is the ONLY raw element
@@ -350,7 +383,8 @@ DELIVERABLE OUTPUT FORMAT:
 
 QUALITY CHECKLIST (MUST PASS):
 - Single user: Human is X, CPU is O
-- CPU uses smart AI (win → block → center → corner → edge)
+- CPU uses smart AI by default (win → block → center → corner → edge)
+- Difficulty toggle switches between Easy (random) and Hard (smart) AI
 - CPU moves automatically after human (unless game over)
 - Mouse + keyboard selection both work (arrows + WASD)
 - Win/draw detection correct for all 8 lines
@@ -363,12 +397,14 @@ QUALITY CHECKLIST (MUST PASS):
 - DRY: WIN_LINES and TOKENS defined once
 - Organism has ZERO inline HTML beyond container div
 - SVG marks animate with draw-on effect
-- Pure atoms wrapped in React.memo (XMark, OMark, GameTitle, ResetButton, ScoreBoard)
+- Pure atoms wrapped in React.memo (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, ScoreBoard)
+- PropTypes validation on all components that accept props
 - Dark mode works automatically via prefers-color-scheme
 - Animations disabled when prefers-reduced-motion: reduce
 - Responsive across phone → tablet → desktop
 - All ARIA attributes present and correct
-- Keyboard navigation works via document-level listener (not per-button onKeyDown)
+- Keyboard navigation works via useGridKeyboard hook (document-level listener, not per-button onKeyDown)
 - ESLint + Prettier configured with lint/format npm scripts
+- Bundle analysis via rollup-plugin-visualizer (dist/bundle-report.html)
 
 BEGIN IMPLEMENTATION NOW.

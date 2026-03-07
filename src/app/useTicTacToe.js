@@ -1,7 +1,7 @@
 import { useReducer, useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { createEmptyBoard, applyMove, isCellEmpty } from '../domain/board.js'
 import { getGameState } from '../domain/rules.js'
-import { chooseCpuMoveSmart } from '../domain/ai.js'
+import { chooseCpuMoveSmart, chooseCpuMoveRandom } from '../domain/ai.js'
 import { TOKENS, CPU_DELAY_MS } from '../domain/constants.js'
 
 // ── Actions ──────────────────────────────────────────────────────────────────
@@ -46,18 +46,8 @@ const gameReducer = (state, action) => {
 
     case ACTIONS.CPU_MOVE: {
       if (state.turn !== TOKENS.CPU) return state
-
-      const { isOver: alreadyOver } = getGameState(state.board)
-      if (alreadyOver) return state
-
-      let cpuIndex
-      try {
-        cpuIndex = chooseCpuMoveSmart(state.board, TOKENS.CPU, TOKENS.HUMAN)
-      } catch {
-        return state // no moves available
-      }
-
-      const board = applyMove(state.board, cpuIndex, TOKENS.CPU)
+      const { index } = action.payload
+      const board = applyMove(state.board, index, TOKENS.CPU)
       return {
         ...state,
         board,
@@ -91,6 +81,7 @@ export const useTicTacToe = () => {
   const [state, dispatch] = useReducer(gameReducer, null, createInitialState)
   const cpuTimeoutRef = useRef(null)
   const [score, setScore] = useState({ [TOKENS.HUMAN]: 0, [TOKENS.CPU]: 0, draws: 0 })
+  const [difficulty, setDifficulty] = useState('hard')
   const prevGameOverRef = useRef(false)
 
   // Derive game state from board (pure, no side-effects)
@@ -142,13 +133,25 @@ export const useTicTacToe = () => {
 
   // ── Effects ──────────────────────────────────────────────────────────────
 
+  const handleToggleDifficulty = useCallback(() => {
+    setDifficulty((prev) => (prev === 'hard' ? 'easy' : 'hard'))
+  }, [])
+
   // Schedule CPU move when turn switches to CPU
   useEffect(() => {
     if (state.turn !== TOKENS.CPU) return
     if (gameState.isOver) return
 
+    const chooseFn = difficulty === 'hard' ? chooseCpuMoveSmart : chooseCpuMoveRandom
+    let cpuIndex
+    try {
+      cpuIndex = chooseFn(state.board, TOKENS.CPU, TOKENS.HUMAN)
+    } catch {
+      return // no moves available
+    }
+
     cpuTimeoutRef.current = setTimeout(() => {
-      dispatch({ type: ACTIONS.CPU_MOVE })
+      dispatch({ type: ACTIONS.CPU_MOVE, payload: { index: cpuIndex } })
       cpuTimeoutRef.current = null
     }, CPU_DELAY_MS)
 
@@ -158,7 +161,7 @@ export const useTicTacToe = () => {
         cpuTimeoutRef.current = null
       }
     }
-  }, [state.turn, gameState.isOver])
+  }, [state.turn, gameState.isOver, difficulty, state.board])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -176,8 +179,10 @@ export const useTicTacToe = () => {
     gameState,
     status,
     score,
+    difficulty,
     handleHumanSelect,
     handleFocusChange,
     handleReset,
+    handleToggleDifficulty,
   }
 }

@@ -43,9 +43,10 @@ Turn flow:
 4. CPU move happens automatically once per human move
 5. Score (wins/losses/draws) persists across rounds until page refresh
 
-CPU logic (smart AI — active):
+CPU logic (smart AI — active by default):
 Deterministic priority: win → block → center → corner → edge.
-Random AI (`chooseCpuMoveRandom`) remains exported for easy-mode use.
+Random AI (`chooseCpuMoveRandom`) is used in Easy mode.
+Difficulty is toggleable via a UI switch (Easy = random, Hard = smart).
 
 Architecture expectations:
 Use CLEAN architecture + Atomic Design and keep code modular.
@@ -64,7 +65,8 @@ src/
     rules.js                     # getWinner → {token, line}, getWinnerToken, isBoardFull, isDraw, getGameState
     ai.js                        # chooseCpuMoveRandom, chooseCpuMoveSmart (active)
   app/
-    useTicTacToe.js              # useReducer + useState (score) + CPU scheduling
+    useTicTacToe.js              # useReducer + useState (score, difficulty) + CPU scheduling
+    useGridKeyboard.js           # Reusable document-level keyboard navigation hook
   ui/
     atoms/
       CellButton.jsx             # Single cell with SVG mark rendering + winning highlight
@@ -72,8 +74,9 @@ src/
       OMark.jsx                  # Animated SVG "O" (React.memo, draw-on effect)
       GameTitle.jsx              # Game heading atom (React.memo)
       ResetButton.jsx            # Reset button atom (React.memo)
+      DifficultyToggle.jsx       # Easy/Hard AI toggle atom (React.memo)
     molecules/
-      BoardGrid.jsx              # 3×3 grid + keyboard nav + reset animation
+      BoardGrid.jsx              # 3×3 grid + reset animation (uses useGridKeyboard hook)
       StatusBar.jsx              # Game status display (aria-live)
       ScoreBoard.jsx             # Win/loss/draw score display (React.memo)
       GameControls.jsx           # Composes ResetButton
@@ -112,9 +115,11 @@ On reset, animate the board with a fade/scale transition.
 
 Code quality:
 • ESLint (flat config) + Prettier configured with `lint`, `lint:fix`, `format`, `format:check` scripts
-• React.memo on pure atoms (XMark, OMark, GameTitle, ResetButton) and ScoreBoard molecule
+• React.memo on pure atoms (XMark, OMark, GameTitle, ResetButton, DifficultyToggle) and ScoreBoard molecule
+• PropTypes runtime validation on all components that accept props
 • `getWinner` returns `{ token, line }` — UI uses `winLine` to highlight winning cells
 • `CPU_DELAY_MS` constant in `constants.js` (currently 400ms)
+• Bundle analysis via `rollup-plugin-visualizer` (generates `dist/bundle-report.html` on build)
 
 Include a Reset button to restart the game.
 
@@ -129,6 +134,7 @@ Keyboard navigation critical rule:
 Use `document.addEventListener('keydown', handler)` in a `useEffect` with empty deps.
 Keep latest state in mutable refs (`useRef`) to avoid stale closures.
 Do NOT use `onKeyDown` on individual buttons — it fails when focus is elsewhere.
+This logic lives in the reusable `useGridKeyboard` hook (`src/app/useGridKeyboard.js`).
 
 Ensure:
 • cells cannot be overwritten

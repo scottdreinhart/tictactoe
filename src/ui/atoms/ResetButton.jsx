@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 /**
  * ResetButton — Atom (pure presentational)
@@ -19,5 +20,10 @@ const ResetButton = React.memo(({ onClick, label = 'Reset Game' }) => (
 ))
 
 ResetButton.displayName = 'ResetButton'
+
+ResetButton.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  label: PropTypes.string,
+}
 
 export default ResetButton

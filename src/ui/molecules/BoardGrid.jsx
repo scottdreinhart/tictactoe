@@ -1,47 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
 import { BOARD_SIZE } from '../../domain/constants.js'
 import CellButton from '../atoms/CellButton.jsx'
-
-const NAV_KEYS = new Set([
-  'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-  'w', 'a', 's', 'd',
-  'W', 'A', 'S', 'D',
-])
-
-/**
- * Compute the next focused index for a given arrow direction.
- * Clamps at grid edges (no wrapping).
- */
-const getNextIndex = (current, key) => {
-  const row = Math.floor(current / BOARD_SIZE)
-  const col = current % BOARD_SIZE
-  const k = key.length === 1 ? key.toLowerCase() : key
-
-  switch (k) {
-    case 'ArrowUp':
-    case 'w':
-      return row > 0 ? current - BOARD_SIZE : current
-    case 'ArrowDown':
-    case 's':
-      return row < BOARD_SIZE - 1 ? current + BOARD_SIZE : current
-    case 'ArrowLeft':
-    case 'a':
-      return col > 0 ? current - 1 : current
-    case 'ArrowRight':
-    case 'd':
-      return col < BOARD_SIZE - 1 ? current + 1 : current
-    default:
-      return current
-  }
-}
+import useGridKeyboard from '../../app/useGridKeyboard.js'
 
 /**
  * BoardGrid — Molecule
  *
  * Renders the 3×3 grid of CellButtons.
- * Owns all keyboard navigation logic (arrows + WASD) via a
- * document-level keydown listener — works regardless of which
- * element currently holds DOM focus.
+ * Keyboard navigation is handled by the useGridKeyboard hook.
  *
  * @param {{
  *   board: Array<null|string>,
@@ -57,14 +24,8 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
   const [isResetting, setIsResetting] = useState(false)
   const prevBoardRef = useRef(board)
 
-  // Keep mutable refs to latest values so the listener closure never goes stale
-  const focusedRef = useRef(focusedIndex)
-  const selectRef = useRef(onSelect)
-  const focusChangeRef = useRef(onFocusChange)
-
-  focusedRef.current = focusedIndex
-  selectRef.current = onSelect
-  focusChangeRef.current = onFocusChange
+  // Keyboard navigation via reusable hook
+  useGridKeyboard(focusedIndex, onFocusChange, onSelect)
 
   // Detect board reset (board went from having marks to all empty)
   useEffect(() => {
@@ -85,32 +46,6 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
       el.focus()
     }
   }, [focusedIndex])
-
-  // Document-level keydown listener — always active, no dependency on button focus
-  useEffect(() => {
-    const handler = (e) => {
-      const key = e.key
-
-      // Navigation
-      if (NAV_KEYS.has(key)) {
-        e.preventDefault()
-        const next = getNextIndex(focusedRef.current, key)
-        if (next !== focusedRef.current) {
-          focusChangeRef.current(next)
-        }
-        return
-      }
-
-      // Selection
-      if (key === ' ' || key === 'Enter') {
-        e.preventDefault()
-        selectRef.current(focusedRef.current)
-      }
-    }
-
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, []) // empty deps — single listener for lifetime of component
 
   return (
     <div
@@ -138,6 +73,15 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
       })}
     </div>
   )
+}
+
+BoardGrid.propTypes = {
+  board: PropTypes.arrayOf(PropTypes.oneOf(['X', 'O', null])).isRequired,
+  focusedIndex: PropTypes.number.isRequired,
+  onFocusChange: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  isGameOver: PropTypes.bool.isRequired,
+  winLine: PropTypes.arrayOf(PropTypes.number),
 }
 
 export default BoardGrid
