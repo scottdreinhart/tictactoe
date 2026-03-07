@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 /**
  * StatusBar: Displays current game status with aria-live for accessibility
@@ -13,6 +14,10 @@ const StatusBar = ({ statusText }) => {
       <p>{statusText}</p>
     </div>
   )
+}
+
+StatusBar.propTypes = {
+  statusText: PropTypes.string.isRequired,
 }
 
 export default StatusBar

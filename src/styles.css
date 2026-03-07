@@ -355,6 +355,69 @@ body {
   text-align: center;
 }
 
+/* ─── Difficulty Toggle ─── */
+.game-toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.difficulty-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--accent);
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.difficulty-option {
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  padding: 6px 20px;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease;
+  letter-spacing: 0.02em;
+}
+
+.difficulty-option:hover:not(.difficulty-active) {
+  background: var(--cell-hover-bg);
+}
+
+.difficulty-active {
+  background: var(--accent);
+  color: #fff;
+  cursor: default;
+}
+
+/* ─── Sound Toggle ─── */
+.sound-toggle {
+  background: transparent;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  cursor: pointer;
+  transition: background-color 200ms ease, transform 200ms ease;
+  line-height: 1;
+}
+
+.sound-toggle:hover {
+  background: var(--cell-hover-bg);
+  transform: scale(1.1);
+}
+
+.sound-toggle:active {
+  transform: scale(0.95);
+}
+
 .reset-button {
   background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   color: white;

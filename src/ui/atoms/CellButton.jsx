@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import XMark from './XMark.jsx'
 import OMark from './OMark.jsx'
 
@@ -49,5 +50,15 @@ const CellButton = React.forwardRef(
 )
 
 CellButton.displayName = 'CellButton'
+
+CellButton.propTypes = {
+  value: PropTypes.oneOf(['X', 'O', null]),
+  disabled: PropTypes.bool.isRequired,
+  isFocused: PropTypes.bool.isRequired,
+  isWinning: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
+  ariaLabel: PropTypes.string.isRequired,
+  tabIndex: PropTypes.number.isRequired,
+}
 
 export default CellButton

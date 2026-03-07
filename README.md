@@ -10,18 +10,23 @@ src/
 │   ├── constants.js               # TOKENS, WIN_LINES, BOARD_SIZE, CPU_DELAY_MS
 │   ├── board.js                   # Board operations (create, apply move, get empty cells)
 │   ├── rules.js                   # Win/draw detection (returns winning line)
-│   └── ai.js                     # CPU move selection (random + smart)
+│   ├── ai.js                     # CPU move selection (random + smart)
+│   └── sounds.js                  # Web Audio API synthesized sound effects
 ├── app/
-│   └── useTicTacToe.js            # Game state + score management hook (useReducer + useState)
+│   ├── useTicTacToe.js            # Game state + score + difficulty management hook
+│   ├── useGridKeyboard.js         # Reusable document-level keyboard navigation hook
+│   └── useSoundEffects.js         # Sound toggle + play functions (respects reduced-motion)
 ├── ui/
 │   ├── atoms/
 │   │   ├── CellButton.jsx         # Single cell with SVG mark rendering + winning highlight
 │   │   ├── XMark.jsx              # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx              # Animated SVG "O" (React.memo, draw-on effect)
 │   │   ├── GameTitle.jsx          # Game heading (React.memo)
-│   │   └── ResetButton.jsx        # Reset/new-game button (React.memo)
+│   │   ├── ResetButton.jsx        # Reset/new-game button (React.memo)
+│   │   ├── DifficultyToggle.jsx   # Easy/Hard AI toggle (React.memo)
+│   │   └── SoundToggle.jsx        # Sound on/off toggle (React.memo)
 │   ├── molecules/
-│   │   ├── BoardGrid.jsx          # 3×3 grid with keyboard nav + reset animation
+│   │   ├── BoardGrid.jsx          # 3×3 grid with reset animation (uses useGridKeyboard)
 │   │   ├── StatusBar.jsx          # Game status display (aria-live)
 │   │   ├── ScoreBoard.jsx         # Win/loss/draw score display (React.memo)
 │   │   ├── GameControls.jsx       # Action buttons (composes ResetButton)
@@ -33,7 +38,7 @@ src/
 
 index.html                         # HTML entry point
 package.json                       # Dependencies & scripts
-vite.config.js                     # Vite configuration (host, port, strictPort)
+vite.config.js                     # Vite configuration + rollup-plugin-visualizer
 eslint.config.js                   # ESLint flat config (React + hooks + Prettier)
 .prettierrc                        # Prettier formatting rules
 ```
@@ -45,9 +50,11 @@ eslint.config.js                   # ESLint flat config (React + hooks + Prettie
 - **Board Representation**: 9-cell array with immutable updates
 - **Win Detection**: All 8 winning lines checked (3 rows, 3 columns, 2 diagonals)
 - **Draw Detection**: Board full + no winner = draw
-- **CPU Move**: Smart priority AI active (win → block → center → corner → edge)
+- **CPU Move**: Smart priority AI (default Hard) or random Easy mode — switchable via toggle
 - **Score Tracking**: Win/loss/draw tallies persisted across rounds
 - **Win-Line Highlight**: Winning 3 cells pulse with animated glow
+- **Difficulty Toggle**: Pill-shaped Easy/Hard switch; Easy = random, Hard = smart priority
+- **Sound Effects**: Synthesized via Web Audio API — move pop, win arpeggio, draw tone (toggleable, respects `prefers-reduced-motion`)
 
 ### Visual Design
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect
@@ -92,7 +99,8 @@ Also supports high-DPI/Retina displays and print media.
 - **Pure Functions**: All domain logic is immutable and deterministic
 - **DRY**: Single source of truth for constants (TOKENS, WIN_LINES)
 - **No Race Conditions**: CPU timeout managed via ref; cancelled on reset/unmount
-- **Document-Level Keyboard**: Uses `document.addEventListener('keydown')` with mutable refs to avoid stale closures
+- **Reusable Hooks**: `useGridKeyboard` extracted from BoardGrid for document-level keyboard navigation
+- **PropTypes**: Runtime prop validation on all components that accept props
 
 ## Installation & Running
 
@@ -146,6 +154,11 @@ getGameState(board)          // → { winner, winLine, isDraw, isOver }
 // AI
 chooseCpuMoveRandom(board)                       // Phase A — random
 chooseCpuMoveSmart(board, cpuToken, humanToken)   // Phase B — priority-based
+
+// Sound effects (Web Audio API)
+playMoveSound()   // short pop on move placement
+playWinSound()    // ascending C-E-G arpeggio
+playDrawSound()   // descending A-F two-note tone
 ```
 
 ## Smart AI (Active)
@@ -157,14 +170,24 @@ The CPU uses `chooseCpuMoveSmart` with deterministic priority:
 4. Take corner
 5. Take edge
 
-The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode use.
+The random AI (`chooseCpuMoveRandom`) remains exported and is used in Easy mode.
 
 ## Technical Highlights
 
-- **React 18** with Hooks (`useReducer` for state, `useState` for score, `useCallback`/`useMemo` for stable refs)
-- **React.memo** on pure atoms (XMark, OMark, GameTitle, ResetButton, ScoreBoard) to skip unnecessary re-renders
+- **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
+- **React.memo** on pure atoms (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, ScoreBoard) to skip unnecessary re-renders
+- **PropTypes** runtime validation on all components that accept props (stripped from production builds)
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
+- **Production build optimizations**:
+  - Vendor chunk splitting — React/ReactDOM cached independently from app code
+  - PropTypes stripped from production via `babel-plugin-transform-react-remove-prop-types`
+  - Modern build target (`es2020`) — no legacy polyfills
+  - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
+  - `modulePreload` polyfill removed — modern browsers handle it natively
+- **Bundle analysis** via `rollup-plugin-visualizer` — generates `dist/bundle-report.html` on build
 - **ESLint + Prettier** for code quality (flat config, React + hooks plugins)
+- **Reusable `useGridKeyboard` hook** — document-level keyboard navigation extracted from BoardGrid
+- **Sound effects** via Web Audio API — zero audio files, synthesized tones (~1.3KB lazy chunk)
 - **CSS Grid** with `aspect-ratio: 1` for perfect square cells
 - **CSS Custom Properties** with light/dark theme sets
 - **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes
@@ -179,7 +202,7 @@ The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode 
 - ✅ Semantic HTML (buttons, grid role)
 - ✅ ARIA live regions for status updates
 - ✅ Keyboard-only playable (arrows, WASD, Space, Enter)
-- ✅ `prefers-reduced-motion` respected (animations disabled)
+- ✅ `prefers-reduced-motion` respected (animations and sounds disabled)
 - ✅ `forced-colors` / high-contrast mode support
 - ✅ Print stylesheet (hides controls, uses black/grey marks)
 
@@ -189,14 +212,14 @@ The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode 
 - [x] ~~**Activate smart AI**~~ — done (priority: win → block → center → corner → edge)
 - [ ] **Minimax AI (Phase C)** — implement full minimax with alpha-beta pruning for unbeatable CPU play
 - [x] ~~**Configurable CPU delay**~~ — done (`CPU_DELAY_MS` constant, currently 400ms)
-- [ ] **Difficulty toggle** — UI switch between Easy (random) and Hard (smart) AI
+- [x] ~~**Difficulty toggle**~~ — done (Easy = random, Hard = smart; pill-shaped toggle)
 - [ ] **Web Worker AI** — move CPU computation to a Web Worker so the UI thread never blocks
 
 ### Visual & UX
 - [x] ~~**Win-line highlight**~~ — done (winning cells pulse with `win-pulse` animation)
 - [x] ~~**Score tracking display**~~ — done (ScoreBoard molecule: You/Draws/CPU tallies)
 - [x] ~~**Smooth board reset transition**~~ — done (fade + scale `board-reset` animation)
-- [ ] **Sound effects** — move placement, win, draw sounds (respect `prefers-reduced-motion`)
+- [x] ~~**Sound effects**~~ — done (Web Audio API: move pop, win arpeggio, draw tone; toggleable + reduced-motion aware)
 - [ ] **Confetti / particle effect** on win
 - [ ] **Move history timeline** — visual sidebar showing each move in order
 - [ ] **Theme picker** — user-selectable color schemes beyond auto light/dark
@@ -205,18 +228,18 @@ The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode 
 ### Code Quality & Testing
 - [x] ~~**ESLint + Prettier**~~ — done (flat config, React + hooks plugins, `lint`/`format` scripts)
 - [x] ~~**`getWinner` returns winning line**~~ — done (returns `{ token, line }`, `getWinnerToken` convenience)
-- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, ScoreBoard)
+- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle, ScoreBoard)
 - [ ] **Unit tests** — domain functions (`board.js`, `rules.js`, `ai.js`) are pure and test-ready; add Vitest or Jest suite
 - [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, StatusBar
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
-- [ ] **PropTypes or TypeScript** — add runtime prop validation (PropTypes) or migrate to TypeScript for static type safety
+- [x] ~~**PropTypes**~~ — done (runtime prop validation on all components that accept props)
 - [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
 
 ### Performance
 - [ ] **Lazy SVG mount** — only mount `XMark`/`OMark` when `value` transitions from `null` (currently conditional render handles this, but `Suspense` could be used for heavier marks)
 
 ### Architecture
-- [ ] **Extract keyboard hook** — pull document-level keydown logic from `BoardGrid` into a reusable `useGridKeyboard` hook
+- [x] ~~**Extract keyboard hook**~~ — done (`useGridKeyboard.js` — reusable document-level keydown logic)
 - [ ] **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
 
 ### DevOps & Deployment
@@ -224,4 +247,26 @@ The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode 
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
 - [ ] **Dependabot auto-merge** — resolve the existing moderate vulnerability alert and enable auto-updates
 - [ ] **PWA support** — add `manifest.json` + service worker for offline play and home-screen install
-- [ ] **Bundle analysis** — add `rollup-plugin-visualizer` to audit production bundle size
+- [x] ~~**Bundle analysis**~~ — done (`rollup-plugin-visualizer` generates `dist/bundle-report.html` on build)
+
+## Future Game Ideas
+
+Simple browser games of similar scope and effort that could be built with the same React + CLEAN architecture stack:
+
+| Game | Description | Complexity vs Tic-Tac-Toe |
+|------|-------------|---------------------------|
+| **Shut the Box** | Roll dice, flip numbered tiles to match the total; lowest remaining sum wins | Similar — grid UI + dice logic |
+| **Mancala (Kalah)** | Two-row pit-and-stones capture game; simple rules, satisfying chain moves | Slightly higher — seed-sowing animation |
+| **Connect Four** | Drop discs into a 7×6 grid; first to four in a row wins | Similar — larger grid, same win-check pattern |
+| **Simon Says** | Repeat a growing sequence of colors/sounds; memory challenge | Similar — leverages existing Web Audio API |
+| **Lights Out** | Toggle a 5×5 grid of lights; goal is to turn them all off | Similar — grid + toggle logic |
+| **Nim** | Players take turns removing objects from piles; last to take loses | Simpler — minimal UI, pure strategy |
+| **Hangman** | Guess letters to reveal a hidden word before the stick figure completes | Similar — alphabet grid + SVG drawing |
+| **Memory / Concentration** | Flip cards to find matching pairs on a grid | Similar — grid + flip animation |
+| **2048** | Slide numbered tiles on a 4×4 grid; merge matching tiles to reach 2048 | Slightly higher — swipe input + merge logic |
+| **Reversi (Othello)** | Place discs to flip opponent's pieces; most discs wins | Moderately higher — flip-chain logic + AI |
+| **Checkers** | Classic diagonal-move capture board game | Higher — move validation + multi-jump |
+| **Battleship** | Place ships on a grid, take turns guessing opponent locations | Moderately higher — two-board UI + ship placement |
+| **Snake** | Steer a growing snake to eat food without hitting walls or itself | Different — real-time game loop instead of turn-based |
+| **Monchola** | Traditional dice/board race game with capture mechanics | Similar — dice roll + board path + capture rules |
+| **Rock Paper Scissors** | Best-of-N rounds against the CPU with hand animations | Simpler — minimal state, animation-focused |

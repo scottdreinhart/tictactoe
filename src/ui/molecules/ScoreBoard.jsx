@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 /**
  * ScoreBoard — Molecule
@@ -25,5 +26,13 @@ const ScoreBoard = React.memo(({ score }) => (
 ))
 
 ScoreBoard.displayName = 'ScoreBoard'
+
+ScoreBoard.propTypes = {
+  score: PropTypes.shape({
+    X: PropTypes.number.isRequired,
+    O: PropTypes.number.isRequired,
+    draws: PropTypes.number.isRequired,
+  }).isRequired,
+}
 
 export default ScoreBoard

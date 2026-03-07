@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 /**
  * GameTitle — Atom (pure presentational)
@@ -12,5 +13,9 @@ const GameTitle = React.memo(({ text }) => (
 ))
 
 GameTitle.displayName = 'GameTitle'
+
+GameTitle.propTypes = {
+  text: PropTypes.string.isRequired,
+}
 
 export default GameTitle

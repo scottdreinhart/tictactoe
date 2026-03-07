@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import ResetButton from '../atoms/ResetButton.jsx'
 
 /**
@@ -14,5 +15,9 @@ const GameControls = ({ onReset }) => (
     <ResetButton onClick={onReset} />
   </div>
 )
+
+GameControls.propTypes = {
+  onReset: PropTypes.func.isRequired,
+}
 
 export default GameControls

@@ -88,3 +88,37 @@ export const chooseCpuMoveSmart = (board, cpuToken, humanToken) => {
   // Edges are [1, 3, 5, 7]
   return empty[0]
 }
+
+/**
+ * PHASE C: Choose CPU move with medium difficulty
+ * Plays tactically (win / block) but picks randomly otherwise.
+ * Beatable but not stupid.
+ *
+ * @param {Array<null|string>} board
+ * @param {string} cpuToken - "O"
+ * @param {string} humanToken - "X"
+ * @returns {number} - index of chosen move
+ * @throws {Error} if no empty cells available
+ */
+export const chooseCpuMoveMedium = (board, cpuToken, humanToken) => {
+  const empty = getEmptyCells(board)
+  if (empty.length === 0) {
+    throw new Error('No empty cells available for CPU move')
+  }
+
+  // 1) Can CPU win this turn?
+  const winMove = findWinningMove(board, cpuToken)
+  if (winMove !== null) {
+    return winMove
+  }
+
+  // 2) Can human win next turn? Block it.
+  const blockMove = findWinningMove(board, humanToken)
+  if (blockMove !== null) {
+    return blockMove
+  }
+
+  // 3) Pick randomly from remaining cells (no positional strategy)
+  const randomIdx = Math.floor(Math.random() * empty.length)
+  return empty[randomIdx]
+}
