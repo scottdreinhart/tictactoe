@@ -242,3 +242,25 @@ The random AI (`chooseCpuMoveRandom`) remains exported and is used in Easy mode.
 - [ ] **Dependabot auto-merge** — resolve the existing moderate vulnerability alert and enable auto-updates
 - [ ] **PWA support** — add `manifest.json` + service worker for offline play and home-screen install
 - [x] ~~**Bundle analysis**~~ — done (`rollup-plugin-visualizer` generates `dist/bundle-report.html` on build)
+
+## Future Game Ideas
+
+Simple browser games of similar scope and effort that could be built with the same React + CLEAN architecture stack:
+
+| Game | Description | Complexity vs Tic-Tac-Toe |
+|------|-------------|---------------------------|
+| **Shut the Box** | Roll dice, flip numbered tiles to match the total; lowest remaining sum wins | Similar — grid UI + dice logic |
+| **Mancala (Kalah)** | Two-row pit-and-stones capture game; simple rules, satisfying chain moves | Slightly higher — seed-sowing animation |
+| **Connect Four** | Drop discs into a 7×6 grid; first to four in a row wins | Similar — larger grid, same win-check pattern |
+| **Simon Says** | Repeat a growing sequence of colors/sounds; memory challenge | Similar — leverages existing Web Audio API |
+| **Lights Out** | Toggle a 5×5 grid of lights; goal is to turn them all off | Similar — grid + toggle logic |
+| **Nim** | Players take turns removing objects from piles; last to take loses | Simpler — minimal UI, pure strategy |
+| **Hangman** | Guess letters to reveal a hidden word before the stick figure completes | Similar — alphabet grid + SVG drawing |
+| **Memory / Concentration** | Flip cards to find matching pairs on a grid | Similar — grid + flip animation |
+| **2048** | Slide numbered tiles on a 4×4 grid; merge matching tiles to reach 2048 | Slightly higher — swipe input + merge logic |
+| **Reversi (Othello)** | Place discs to flip opponent's pieces; most discs wins | Moderately higher — flip-chain logic + AI |
+| **Checkers** | Classic diagonal-move capture board game | Higher — move validation + multi-jump |
+| **Battleship** | Place ships on a grid, take turns guessing opponent locations | Moderately higher — two-board UI + ship placement |
+| **Snake** | Steer a growing snake to eat food without hitting walls or itself | Different — real-time game loop instead of turn-based |
+| **Monchola** | Traditional dice/board race game with capture mechanics | Similar — dice roll + board path + capture rules |
+| **Rock Paper Scissors** | Best-of-N rounds against the CPU with hand animations | Simpler — minimal state, animation-focused |
