@@ -48,6 +48,22 @@
   justify-content: center;
 }
 
+/* ─── Main Content Layout ─── */
+.mainContent {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  position: relative;
+}
+
+.gameContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2.5vh, 24px);
+  min-width: 0;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    GAME OUTCOME EFFECTS — Win / Loss / Draw animations on .root
    ═══════════════════════════════════════════════════════════════════════════ */
