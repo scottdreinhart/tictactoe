@@ -11,6 +11,7 @@
 [![ESLint](https://img.shields.io/badge/ESLint-10-4B32C3?logo=eslint&logoColor=white)](https://github.com/eslint/eslint)
 [![Prettier](https://img.shields.io/badge/Prettier-3-F7B93E?logo=prettier&logoColor=black)](https://github.com/prettier/prettier)
 [![Android](https://img.shields.io/badge/Android-SDK_36-34A853?logo=android&logoColor=white)](https://github.com/android/platform-tools)
+[![All Rights Reserved](https://img.shields.io/badge/All_Rights_Reserved-red)](LICENSE)
 
 **⚠️ PROPRIETARY SOFTWARE — All Rights Reserved**
 
