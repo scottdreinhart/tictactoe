@@ -27,7 +27,7 @@ src/
 │   │   ├── XMark.jsx                 # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx                 # Animated SVG "O" (React.memo, draw-on effect)
 │   │   ├── GameTitle.jsx             # Game heading (React.memo)
-│   │   ├── ResetButton.jsx           # Reset/new-game button (React.memo)
+│   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + animated panel
 │   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard AI toggle (React.memo)
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
 │   │   ├── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
@@ -78,6 +78,12 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 
 ### Controls
 - **Mouse**: Click any empty cell to move
+- **Hamburger Menu** (☰): Sound, Theme, and Help settings organized in a dropdown panel with:
+  - `aria-haspopup` + `aria-expanded` on trigger button
+  - `role="menu"` on panel with labeled sections
+  - Focus trap (Tab/Shift+Tab cycle within panel)
+  - Close on Escape, outside click, or outside touch
+  - Animated ☰ → ✕ transition on open/close
 - **Keyboard**: 
   - **Arrow Keys** or **WASD**: Navigate (↑/W up, ↓/S down, ←/A left, →/D right)
   - **Space** or **Enter**: Select focused cell

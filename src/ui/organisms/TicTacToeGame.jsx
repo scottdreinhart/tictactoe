@@ -9,6 +9,7 @@ import GameTitle from '../atoms/GameTitle.jsx'
 import DifficultyToggle from '../atoms/DifficultyToggle.jsx'
 import SoundToggle from '../atoms/SoundToggle.jsx'
 import ThemeSelector from '../atoms/ThemeSelector.jsx'
+import HamburgerMenu from '../atoms/HamburgerMenu.jsx'
 import ConfettiOverlay from '../atoms/ConfettiOverlay.jsx'
 import NotificationBanner from '../atoms/NotificationBanner.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
@@ -129,14 +130,25 @@ const TicTacToeGame = () => {
 
       <div className="game-toolbar">
         <DifficultyToggle difficulty={difficulty} onSelect={handleSetDifficulty} />
-        <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
-        <ThemeSelector
-          settings={settings}
-          onColorTheme={setColorTheme}
-          onMode={setMode}
-          onColorblind={setColorblind}
-        />
-        <Instructions />
+        <HamburgerMenu>
+          <div className="menu-section" role="menuitem">
+            <span className="menu-section-label">Sound</span>
+            <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
+          </div>
+          <div className="menu-section" role="menuitem">
+            <span className="menu-section-label">Theme</span>
+            <ThemeSelector
+              settings={settings}
+              onColorTheme={setColorTheme}
+              onMode={setMode}
+              onColorblind={setColorblind}
+            />
+          </div>
+          <div className="menu-section" role="menuitem">
+            <span className="menu-section-label">Help</span>
+            <Instructions />
+          </div>
+        </HamburgerMenu>
       </div>
 
       <ScoreBoard score={score} />

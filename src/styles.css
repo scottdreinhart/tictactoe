@@ -1025,6 +1025,124 @@ body {
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
+/* ─── Hamburger Menu ─── */
+.hamburger-menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.hamburger-btn {
+  background: transparent;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 200ms ease, transform 200ms ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hamburger-btn:hover {
+  background: var(--cell-hover-bg);
+  transform: scale(1.05);
+}
+
+.hamburger-btn:active {
+  transform: scale(0.95);
+}
+
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 20px;
+  height: 20px;
+}
+
+.hamburger-line {
+  display: block;
+  height: 2.5px;
+  width: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+
+/* Animate lines to X when open */
+.hamburger-line.line-open:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.hamburger-line.line-open:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-line.line-open:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* Menu panel dropdown */
+.menu-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  background: var(--card-bg);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 32px var(--card-shadow);
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: menu-panel-enter 250ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes menu-panel-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.menu-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--cell-border);
+}
+
+.menu-section:last-child {
+  border-bottom: none;
+}
+
+.menu-section-label {
+  font-size: clamp(0.78rem, 2vw, 0.88rem);
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* When theme selector is inside the menu, its panel needs left-anchor */
+.menu-section .theme-panel {
+  right: auto;
+  left: 0;
+  min-width: 200px;
+}
+
 /* ─── Info Icon + Tooltip (replaces old Instructions block) ─── */
 .info-icon-wrapper {
   position: relative;
@@ -1267,7 +1385,8 @@ body {
   }
 
   .info-icon-wrapper,
-  .notification-banner {
+  .notification-banner,
+  .menu-panel {
     display: none;
   }
 }
@@ -1294,7 +1413,8 @@ body {
 
   .reset-button,
   .info-icon-wrapper,
-  .notification-banner {
+  .notification-banner,
+  .hamburger-menu {
     display: none;
   }
 
