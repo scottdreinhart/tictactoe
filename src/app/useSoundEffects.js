@@ -51,14 +51,18 @@ const useSoundEffects = () => {
   }, [shouldPlay])
 
   const playWin = useCallback(() => {
-    if (shouldPlay()) getSounds().then((m) => m.playWinSound())
+    if (shouldPlay()) getSounds().then((m) => m.playWinMusic())
+  }, [shouldPlay])
+
+  const playLoss = useCallback(() => {
+    if (shouldPlay()) getSounds().then((m) => m.playLossMusic())
   }, [shouldPlay])
 
   const playDraw = useCallback(() => {
     if (shouldPlay()) getSounds().then((m) => m.playDrawSound())
   }, [shouldPlay])
 
-  return { soundEnabled, toggleSound, playMove, playWin, playDraw }
+  return { soundEnabled, toggleSound, playMove, playWin, playLoss, playDraw }
 }
 
 export default useSoundEffects

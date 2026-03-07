@@ -81,6 +81,101 @@ export const playWinSound = () => {
 }
 
 /**
+ * Win music — triumphant fanfare with harmonics (~2 s)
+ * Ascending C-major arpeggio capped by a bright sustained chord.
+ */
+export const playWinMusic = () => {
+  const ctx = getContext()
+  const t = ctx.currentTime
+
+  // Melody notes: C4 → E4 → G4 → C5, then a final major chord
+  const melody = [
+    { freq: 261.63, start: 0,    dur: 0.25 },  // C4
+    { freq: 329.63, start: 0.2,  dur: 0.25 },  // E4
+    { freq: 392.0,  start: 0.4,  dur: 0.25 },  // G4
+    { freq: 523.25, start: 0.6,  dur: 0.6  },  // C5 (sustained)
+  ]
+
+  // Final chord: C5 + E5 + G5 together
+  const chord = [
+    { freq: 523.25, start: 0.9, dur: 0.9 },  // C5
+    { freq: 659.25, start: 0.9, dur: 0.9 },  // E5
+    { freq: 783.99, start: 0.9, dur: 0.9 },  // G5
+  ]
+
+  melody.forEach(({ freq, start, dur }) => {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'square'
+    osc.frequency.setValueAtTime(freq, t + start)
+    gain.gain.setValueAtTime(0.1, t + start)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + start + dur)
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.start(t + start)
+    osc.stop(t + start + dur)
+  })
+
+  chord.forEach(({ freq, start, dur }) => {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'triangle'
+    osc.frequency.setValueAtTime(freq, t + start)
+    gain.gain.setValueAtTime(0.12, t + start)
+    gain.gain.linearRampToValueAtTime(0.08, t + start + dur * 0.6)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + start + dur)
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.start(t + start)
+    osc.stop(t + start + dur)
+  })
+}
+
+/**
+ * Loss music — sombre descending minor phrase (~2 s)
+ * Descending E-minor walk down finishing on a low sustained note.
+ */
+export const playLossMusic = () => {
+  const ctx = getContext()
+  const t = ctx.currentTime
+
+  // Descending melody: E4 → D4 → C4 → B3 → low G3
+  const notes = [
+    { freq: 329.63, start: 0,    dur: 0.35 },  // E4
+    { freq: 293.66, start: 0.3,  dur: 0.35 },  // D4
+    { freq: 261.63, start: 0.6,  dur: 0.35 },  // C4
+    { freq: 246.94, start: 0.9,  dur: 0.35 },  // B3
+    { freq: 196.0,  start: 1.2,  dur: 0.8  },  // G3 (sustained)
+  ]
+
+  notes.forEach(({ freq, start, dur }) => {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(freq, t + start)
+    gain.gain.setValueAtTime(0.14, t + start)
+    gain.gain.linearRampToValueAtTime(0.06, t + start + dur * 0.5)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + start + dur)
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.start(t + start)
+    osc.stop(t + start + dur)
+  })
+
+  // Subtle minor third drone underneath the last note
+  const drone = ctx.createOscillator()
+  const droneGain = ctx.createGain()
+  drone.type = 'triangle'
+  drone.frequency.setValueAtTime(233.08, t + 1.2) // Bb3 — minor colour
+  droneGain.gain.setValueAtTime(0.06, t + 1.2)
+  droneGain.gain.exponentialRampToValueAtTime(0.001, t + 2.0)
+  drone.connect(droneGain)
+  droneGain.connect(ctx.destination)
+  drone.start(t + 1.2)
+  drone.stop(t + 2.0)
+}
+
+/**
  * Draw — neutral descending two-note tone
  */
 export const playDrawSound = () => {

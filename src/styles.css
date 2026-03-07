@@ -668,6 +668,97 @@ body {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAME OUTCOME EFFECTS — Win / Loss / Draw animations on .game-container
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Confetti canvas overlay */
+.confetti-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Win — golden glow border pulse */
+.game-container.outcome-win {
+  animation: win-glow 1.2s ease-in-out 2;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes win-glow {
+  0%, 100% {
+    box-shadow: 0 12px 48px var(--card-shadow);
+  }
+  50% {
+    box-shadow: 0 0 40px 8px rgba(250, 204, 21, 0.5), 0 12px 48px var(--card-shadow);
+  }
+}
+
+/* Loss — shake + red flash */
+.game-container.outcome-loss {
+  animation: loss-shake 500ms ease-in-out;
+}
+
+@keyframes loss-shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-6px); }
+  20% { transform: translateX(6px); }
+  30% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  50% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+.game-container.outcome-loss .board-grid {
+  animation: loss-flash 600ms ease-out;
+}
+
+@keyframes loss-flash {
+  0% {
+    box-shadow: inset 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+  30% {
+    box-shadow: inset 0 0 30px 5px rgba(220, 38, 38, 0.3);
+  }
+  100% {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Draw — brief desaturation pulse */
+.game-container.outcome-draw {
+  animation: draw-fade 1s ease-in-out;
+}
+
+@keyframes draw-fade {
+  0%, 100% {
+    filter: none;
+  }
+  40% {
+    filter: grayscale(0.6) brightness(0.9);
+  }
+}
+
+.game-container.outcome-draw .board-grid {
+  animation: draw-board-pulse 800ms ease-in-out;
+}
+
+@keyframes draw-board-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
 /* ─── Controls ─── */
 .game-controls {
   width: 100%;

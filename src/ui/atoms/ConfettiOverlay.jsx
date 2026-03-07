@@ -1,0 +1,105 @@
+import React, { useEffect, useRef } from 'react'
+
+const PARTICLE_COUNT = 80
+const GRAVITY = 0.003
+const COLORS = [
+  '#667eea', '#764ba2', '#f97316', '#22c55e',
+  '#f43f5e', '#0ea5e9', '#a78bfa', '#fbbf24',
+]
+
+/**
+ * ConfettiOverlay — Atom
+ *
+ * Canvas-based confetti burst that auto-plays on mount and
+ * self-cleans after the animation completes (~3 seconds).
+ * Rendered as a fixed overlay covering the game container.
+ */
+const ConfettiOverlay = ({ onDone }) => {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    let animId = null
+
+    const resize = () => {
+      const rect = canvas.parentElement.getBoundingClientRect()
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+      canvas.style.width = `${rect.width}px`
+      canvas.style.height = `${rect.height}px`
+      ctx.scale(dpr, dpr)
+    }
+    resize()
+
+    const w = canvas.width / dpr
+    const h = canvas.height / dpr
+
+    // Create particles
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+      x: w / 2 + (Math.random() - 0.5) * w * 0.3,
+      y: h * 0.35,
+      vx: (Math.random() - 0.5) * 8,
+      vy: -Math.random() * 6 - 2,
+      size: Math.random() * 6 + 3,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rotation: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 12,
+      opacity: 1,
+    }))
+
+    let frame = 0
+    const maxFrames = 180 // ~3s at 60fps
+
+    const animate = () => {
+      frame++
+      ctx.clearRect(0, 0, w, h)
+
+      let alive = 0
+      for (const p of particles) {
+        p.x += p.vx
+        p.vy += GRAVITY * 60 // gravity per frame
+        p.y += p.vy
+        p.rotation += p.rotSpeed
+        p.opacity = Math.max(0, 1 - frame / maxFrames)
+        p.vx *= 0.99 // air friction
+
+        if (p.opacity <= 0) continue
+        alive++
+
+        ctx.save()
+        ctx.globalAlpha = p.opacity
+        ctx.translate(p.x, p.y)
+        ctx.rotate((p.rotation * Math.PI) / 180)
+        ctx.fillStyle = p.color
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6)
+        ctx.restore()
+      }
+
+      if (alive > 0 && frame < maxFrames) {
+        animId = requestAnimationFrame(animate)
+      } else {
+        if (onDone) onDone()
+      }
+    }
+
+    animId = requestAnimationFrame(animate)
+
+    return () => {
+      if (animId) cancelAnimationFrame(animId)
+    }
+  }, [onDone])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="confetti-canvas"
+      aria-hidden="true"
+    />
+  )
+}
+
+export default ConfettiOverlay
