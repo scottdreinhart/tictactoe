@@ -279,7 +279,6 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
   - Classic theme bundled in main stylesheet (~6 KB gzipped)
   - Non-classic themes lazy-loaded on-demand (~0.5–1 KB each, gzipped)
   - All themes preloaded at app startup for instant theme-switching (<1 ms per switch)
-  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for full details
 - **Web Worker for AI** (Phase 7):
   - CPU move computation runs in `ai.worker.js` off the main thread
   - Smart/Medium AI algorithms never block UI animations or interactions
