@@ -398,8 +398,13 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
     - BoardGrid (grid layout + reset animation), ScoreBoard (score display), Instructions (info icon + tooltip)
     - BoardGrid.module.css, ScoreBoard.module.css, Instructions.module.css created
     - Build verified: 32.76 KB (5.97 KB gzip) with 83 modules
-  - **Phase 3 (Organisms)**: Convert TicTacToeGame
+  - ✅ **Phase 3 (Organisms)**: TicTacToeGame converted to CSS Modules:
+    - Root game container with outcome animations (win glow, loss shake, draw fade)
+    - Outcome classes dynamically bound via `cx(styles.root, outcomeClass)`
+    - TicTacToeGame.module.css with all outcome and accessibility styles
+    - Build verified: 34.39 KB (6.12 KB gzip) with 84 modules
   - **Phase 4**: Deprecate global BEM classes, keep shared globals (layout, animations, base styles)
+    - Global outcome effects on board-grid (cross-module animations) can be consolidated
   - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for migration guide and `src/ui/utils/cssModules.js` utility
 
 ### DevOps & Deployment
