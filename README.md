@@ -215,9 +215,13 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 
 ## Technical Highlights
 
+### React & State Management
 - **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
 - **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
 - **PropTypes** runtime validation on all components that accept props (stripped from production builds)
+- **7 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue` — extracted for composability and reuse
+
+### Build & Performance Optimization
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
 - **Production build optimizations**:
   - Vendor chunk splitting — React/ReactDOM cached independently from app code
@@ -226,20 +230,35 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
 - **Bundle analysis** via `rollup-plugin-visualizer` — generates `dist/bundle-report.html` on build
-- **ESLint + Prettier** for code quality (flat config, React + hooks plugins)
-- **7 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue`
-- **Sound effects** via Web Audio API — zero audio files, synthesized tones + music jingles (~3KB lazy chunk)
-- **Canvas confetti** — 80-particle burst with gravity, air friction, rotation, and opacity fade (~3s)
-- **Unified notification queue** — FIFO queue replaces static status bar; auto-dismiss with configurable duration
-- **6 color themes** with light/dark/system modes + 4 colorblind presets — all persisted to localStorage
-- **Touch & gesture support** — swipe navigation, haptic feedback, optimized touch-action properties
-- **CSS Grid** with `aspect-ratio: 1` for perfect square cells
+- **Sound synthesis** via Web Audio API — zero audio files, synthesized tones + music jingles (~3KB lazy chunk)
+
+### Code Quality & Maintainability
+- **ESLint + Prettier** for code quality (flat config, React + hooks plugins, `lint`/`lint:fix`/`format`/`format:check` scripts)
+- **Zero TypeScript**: Pure JavaScript for simplicity and fast iteration
+- **No external game libraries**: All logic built from scratch — board, rules, AI, sounds, themes
+- **SOLID principles** enforced: dependency inversion, single responsibility, open/closed principle via hooks and constants
+
+### Interactive Features
+- **Sound effects** — move pop (600Hz), navigation beep (800Hz), win fanfare (C-E-G arpeggio), loss jingle (A-F descending), draw tone — all synthesized, toggleable, respects `prefers-reduced-motion`
+- **Canvas confetti** — 80-particle burst with gravity, air friction, rotation, and opacity fade (~3s animation on human win)
+- **Unified notification queue** — FIFO queue system for status + countdown + reset messages; auto-dismiss with configurable duration
+- **Keyboard navigation** — Arrow keys + WASD for grid movement, Space/Enter to select, Escape for menu close
+- **Touch & gesture support** — swipe navigation (30px threshold), haptic feedback, optimized `touch-action` properties for mobile
+
+### Visuals & Animations
+- **CSS Grid** with `aspect-ratio: 1` for perfect square cells responsive across all screen sizes
+- **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes for X and O marks
+- **Outcome animations** — win glow pulse, loss shake, draw fade CSS classes + confetti canvas overlay
+- **Board reset animation** — scale + fade transition (300ms cubic-bezier easing)
+- **Menu animation** — hamburger ☰→✕ icon transition + panel slide-in (250ms bounce easing)
+- **Kinetic animations** — directional slide-in effects for cell focus (up/down/left/right based on navigation direction)
+
+### Theming & Customization
+- **6 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — light/dark variants + High Contrast mode
+- **Light / Dark / System modes** — auto-detect via `prefers-color-scheme`, manual override via selector, persisted to localStorage
+- **4 colorblind-safe presets**: Protanopia, Deuteranopia, Tritanopia, Achromatopsia — all with distinct X/O mark colors
 - **CSS Custom Properties** with theme-driven color sets via `data-theme` / `data-mode` / `data-colorblind` attributes
-- **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes
-- **Outcome animations** — win glow, loss shake, draw fade CSS classes + confetti canvas overlay
-- **Board reset animation** (scale + fade transition)
-- **Zero TypeScript**: Pure JavaScript for simplicity
-- **No external game libraries**: All logic built from scratch
+- **Smart dropdown positioning** — `useSmartPosition` hook auto-detects viewport overflow, positions menus left/right intelligently
 
 ## Accessibility Compliance
 
