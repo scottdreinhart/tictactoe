@@ -173,6 +173,7 @@ The project enforces four complementary design patterns:
 npm install
 
 # Start development server (accessible on LAN via 0.0.0.0)
+# Cross-platform: works on Windows, macOS, Linux (uses kill-port instead of fuser)
 npm run dev
 
 # Build for production
@@ -273,6 +274,12 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
   - Modern build target (`es2020`) — no legacy polyfills
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
+- **CSS Code-Splitting** (Vite + dynamic imports):
+  - Theme CSS split into separate chunks (ocean, sunset, forest, rose, midnight, highcontrast)
+  - Classic theme bundled in main stylesheet (~6 KB gzipped)
+  - Non-classic themes lazy-loaded on-demand (~0.5–1 KB each, gzipped)
+  - All themes preloaded at app startup for instant theme-switching (<1 ms per switch)
+  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for full details
 - **Web Worker for AI** (Phase 7):
   - CPU move computation runs in `ai.worker.js` off the main thread
   - Smart/Medium AI algorithms never block UI animations or interactions
@@ -350,9 +357,11 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 ### Performance ✅
 - **Lazy SVG mount** — `React.lazy` + `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5)
 - **Service Worker caching** — precache critical shell + cache-first for `/assets/*` in [sw.js](public/sw.js)
+- **CSS code-splitting** — theme CSS split into separate chunks; classic bundled in main, others lazy-loaded on-demand; all preloaded at startup for instant switching
 
 ### Architecture ✅
 - **Extract keyboard hook** — `useGridKeyboard.js` — reusable document-level keydown logic
+- **Cross-platform dev script** — replaced `fuser -k 5173/tcp` with `kill-port` (works on Windows, macOS, Linux)
 
 ### Accessibility ✅
 - **Remove `user-scalable=no`** — viewport meta tag has `user-scalable=yes` in [index.html](index.html#L5), fully WCAG 2.1 SC 1.4.4 compliant
@@ -379,12 +388,9 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
 - [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
-### Performance
-- [ ] **CSS code-splitting** — split theme-variant CSS into on-demand chunks so unused themes don't ship in the initial stylesheet
-
 ### Architecture
 - [ ] **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
-- [ ] **Cross-platform dev script** — replace `fuser -k 5173/tcp` in `npm run dev` with cross-platform port-kill (e.g. `kill-port` package)
+  - See [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) for migration guide and `src/ui/utils/cssModules.js` utility for component-scoped styling
 
 ### DevOps & Deployment
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
