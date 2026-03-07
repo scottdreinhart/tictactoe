@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from 'react'
 import { useTicTacToe } from '../../app/useTicTacToe.js'
 import useSoundEffects from '../../app/useSoundEffects.js'
+import useTheme from '../../app/useTheme.js'
 import GameTitle from '../atoms/GameTitle.jsx'
 import DifficultyToggle from '../atoms/DifficultyToggle.jsx'
 import SoundToggle from '../atoms/SoundToggle.jsx'
+import ThemeSelector from '../atoms/ThemeSelector.jsx'
 import StatusBar from '../molecules/StatusBar.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
 import GameControls from '../molecules/GameControls.jsx'
@@ -34,6 +36,7 @@ const TicTacToeGame = () => {
   } = useTicTacToe()
 
   const { soundEnabled, toggleSound, playMove, playWin, playDraw } = useSoundEffects()
+  const { settings, setColorTheme, setMode, setColorblind } = useTheme()
 
   // Track previous board to detect moves (for move sound)
   const prevBoardRef = useRef(board)
@@ -68,6 +71,12 @@ const TicTacToeGame = () => {
       <div className="game-toolbar">
         <DifficultyToggle difficulty={difficulty} onSelect={handleSetDifficulty} />
         <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
+        <ThemeSelector
+          settings={settings}
+          onColorTheme={setColorTheme}
+          onMode={setMode}
+          onColorblind={setColorblind}
+        />
       </div>
 
       <StatusBar statusText={status} />
