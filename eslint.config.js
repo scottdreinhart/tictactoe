@@ -30,6 +30,7 @@ export default [
         cancelAnimationFrame: 'readonly',
         Math: 'readonly',
         localStorage: 'readonly',
+        navigator: 'readonly',
       },
     },
     rules: {
