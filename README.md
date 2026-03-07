@@ -10,7 +10,7 @@ src/
 │   ├── constants.js                  # TOKENS, WIN_LINES, BOARD_SIZE, CPU_DELAY_MS
 │   ├── board.js                      # Board operations (create, apply move, get empty cells)
 │   ├── rules.js                      # Win/draw detection (returns winning line)
-│   ├── ai.js                         # CPU move selection (random / medium / smart)
+│   ├── ai.js                         # CPU move selection (random / medium / smart / minimax unbeatable)
 │   ├── sounds.js                     # Web Audio API synthesized SFX + jingles
 │   └── themes.js                     # Color theme, mode & colorblind definitions
 ├── app/
@@ -27,7 +27,7 @@ src/
 │   │   ├── XMark.jsx                 # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx                 # Animated SVG "O" (React.memo, draw-on effect)
 │   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + animated panel
-│   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard AI toggle (React.memo)
+│   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard/Unbeatable AI toggle (React.memo)
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
 │   │   ├── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
 │   │   ├── ConfettiOverlay.jsx       # Canvas-based confetti particle animation on win
@@ -55,10 +55,10 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - **Board Representation**: 9-cell array with immutable updates
 - **Win Detection**: All 8 winning lines checked (3 rows, 3 columns, 2 diagonals)
 - **Draw Detection**: Board full + no winner = draw
-- **CPU Move**: Three difficulty levels — Easy (random), Medium (random + occasional blocking), Hard (deterministic priority: win → block → center → corner → edge)
+- **CPU Move**: Four difficulty levels — Easy (random), Medium (win/block + random), Hard (heuristic priority: win → block → center → corner → edge), Unbeatable (minimax with alpha-beta pruning, cannot be beaten)
 - **Score Tracking**: Win/loss/draw tallies persisted across rounds
 - **Win-Line Highlight**: Winning 3 cells pulse with animated glow
-- **Difficulty Toggle**: Pill-shaped Easy/Medium/Hard switch
+- **Difficulty Toggle**: Pill-shaped Easy/Medium/Hard/Unbeatable switch
 - **Auto-Reset**: 30-second countdown after game end; auto-starts a new round ("Reset Now" button available)
 - **Sound Effects**: Synthesized via Web Audio API — move pop, win fanfare (C-major arpeggio + chord ~2s), loss jingle (descending E-minor ~2s), draw tone (toggleable, respects `prefers-reduced-motion`)
 
@@ -66,7 +66,7 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect
 - **6 Color Themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — each with unique accent gradient
 - **Light / Dark Mode**: System (auto), Light (forced), or Dark (forced) — persisted to localStorage
-- **4 Colorblind Modes**: Protanopia, Deuteranopia, Tritanopia, Achromatopsia — overrides X/O colors for visibility
+- **4 Colorblind Modes**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — overrides X/O colors for visibility
 - **CSS Custom Properties**: All colors/sizes driven by CSS variables for easy theming
 - **Cell Animations**: Pop-in effect when marks are placed; winning cells pulse
 - **Outcome Animations**: Win glow, loss shake, draw fade — CSS class applied to game container
@@ -99,7 +99,7 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 - Roving tabindex for keyboard navigation
 - `prefers-reduced-motion: reduce` disables all animations and sounds
 - `forced-colors: active` support for high-contrast mode
-- 4 colorblind presets override X/O mark colors for improved visibility
+- 4 colorblind presets override X/O mark colors for improved visibility (Standard, Red Weakness, Green Weakness, Blue Weakness, Monochrome)
 - SVG marks use `aria-hidden="true"` (cell label provides semantics)
 - Clear visual focus indicators with accent-colored outline + glow
 - Theme selector uses `aria-pressed` on all buttons and `role="dialog"` for the panel
@@ -225,24 +225,33 @@ playDrawSound()   // descending A4→F4 two-note tone
 // Themes
 COLOR_THEMES      // 6 themes: classic, ocean, sunset, forest, rose, midnight
 MODES             // ['system', 'light', 'dark']
-COLORBLIND_MODES  // none, protanopia, deuteranopia, tritanopia, achromatopsia
+COLORBLIND_MODES  // none, protanopia (red weakness), deuteranopia (green weakness), tritanopia (blue weakness), achromatopsia (monochrome)
 DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none' }
 ```
 
 ## AI Difficulty Levels
 
-| Level | Strategy | Function |
-|-------|----------|----------|
-| **Easy** | Purely random move selection | `chooseCpuMoveRandom` |
-| **Medium** | Random with occasional smart blocking | hybrid logic in `useTicTacToe` |
-| **Hard** | Deterministic priority (default) | `chooseCpuMoveSmart` |
+| Level | Strategy | Implementation | Notes |
+|-------|----------|-----------------|-------|
+| **Easy** | Purely random choice | `chooseCpuMoveRandom` | Weakest, beatable in 1-2 moves |
+| **Medium** | Win/block + random | `chooseCpuMoveMedium` | Defensive but tactical; loses to perfect play |
+| **Hard** | Priority-based heuristic | `chooseCpuMoveSmart` | Center → corners → edges with blocking; competent opponent |
+| **Unbeatable** | Minimax with alpha-beta pruning (Phase C) | `chooseCpuMoveUnbeatable` | Exhaustive game-tree search; cannot be beaten (best result: draw) |
 
-The **Hard** AI uses `chooseCpuMoveSmart` with priority:
+### Hard AI Strategy (Priority-Based)
 1. Win if possible this turn
 2. Block human from winning next turn
-3. Take center
-4. Take corner
-5. Take edge
+3. Take center (index 4)
+4. Take corner (0, 2, 6, or 8)
+5. Take edge (1, 3, 5, or 7)
+
+### Unbeatable AI Strategy (Minimax)
+- **Algorithm**: Minimax with alpha-beta pruning
+- **Execution**: Web Worker off-main-thread (Phase 7, `src/workers/ai.worker.js`)
+- **Move ordering**: Center → corners → edges (accelerates pruning)
+- **Complexity**: O(9! / (2^k)) calls with pruning; ~100K–500K evaluations per move
+- **Strength**: Perfect play against optimal defense; guaranteed draw if human also plays optimally
+- **Responsiveness**: CPU_DELAY_MS simulates thinking time; UI remains responsive on 60 FPS
 
 ## Technical Highlights
 
@@ -250,7 +259,7 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 - **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
 - **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
 - **PropTypes** runtime validation on all components that accept props (stripped from production builds)
-- **7 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue` — extracted for composability and reuse
+- **8 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue`, `useSmartPosition`, `useDropdownBehavior` — extracted for composability and reuse
 
 ### Build & Performance Optimization
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
@@ -260,6 +269,11 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
   - Modern build target (`es2020`) — no legacy polyfills
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
+- **Web Worker for AI** (Phase 7):
+  - CPU move computation runs in `ai.worker.js` off the main thread
+  - Smart/Medium AI algorithms never block UI animations or interactions
+  - Maintains 60 FPS even during complex AI calculations
+  - Worker bundled separately (~1.2 KB gzipped), loaded on demand
 - **Bundle analysis** via `rollup-plugin-visualizer` — generates `dist/bundle-report.html` on build
 - **Sound synthesis** via Web Audio API — zero audio files, synthesized tones + music jingles (~3KB lazy chunk)
 
@@ -287,7 +301,7 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 ### Theming & Customization
 - **6 color themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight — light/dark variants + High Contrast mode
 - **Light / Dark / System modes** — auto-detect via `prefers-color-scheme`, manual override via selector, persisted to localStorage
-- **4 colorblind-safe presets**: Protanopia, Deuteranopia, Tritanopia, Achromatopsia — all with distinct X/O mark colors
+- **4 colorblind-safe presets**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — all with distinct X/O mark colors
 - **CSS Custom Properties** with theme-driven color sets via `data-theme` / `data-mode` / `data-colorblind` attributes
 - **Smart dropdown positioning** — `useSmartPosition` hook auto-detects viewport overflow, positions menus left/right intelligently
 
@@ -308,10 +322,10 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 
 ### Technical — AI
 - [x] ~~**Activate smart AI**~~ — done (priority: win → block → center → corner → edge)
-- [ ] **Minimax AI (Phase C)** — implement full minimax with alpha-beta pruning for unbeatable CPU play
+- [x] ~~**Minimax AI (Phase C)**~~ — done (full minimax with alpha-beta pruning, unbeatable CPU difficulty level)
 - [x] ~~**Configurable CPU delay**~~ — done (`CPU_DELAY_MS` constant, currently 400ms)
-- [x] ~~**Difficulty toggle**~~ — done (Easy = random, Hard = smart; pill-shaped toggle)
-- [ ] **Web Worker AI** — move CPU computation to a Web Worker so the UI thread never blocks
+- [x] ~~**Difficulty toggle**~~ — done (Easy/Medium/Hard/Unbeatable; pill-shaped toggle)
+- [x] ~~**Web Worker AI**~~ — done (CPU computation off-main-thread in `ai.worker.js`, 60 FPS guaranteed)
 
 ### Visual & UX
 - [x] ~~**Win-line highlight**~~ — done (winning cells pulse with `win-pulse` animation)

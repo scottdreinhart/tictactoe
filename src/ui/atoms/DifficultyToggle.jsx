@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const LEVELS = ['easy', 'medium', 'hard']
+const LEVELS = ['easy', 'medium', 'hard', 'unbeatable']
 
 /**
  * DifficultyToggle — Atom (pure presentational)
  *
- * A pill-shaped toggle that switches between Easy, Medium, and Hard AI difficulty.
+ * A pill-shaped toggle that switches between Easy, Medium, Hard, and Unbeatable AI difficulty.
  *
  * @param {{ difficulty: string, onSelect: (level: string) => void }} props
  */
@@ -29,7 +29,7 @@ const DifficultyToggle = React.memo(({ difficulty, onSelect }) => (
 DifficultyToggle.displayName = 'DifficultyToggle'
 
 DifficultyToggle.propTypes = {
-  difficulty: PropTypes.oneOf(['easy', 'medium', 'hard']).isRequired,
+  difficulty: PropTypes.oneOf(['easy', 'medium', 'hard', 'unbeatable']).isRequired,
   onSelect: PropTypes.func.isRequired,
 }
 
