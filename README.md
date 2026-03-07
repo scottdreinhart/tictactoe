@@ -242,7 +242,8 @@ pnpm install
 
 # Start development server (accessible on LAN via 0.0.0.0)
 # Cross-platform: works on Windows, macOS, Linux (uses kill-port instead of fuser)
-pnpm dev
+pnpm start          # quick alias — vite --host
+pnpm dev            # same + kills stale port 5173 first
 
 # Build for production
 pnpm build
@@ -250,18 +251,42 @@ pnpm build
 # Preview production build locally
 pnpm preview
 
-# Lint
-pnpm lint          # check for issues
-pnpm lint:fix      # auto-fix issues
+# Build then preview in one step
+pnpm build:preview
+```
 
-# Format
-pnpm format        # format all source files
-pnpm format:check  # check formatting without writing
+### Code Quality
 
-# Utility
-pnpm clean         # wipe dist/ and release/ build outputs
-pnpm clean:node    # delete node_modules for a fresh install
-pnpm analyze       # production build + open bundle visualizer report
+```bash
+# Individual tools
+pnpm lint           # ESLint — check for issues
+pnpm lint:fix       # ESLint — auto-fix issues
+pnpm format         # Prettier — format all source files
+pnpm format:check   # Prettier — check formatting without writing
+
+# Chains
+pnpm check          # lint + format:check in one pass (quality gate)
+pnpm fix            # lint:fix + format in one pass (auto-fix everything)
+pnpm validate       # check + build — full pre-push validation
+```
+
+### Cleanup & Maintenance
+
+```bash
+# Clean
+pnpm clean          # wipe dist/ and release/ build outputs
+pnpm clean:node     # delete node_modules only
+pnpm clean:all      # nuclear — dist/ + release/ + node_modules/
+
+# Fresh start
+pnpm reinstall      # clean:all + pnpm install
+
+# Dependencies
+pnpm deps:check     # check for outdated packages (pnpm outdated)
+pnpm deps:audit     # security vulnerability audit (pnpm audit)
+
+# Analysis
+pnpm analyze        # production build + open bundle visualizer report
 ```
 
 > **Note**: `pnpm build` automatically runs `pnpm clean` first (via the `prebuild` lifecycle script).
@@ -273,6 +298,9 @@ The app will be available at `http://localhost:5173`
 ```bash
 # Development: launches Vite + Electron together
 pnpm electron:dev
+
+# Preview production build in Electron (build + launch)
+pnpm electron:preview
 
 # Production build: creates distributable for current platform in release/
 pnpm electron:build
@@ -423,7 +451,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 - **Sound synthesis** via Web Audio API — zero audio files, synthesized tones + music jingles (~3KB lazy chunk)
 
 ### Code Quality & Maintainability
-- **ESLint + Prettier** for code quality (flat config, React + hooks plugins, `lint`/`lint:fix`/`format`/`format:check` scripts)
+- **ESLint + Prettier** for code quality (flat config, React + hooks plugins, `check`/`fix`/`validate` chains)
 - **Zero TypeScript**: Pure JavaScript for simplicity and fast iteration
 - **No external game libraries**: All logic built from scratch — board, rules, AI, sounds, themes
 - **SOLID principles** enforced: dependency inversion, single responsibility, open/closed principle via hooks and constants
@@ -575,7 +603,7 @@ The app is built with React + Vite. All platforms with a web browser can run the
 - **Streak & best-time display** — current win streak (🔥) and fastest win time in MoveTimeline drawer
 
 ### Code Quality
-- **ESLint + Prettier** — flat config, React + hooks plugins, `lint`/`format` scripts
+- **ESLint + Prettier** — flat config, React + hooks plugins, `check`/`fix`/`validate` chains
 - **`getWinner` returns winning line** — returns `{ token, line }`, `getWinnerToken` convenience
 - **`React.memo` on atoms** — XMark, OMark, DifficultyToggle, SoundToggle, ThemeSelector
 - **PropTypes on all components** — runtime prop validation on all components that accept props
