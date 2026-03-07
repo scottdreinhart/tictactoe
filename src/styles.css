@@ -650,7 +650,7 @@ body {
   gap: 0;
   border-radius: 8px;
   overflow: hidden;
-  border: none;
+  border: 1px solid rgba(128, 128, 128, 0.3);
   width: fit-content;
   margin: 0 auto;
 }
@@ -659,6 +659,7 @@ body {
   background: transparent;
   color: var(--text-primary);
   border: none;
+  border-right: 1px solid rgba(128, 128, 128, 0.3);
   padding: 10px 20px;
   min-height: 44px;
   font-size: clamp(0.75rem, 2vw, 0.85rem);
@@ -670,6 +671,10 @@ body {
 
 .difficulty-option:hover:not(.difficulty-active) {
   background: var(--cell-hover-bg);
+}
+
+.difficulty-option:last-child {
+  border-right: none;
 }
 
 .difficulty-active {
