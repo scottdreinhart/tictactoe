@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Tic-Tac-Toe",
   "type": "module",
+  "private": true,
+  "license": "PROPRIETARY",
+  "author": "Scott Reinhart",
   "scripts": {
     "dev": "fuser -k 5173/tcp 2>/dev/null; vite --host",
     "build": "vite build",

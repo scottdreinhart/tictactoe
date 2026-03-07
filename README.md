@@ -1,6 +1,10 @@
 # Tic-Tac-Toe
 
-A clean, modular React Tic-Tac-Toe game with animated SVG marks, 6 color themes (light/dark + colorblind modes), keyboard/mouse/touch controls, synthesized sound effects, and a unified notification queue — built with **CLEAN Architecture** and **Atomic Design**.
+**⚠️ PROPRIETARY SOFTWARE — All Rights Reserved**
+
+© 2026 Scott Reinhart. This software is proprietary and confidential. 
+Unauthorized reproduction, distribution, or use is strictly prohibited.
+See [LICENSE](LICENSE) file for complete terms and conditions.
 
 ## Project Structure
 
@@ -318,63 +322,75 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - ✅ 4 colorblind presets (Protanopia, Deuteranopia, Tritanopia, Achromatopsia)
 - ✅ Print stylesheet (hides controls + notifications, uses black/grey marks)
 
-## Potential Improvements
+## Completed Features (Phases 1–7)
 
-### Technical — AI
-- [x] ~~**Activate smart AI**~~ — done (priority: win → block → center → corner → edge)
-- [x] ~~**Minimax AI (Phase C)**~~ — done (full minimax with alpha-beta pruning, unbeatable CPU difficulty level)
-- [x] ~~**Configurable CPU delay**~~ — done (`CPU_DELAY_MS` constant, currently 400ms)
-- [x] ~~**Difficulty toggle**~~ — done (Easy/Medium/Hard/Unbeatable; pill-shaped toggle)
-- [x] ~~**Web Worker AI**~~ — done (CPU computation off-main-thread in `ai.worker.js`, 60 FPS guaranteed)
+### Technical — AI ✅
+- **Activate smart AI** (priority: win → block → center → corner → edge)
+- **Minimax AI with alpha-beta pruning** — unbeatable CPU difficulty level
+- **Configurable CPU delay** — `CPU_DELAY_MS` constant (currently 400ms)
+- **Difficulty toggle** — Easy/Medium/Hard/Unbeatable; pill-shaped toggle
+- **Web Worker AI** — CPU computation off-main-thread in `ai.worker.js`, 60 FPS guaranteed
+
+### Visual & UX ✅
+- **Win-line highlight** — winning cells pulse with `win-pulse` animation
+- **Score tracking display** — ScoreBoard molecule: You/Draws/CPU tallies
+- **Smooth board reset transition** — fade + scale `board-reset` animation
+- **Sound effects** — Web Audio API: move pop, win arpeggio, draw tone; toggleable + reduced-motion aware
+- **Confetti / particle effect** — canvas-based 80-particle burst with gravity + fade on human win
+- **Theme picker** — 6 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage
+- **Touch gesture support** — swipe navigation via `useSwipeGesture`, haptic feedback, `touch-action` CSS
+
+### Code Quality ✅
+- **ESLint + Prettier** — flat config, React + hooks plugins, `lint`/`format` scripts
+- **`getWinner` returns winning line** — returns `{ token, line }`, `getWinnerToken` convenience
+- **`React.memo` on atoms** — XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector
+- **PropTypes on all components** — runtime prop validation on all components that accept props
+- **Dead code cleanup** — removed 5 orphaned files (CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls); removed unused CSS variables and rules
+
+### Performance ✅
+- **Lazy SVG mount** — `React.lazy` + `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5)
+- **Service Worker caching** — precache critical shell + cache-first for `/assets/*` in [sw.js](public/sw.js)
+
+### Architecture ✅
+- **Extract keyboard hook** — `useGridKeyboard.js` — reusable document-level keydown logic
+
+### Accessibility ✅
+- **Remove `user-scalable=no`** — viewport meta tag has `user-scalable=yes` in [index.html](index.html#L5), fully WCAG 2.1 SC 1.4.4 compliant
+- **Skip-to-content link** — hidden `<a href="#game-board">Skip to game board</a>` in [TicTacToeGame.jsx](src/ui/organisms/TicTacToeGame.jsx#L125), visible on focus
+- **High-contrast theme** — dedicated [highcontrast.css](src/themes/highcontrast.css) + `@media (forced-colors: active)` support in [styles.css](src/styles.css#L1370)
+
+### DevOps & Deployment ✅
+- **Proprietary license** — LICENSE file with full terms and copyright holder identification
+- **PWA support** — `manifest.json` + service worker for offline play and home-screen install
+- **Bundle analysis** — `rollup-plugin-visualizer` generates `dist/bundle-report.html` on build
+- **Dependency updates** — React 19.2.4, eslint 10.0.3, @vitejs/plugin-react 5.1.4 upgraded March 7, 2026
+
+## Remaining Work
 
 ### Visual & UX
-- [x] ~~**Win-line highlight**~~ — done (winning cells pulse with `win-pulse` animation)
-- [x] ~~**Score tracking display**~~ — done (ScoreBoard molecule: You/Draws/CPU tallies)
-- [x] ~~**Smooth board reset transition**~~ — done (fade + scale `board-reset` animation)
-- [x] ~~**Sound effects**~~ — done (Web Audio API: move pop, win arpeggio, draw tone; toggleable + reduced-motion aware)
-- [x] ~~**Confetti / particle effect**~~ — done (canvas-based 80-particle burst with gravity + fade on human win)
 - [ ] **Move history timeline** — visual sidebar showing each move in order with undo/redo support
-- [x] ~~**Theme picker**~~ — done (6 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage)
-- [x] ~~**Touch gesture support**~~ — done (swipe navigation via `useSwipeGesture`, haptic feedback, `touch-action` CSS)
 - [ ] **Player name customization** — editable labels for "You" and "CPU" on the scoreboard
 - [ ] **Game statistics dashboard** — track lifetime stats (total games, win rate, win streaks) persisted to localStorage
 
 ### Code Quality & Testing
-- [x] ~~**ESLint + Prettier**~~ — done (flat config, React + hooks plugins, `lint`/`format` scripts)
-- [x] ~~**`getWinner` returns winning line**~~ — done (returns `{ token, line }`, `getWinnerToken` convenience)
-- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard)
 - [ ] **Unit tests** — domain functions (`board.js`, `rules.js`, `ai.js`) are pure and test-ready; add Vitest or Jest suite
 - [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, NotificationBanner
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
-- [x] ~~**PropTypes**~~ — done (runtime prop validation on all components that accept props)
 - [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
-- [x] ~~**Dead code cleanup**~~ — done (removed 5 orphaned files: CountdownOverlay, ResetDialog, ResetButton, StatusBar, GameControls; removed unused CSS variables and rules)
 - [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
 ### Performance
-- [x] ~~**Lazy SVG mount**~~ — done (`React.lazy` + `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5))
 - [ ] **CSS code-splitting** — split theme-variant CSS into on-demand chunks so unused themes don't ship in the initial stylesheet
-- [x] ~~**Service Worker caching**~~ — done (precache critical shell + cache-first for `/assets/*` in [sw.js](public/sw.js))
 
 ### Architecture
-- [x] ~~**Extract keyboard hook**~~ — done (`useGridKeyboard.js` — reusable document-level keydown logic)
 - [ ] **CSS Modules or CSS-in-JS** — scope styles per component to eliminate global class name collisions
-- [ ] **Cross-platform dev script** — replace `fuser -k 5173/tcp` in `npm run dev` with a cross-platform port-kill (e.g. `kill-port` package) so it works on native Windows/macOS, not just WSL/Linux
-
-### Accessibility
-- [x] ~~**Remove `user-scalable=no`**~~ — done (viewport meta tag already has `user-scalable=yes` in [index.html](index.html#L5), fully WCAG 2.1 SC 1.4.4 compliant)
-- [x] ~~**Skip-to-content link**~~ — done (hidden `<a href="#game-board">Skip to game board</a>` in [TicTacToeGame.jsx](src/ui/organisms/TicTacToeGame.jsx#L125), visible on focus)
-- [x] ~~**High-contrast theme**~~ — done (dedicated [highcontrast.css](src/themes/highcontrast.css) + `@media (forced-colors: active)` support in [styles.css](src/styles.css#L1370))
+- [ ] **Cross-platform dev script** — replace `fuser -k 5173/tcp` in `npm run dev` with cross-platform port-kill (e.g. `kill-port` package)
 
 ### DevOps & Deployment
-- [ ] **Add LICENSE file** — the repo is public on GitHub but has no license; add MIT (or preferred) so others can legally use/fork the code
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
-- [ ] **Dependabot auto-merge** — resolve the existing moderate vulnerability alert and enable auto-updates
-- [x] ~~**PWA support**~~ — done (`manifest.json` + service worker for offline play and home-screen install)
-- [x] ~~**Bundle analysis**~~ — done (`rollup-plugin-visualizer` generates `dist/bundle-report.html` on build)
-- [x] ~~**Dependency updates**~~ — done (React 19.2.4, eslint 10.0.3, @vitejs/plugin-react 5.1.4 upgraded March 7, 2026)
-- [ ] **Browser compatibility documentation** — document minimum browser versions (Chrome 80+, Firefox 80+, Safari 14+, Edge 80+) given `es2020` target, `aspect-ratio`, Web Audio API, and CSS `translate` usage
+- [ ] **Dependabot auto-merge** — resolve existing moderate vulnerability alert and enable auto-updates
+- [ ] **Browser compatibility documentation** — minimum versions (Chrome 80+, Firefox 80+, Safari 14+, Edge 80+)
 
 ### Gameplay
 - [ ] **Local multiplayer** — human vs human mode on the same device (remove CPU AI, alternate turns)

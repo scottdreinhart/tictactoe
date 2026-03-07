@@ -11,7 +11,7 @@
 The vulnerability is in a transitive dependency (not directly in your `package.json`). GitHub Dependabot identified it when you pushed. 
 
 ### To View the Specific Vulnerability:
-1. Go to GitHub repository: https://github.com/scottdreinhart/tictactoe
+1. Go to GitHub repository: https://github.com/scottreinhart/tictactoe
 2. Click the **"Security"** tab
 3. Click **"Dependabot alerts"**
 4. Review the details — it will show:

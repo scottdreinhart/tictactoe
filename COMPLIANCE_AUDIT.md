@@ -575,7 +575,7 @@ The Unbeatable AI difficulty is now available:
   <meta property="og:title" content="Tic-Tac-Toe" />
   <meta property="og:description" content="..." />
   <meta property="og:image" content="/icon.svg" />
-  <meta property="og:url" content="https://scottdreinhart.com/tictactoe" />
+  <meta property="og:url" content="https://scottreinhart.com/tictactoe" />
   <meta name="twitter:card" content="summary" />
   ```
   - _Impact_: Low-Medium (social sharing preview, not critical for gameplay)
