@@ -404,33 +404,30 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 
 ## Device Compatibility
 
-The app is built with React + Vite. Distribution uses **Electron** (desktop) and **Capacitor** (mobile + TV) to wrap the web build in native app shells. Each platform's packaging technology, distribution channel, and support status are listed below.
+The app is built with React + Vite. All platforms with a web browser can run the app today via URL or PWA install. Native app distribution uses **Electron** (desktop) and **Capacitor** (mobile + TV) to wrap the web build in native app shells — these are planned for future releases.
 
-| Platform | Technology | Distribution | Input Method | Status |
-|----------|-----------|-------------|-------------|--------|
-| **Desktop** | | | | |
-| Windows | Electron | `.exe` installer / Microsoft Store | Mouse, keyboard, trackpad | Planned |
-| macOS | Electron | `.dmg` / Mac App Store | Mouse, keyboard, trackpad | Planned |
-| Linux | Electron | `.AppImage` / `.deb` / `.snap` | Mouse, keyboard, trackpad | Planned |
-| **Mobile** | | | | |
-| Android | Capacitor | Google Play Store / `.apk` sideload | Touch, swipe gestures | Planned |
-| iOS | Capacitor | App Store | Touch, swipe gestures | Planned |
-| **Tablets** | | | | |
-| iPad | Capacitor (iOS) | App Store | Touch, swipe gestures | Planned |
-| Android tablets | Capacitor (Android) | Google Play Store | Touch, swipe gestures | Planned |
-| Amazon Fire tablets | Capacitor (Android) | Amazon Appstore | Touch, swipe gestures | Planned |
-| **Smart TV / Streaming** | | | | |
-| Amazon Fire TV Stick | Capacitor (Android) | Amazon Appstore | D-pad remote | Planned |
-| Amazon Fire TV | Capacitor (Android) | Amazon Appstore | D-pad remote | Planned |
-| Amazon Echo Show | Capacitor (Android) | Amazon Appstore | Touch screen | Planned |
-| Android TV / Google TV | Capacitor (Android) | Google Play Store | D-pad remote | Planned |
-| Samsung Smart TV (Tizen) | Tizen Web SDK | Samsung TV App Store | D-pad remote | Gap |
-| LG Smart TV (webOS) | webOS Web SDK | LG Content Store | D-pad remote, Magic Remote | Gap |
-| Apple TV (tvOS) | — | — | — | Gap |
-| Roku | — | — | — | Gap |
-| **Web (Browser)** | | | | |
-| Desktop browsers | None (direct) | URL / PWA install | Mouse, keyboard, trackpad | Current |
-| Mobile browsers | None (direct) | URL / PWA install | Touch, swipe gestures | Current |
+| Platform | Native App Tech | Distribution | Input Method | Web (Browser) | Native App |
+|----------|----------------|-------------|-------------|--------------|-----------|
+| **Desktop** | | | | | |
+| Windows | Electron | `.exe` / Microsoft Store | Mouse, keyboard, trackpad | Supported | Planned |
+| macOS | Electron | `.dmg` / Mac App Store | Mouse, keyboard, trackpad | Supported | Planned |
+| Linux | Electron | `.AppImage` / `.deb` / `.snap` | Mouse, keyboard, trackpad | Supported | Planned |
+| **Mobile** | | | | | |
+| Android | Capacitor | Google Play Store / `.apk` | Touch, swipe gestures | Supported | Planned |
+| iOS | Capacitor | App Store | Touch, swipe gestures | Supported | Planned |
+| **Tablets** | | | | | |
+| iPad | Capacitor (iOS) | App Store | Touch, swipe gestures | Supported | Planned |
+| Android tablets | Capacitor (Android) | Google Play Store | Touch, swipe gestures | Supported | Planned |
+| Amazon Fire tablets | Capacitor (Android) | Amazon Appstore | Touch, swipe gestures | Supported | Planned |
+| **Smart TV / Streaming** | | | | | |
+| Amazon Fire TV Stick | Capacitor (Android) | Amazon Appstore | D-pad remote | Supported (Silk) | Planned |
+| Amazon Fire TV | Capacitor (Android) | Amazon Appstore | D-pad remote | Supported (Silk) | Planned |
+| Amazon Echo Show | Capacitor (Android) | Amazon Appstore | Touch screen | Supported (Silk) | Planned |
+| Android TV / Google TV | Capacitor (Android) | Google Play Store | D-pad remote | Supported (Chrome) | Planned |
+| Samsung Smart TV (Tizen) | Tizen Web SDK | Samsung TV App Store | D-pad remote | Supported (Tizen Browser) | Gap |
+| LG Smart TV (webOS) | webOS Web SDK | LG Content Store | D-pad remote, Magic Remote | Supported (webOS Browser) | Gap |
+| Apple TV (tvOS) | — | — | — | No browser | Not feasible |
+| Roku | — | — | — | No browser | Not feasible |
 
 ### Support Gaps
 
