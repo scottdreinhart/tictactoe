@@ -672,3 +672,11 @@ Simple browser games of similar scope and effort that could be built with the sa
 | **Snake** | Steer a growing snake to eat food without hitting walls or itself | Different — real-time game loop instead of turn-based |
 | **Monchola** | Traditional dice/board race game with capture mechanics | Similar — dice roll + board path + capture rules |
 | **Rock Paper Scissors** | Best-of-N rounds against the CPU with hand animations | Simpler — minimal state, animation-focused |
+
+---
+
+[⬆ Back to top](#tic-tac-toe)
+
+---
+
+[⬆ Back to top](#tic-tac-toe)
