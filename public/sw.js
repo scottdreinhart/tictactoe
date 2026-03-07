@@ -1,8 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Service Worker — cache-first for hashed assets, network-first for HTML
+   Service Worker — PWA-ready caching strategy
+   • install  → precache critical shell (HTML, offline fallback)
+   • activate → clean old caches, claim clients
+   • fetch    → cache-first for hashed /assets/, network-first for HTML,
+                 offline fallback for navigation when network is unavailable
    ═══════════════════════════════════════════════════════════════════════════ */
-const CACHE_NAME = 'ttt-v1'
-const PRECACHE = ['/']
+const CACHE_NAME = 'ttt-v2'
+const PRECACHE = ['/', '/offline.html', '/icon.svg', '/manifest.json']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -25,17 +29,21 @@ self.addEventListener('activate', (event) => {
 })
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url)
+  const { request } = event
+  const url = new URL(request.url)
+
+  // Only handle same-origin requests
+  if (url.origin !== self.location.origin) return
 
   // Cache-first for hashed build assets (immutable filenames)
   if (url.pathname.startsWith('/assets/')) {
     event.respondWith(
-      caches.match(event.request).then(
+      caches.match(request).then(
         (cached) =>
           cached ||
-          fetch(event.request).then((response) => {
+          fetch(request).then((response) => {
             const clone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
             return response
           })
       )
@@ -43,14 +51,33 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Network-first for everything else (HTML, theme chunks, etc.)
+  // Navigation requests → network-first with offline fallback
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone()
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+          return response
+        })
+        .catch(() =>
+          caches.match(request).then((cached) => cached || caches.match('/offline.html'))
+        )
+    )
+    return
+  }
+
+  // All other requests → stale-while-revalidate
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const clone = response.clone()
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
-        return response
-      })
-      .catch(() => caches.match(event.request))
+    caches.match(request).then((cached) => {
+      const fetched = fetch(request)
+        .then((response) => {
+          const clone = response.clone()
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+          return response
+        })
+        .catch(() => cached)
+      return cached || fetched
+    })
   )
 })

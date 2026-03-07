@@ -6,6 +6,7 @@
    • SVG animated marks (draw-on effect)
    • Reduced motion support
    • Responsive media queries (phone → tablet → desktop → large)
+   • PWA / marketplace-ready (safe areas, touch targets, standalone mode)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -159,7 +160,10 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  /* Prevent pull-to-refresh / rubber-banding in standalone PWA */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -170,8 +174,19 @@ body {
   background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   background-attachment: fixed;
   color: var(--text-primary);
-  padding: clamp(8px, 2vw, 24px);
+  /* Safe area insets for notched / rounded devices (iPhone, Pixel) */
+  padding:
+    max(env(safe-area-inset-top, 0px), clamp(8px, 2vw, 24px))
+    max(env(safe-area-inset-right, 0px), clamp(8px, 2vw, 24px))
+    max(env(safe-area-inset-bottom, 0px), clamp(8px, 2vw, 24px))
+    max(env(safe-area-inset-left, 0px), clamp(8px, 2vw, 24px));
+  min-height: 100%;
   transition: background-color 300ms ease, color 300ms ease;
+  /* Prevent accidental text selection on UI chrome */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Prevent callout / context menu on long-press (iOS) */
+  -webkit-touch-callout: none;
 }
 
 /* ─── Skip-to-Content ─── */
@@ -208,6 +223,10 @@ body {
   width: 100%;
   max-width: 540px;
   margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* ─── Game Container ─── */
@@ -579,7 +598,13 @@ body {
 
 .notification-banner__action {
   font-size: clamp(0.78rem, 2vw, 0.92rem);
-  padding: 8px 22px;
+  padding: 12px 24px;
+  min-height: 48px;
+  min-width: 48px;
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Variant: win — golden glow */
@@ -634,7 +659,8 @@ body {
   background: transparent;
   color: var(--text-primary);
   border: none;
-  padding: 6px 20px;
+  padding: 10px 20px;
+  min-height: 44px;
   font-size: clamp(0.75rem, 2vw, 0.85rem);
   font-weight: 600;
   cursor: pointer;
@@ -658,6 +684,8 @@ body {
   border: none;
   border-radius: 8px;
   padding: 4px 10px;
+  min-width: 48px;
+  min-height: 48px;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
   transition: background-color 200ms ease, transform 200ms ease;
@@ -683,6 +711,8 @@ body {
   border: none;
   border-radius: 8px;
   padding: 4px 10px;
+  min-width: 48px;
+  min-height: 48px;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
   transition: background-color 200ms ease, transform 200ms ease;
@@ -737,11 +767,14 @@ body {
 }
 
 .theme-swatch {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
+  /* 44px touch target via padding */
+  padding: 4px;
+  box-sizing: content-box;
   transition: transform 200ms ease, border-color 200ms ease;
 }
 
@@ -767,7 +800,8 @@ body {
   flex: 1;
   background: transparent;
   border: none;
-  padding: 5px 8px;
+  padding: 10px 8px;
+  min-height: 44px;
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
@@ -796,8 +830,9 @@ body {
   background: transparent;
   border: 1px solid var(--cell-border);
   border-radius: 4px;
-  padding: 3px 8px;
-  font-size: 0.65rem;
+  padding: 10px 12px;
+  min-height: 44px;
+  font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
   color: var(--text-primary);
@@ -852,6 +887,8 @@ body {
   border: none;
   border-radius: 8px;
   padding: 6px 10px;
+  min-width: 48px;
+  min-height: 48px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -971,8 +1008,8 @@ body {
   border: none;
   color: var(--text-secondary);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   font-size: 1.1rem;
   line-height: 1;
   display: flex;
@@ -1272,5 +1309,32 @@ body {
 
   .mark-o circle {
     stroke: VisitedText;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PWA STANDALONE MODE — Native-app feel when installed
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (display-mode: standalone) {
+  /* iOS standalone: account for status bar area */
+  body {
+    padding-top: max(env(safe-area-inset-top, 0px), 20px);
+  }
+
+  /* Remove subtle web-app cues */
+  .skip-to-content {
+    display: none;
+  }
+
+  /* Tighter layout when running as installed app */
+  .game-container {
+    border-radius: 12px;
+  }
+}
+
+/* Also target iOS standalone specifically */
+@media (display-mode: standalone) and (max-width: 599px) {
+  body {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
   }
 }
