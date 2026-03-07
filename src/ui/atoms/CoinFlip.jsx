@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styles from './CoinFlip.module.css'
 
 /**
@@ -8,23 +8,29 @@ import styles from './CoinFlip.module.css'
 export const CoinFlip = ({ onFlipComplete }) => {
   const [isFlipping, setIsFlipping] = useState(true)
   const [result, setResult] = useState(null)
+  const callbackRef = useRef(onFlipComplete)
+  callbackRef.current = onFlipComplete
 
   useEffect(() => {
     // Flip for 1.5 seconds
     const flipDuration = 1500
+    let resultTimer = null
     const flipTimer = setTimeout(() => {
       setIsFlipping(false)
       // Randomly choose X or O to go first
       const isXFirst = Math.random() > 0.5
       setResult(isXFirst ? 'X' : 'O')
       // Call callback after a short delay to show result
-      setTimeout(() => {
-        onFlipComplete(isXFirst)
+      resultTimer = setTimeout(() => {
+        callbackRef.current(isXFirst)
       }, 800)
     }, flipDuration)
 
-    return () => clearTimeout(flipTimer)
-  }, [onFlipComplete])
+    return () => {
+      clearTimeout(flipTimer)
+      if (resultTimer) clearTimeout(resultTimer)
+    }
+  }, []) // run once on mount
 
   return (
     <div className={styles.container}>

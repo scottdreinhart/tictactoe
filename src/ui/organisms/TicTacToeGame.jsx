@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import { useTicTacToe } from '../../app/useTicTacToe.js'
 import useSoundEffects from '../../app/useSoundEffects.js'
 import useTheme from '../../app/useTheme.js'
@@ -56,6 +56,9 @@ const TicTacToeGame = () => {
 
   // Coin flip state - show at app startup
   const [coinFlipDone, setCoinFlipDone] = useState(false)
+  const handleCoinFlipComplete = useCallback(() => {
+    setCoinFlipDone(true)
+  }, [])
 
   // Auto-reset countdown (30 s)
   const { secondsLeft, resetNow } = useAutoReset(gameState.isOver, handleReset)
@@ -161,7 +164,7 @@ const TicTacToeGame = () => {
 
   return (
     <div className={containerClass}>
-      {!coinFlipDone && <CoinFlip onFlipComplete={() => setCoinFlipDone(true)} />}
+      {!coinFlipDone && <CoinFlip onFlipComplete={handleCoinFlipComplete} />}
       <a href="#game-board" className={styles.skipToContent}>Skip to game board</a>
       {showConfetti && (
         <ConfettiOverlay onDone={() => setShowConfetti(false)} />

@@ -259,6 +259,7 @@ export const useTicTacToe = () => {
     const handleWorkerMessage = (event) => {
       const { index, error } = event.data
       if (error) {
+        // eslint-disable-next-line no-console
         console.error('AI Worker error:', error)
         return
       }
