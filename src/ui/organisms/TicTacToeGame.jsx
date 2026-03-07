@@ -112,7 +112,7 @@ const TicTacToeGame = () => {
         <Instructions />
       </div>
 
-      <StatusBar statusText={status} />
+      <StatusBar statusText={status} isOverlay={false} />
 
       <ScoreBoard score={score} />
 
@@ -125,6 +125,9 @@ const TicTacToeGame = () => {
           isGameOver={gameState.isOver}
           winLine={gameState.winLine}
         />
+        {outcome && (
+          <StatusBar statusText={status} isOverlay outcome={outcome} />
+        )}
         {secondsLeft !== null && secondsLeft > 0 && (
           <CountdownOverlay seconds={secondsLeft} />
         )}

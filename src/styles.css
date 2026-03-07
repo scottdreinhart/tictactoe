@@ -458,6 +458,60 @@ body {
   margin: 0;
 }
 
+/* ─── Status Bar — Floating Overlay (win / loss / draw) ─── */
+.status-bar--overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 9;
+  width: auto;
+  min-width: 60%;
+  max-width: 90%;
+  border-left: none;
+  border-radius: 14px;
+  padding: clamp(14px, 2.5vh, 24px) clamp(20px, 4vw, 36px);
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  animation: status-slide-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes status-slide-in {
+  0% {
+    opacity: 0;
+    translate: -50% -30%;
+    scale: 0.8;
+  }
+  100% {
+    opacity: 1;
+    translate: -50% -50%;
+    scale: 1;
+  }
+}
+
+/* Win: golden glow */
+.status-bar--win {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #1a1a2e;
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.5), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Loss: muted red */
+.status-bar--loss {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Draw: neutral blue-grey */
+.status-bar--draw {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(100, 116, 139, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
 /* ─── Score Board ─── */
 .score-board {
   display: flex;
