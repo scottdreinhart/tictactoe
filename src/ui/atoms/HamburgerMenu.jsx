@@ -11,18 +11,47 @@ import PropTypes from 'prop-types'
  *   - `role="menu"` + `aria-label` on the panel
  *   - Focus trap: Tab / Shift+Tab cycles within the panel
  *   - Closes on Escape, outside click, or outside touch
+ *   - Smart positioning: auto-detects left vs. right alignment to avoid viewport overflow
  *   - Animated via CSS (`menu-panel-enter` keyframe)
  *
  * @param {{ children: React.ReactNode }} props
  */
 const HamburgerMenu = ({ children }) => {
   const [open, setOpen] = useState(false)
+  const [alignment, setAlignment] = useState('right') // 'left' or 'right'
   const btnRef = useRef(null)
   const panelRef = useRef(null)
 
   const toggle = useCallback(() => {
     setOpen((prev) => !prev)
   }, [])
+
+  // Detect alignment when menu opens
+  useEffect(() => {
+    if (!open || !btnRef.current) return
+
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      const btnRect = btnRef.current.getBoundingClientRect()
+      const minPanelWidth = 240 // matches .menu-panel min-width in CSS
+      const padding = 16 // safe margin from viewport edge
+
+      // Check if right-aligned would fit
+      const rightEdge = btnRect.right + minPanelWidth
+      const wouldOverflowRight = rightEdge + padding > window.innerWidth
+
+      // Check if left-aligned would fit
+      const leftEdge = btnRect.left - minPanelWidth
+      const wouldOverflowLeft = leftEdge - padding < 0
+
+      // Smart logic: prefer right, but flip to left if right would overflow
+      const newAlignment = wouldOverflowRight && !wouldOverflowLeft ? 'left' : 'right'
+      setAlignment(newAlignment)
+    }, 0)
+
+    return () => clearTimeout(timer)
+  }, [open])
+
 
   // Close on outside click / touch / Escape
   useEffect(() => {
@@ -111,6 +140,7 @@ const HamburgerMenu = ({ children }) => {
           ref={panelRef}
           id="game-menu-panel"
           className="menu-panel"
+          data-alignment={alignment}
           role="menu"
           aria-label="Game settings"
         >
