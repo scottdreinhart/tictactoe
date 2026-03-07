@@ -268,7 +268,6 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 - [ ] **Move history timeline** — visual sidebar showing each move in order with undo/redo support
 - [x] ~~**Theme picker**~~ — done (6 color themes + light/dark/system mode + 4 colorblind presets; persisted to localStorage)
 - [x] ~~**Touch gesture support**~~ — done (swipe navigation via `useSwipeGesture`, haptic feedback, `touch-action` CSS)
-- [ ] **Board size variants** — 4×4 or 5×5 grids with adjustable win-line length for increased difficulty
 - [ ] **Player name customization** — editable labels for "You" and "CPU" on the scoreboard
 - [ ] **Game statistics dashboard** — track lifetime stats (total games, win rate, win streaks) persisted to localStorage
 
