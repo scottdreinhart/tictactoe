@@ -1,7 +1,6 @@
 import { useReducer, useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { createEmptyBoard, applyMove, isCellEmpty } from '../domain/board.js'
 import { getGameState } from '../domain/rules.js'
-import { chooseCpuMoveSmart, chooseCpuMoveMedium, chooseCpuMoveRandom } from '../domain/ai.js'
 import { TOKENS, CPU_DELAY_MS } from '../domain/constants.js'
 
 // ── Actions ──────────────────────────────────────────────────────────────────
@@ -80,6 +79,7 @@ const gameReducer = (state, action) => {
 export const useTicTacToe = () => {
   const [state, dispatch] = useReducer(gameReducer, null, createInitialState)
   const cpuTimeoutRef = useRef(null)
+  const workerRef = useRef(null)
   const [score, setScore] = useState({ [TOKENS.HUMAN]: 0, [TOKENS.CPU]: 0, draws: 0 })
   const [difficulty, setDifficulty] = useState('medium')
   const prevGameOverRef = useRef(false)
@@ -137,33 +137,60 @@ export const useTicTacToe = () => {
     setDifficulty(level)
   }, [])
 
-  // Schedule CPU move when turn switches to CPU
+  // Initialize Web Worker on mount
+  useEffect(() => {
+    // Create worker instance
+    workerRef.current = new Worker(new URL('../workers/ai.worker.js', import.meta.url), {
+      type: 'module',
+    })
+
+    // Clean up on unmount
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate()
+        workerRef.current = null
+      }
+    }
+  }, [])
+
+  // Schedule CPU move when turn switches to CPU (using Web Worker to avoid blocking UI)
   useEffect(() => {
     if (state.turn !== TOKENS.CPU) return
     if (gameState.isOver) return
+    if (!workerRef.current) return
 
-    const chooseFn =
-      difficulty === 'hard'
-        ? chooseCpuMoveSmart
-        : difficulty === 'medium'
-          ? chooseCpuMoveMedium
-          : chooseCpuMoveRandom
-    let cpuIndex
-    try {
-      cpuIndex = chooseFn(state.board, TOKENS.CPU, TOKENS.HUMAN)
-    } catch {
-      return // no moves available
+    // Set up message handler to receive computed move from worker
+    const handleWorkerMessage = (event) => {
+      const { index, error } = event.data
+      if (error) {
+        console.error('AI Worker error:', error)
+        return
+      }
+
+      cpuTimeoutRef.current = setTimeout(() => {
+        dispatch({ type: ACTIONS.CPU_MOVE, payload: { index } })
+        cpuTimeoutRef.current = null
+      }, CPU_DELAY_MS)
     }
 
-    cpuTimeoutRef.current = setTimeout(() => {
-      dispatch({ type: ACTIONS.CPU_MOVE, payload: { index: cpuIndex } })
-      cpuTimeoutRef.current = null
-    }, CPU_DELAY_MS)
+    workerRef.current.onmessage = handleWorkerMessage
+
+    // Send computation request to worker
+    // Worker receives: board state, difficulty level, token identifiers
+    workerRef.current.postMessage({
+      board: state.board,
+      difficulty,
+      cpuToken: TOKENS.CPU,
+      humanToken: TOKENS.HUMAN,
+    })
 
     return () => {
       if (cpuTimeoutRef.current !== null) {
         clearTimeout(cpuTimeoutRef.current)
         cpuTimeoutRef.current = null
+      }
+      if (workerRef.current) {
+        workerRef.current.onmessage = null
       }
     }
   }, [state.turn, gameState.isOver, difficulty, state.board])
@@ -173,6 +200,11 @@ export const useTicTacToe = () => {
     return () => {
       if (cpuTimeoutRef.current !== null) {
         clearTimeout(cpuTimeoutRef.current)
+        cpuTimeoutRef.current = null
+      }
+      if (workerRef.current) {
+        workerRef.current.terminate()
+        workerRef.current = null
       }
     }
   }, [])

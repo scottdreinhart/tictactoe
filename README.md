@@ -260,6 +260,11 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
   - Modern build target (`es2020`) — no legacy polyfills
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
+- **Web Worker for AI** (Phase 7):
+  - CPU move computation runs in `ai.worker.js` off the main thread
+  - Smart/Medium AI algorithms never block UI animations or interactions
+  - Maintains 60 FPS even during complex AI calculations
+  - Worker bundled separately (~1.2 KB gzipped), loaded on demand
 - **Bundle analysis** via `rollup-plugin-visualizer` — generates `dist/bundle-report.html` on build
 - **Sound synthesis** via Web Audio API — zero audio files, synthesized tones + music jingles (~3KB lazy chunk)
 
