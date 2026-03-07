@@ -156,6 +156,6 @@ export const chooseCpuMoveMedium = (board, cpuToken, humanToken) => {
  */
 export const chooseCpuMoveUnbeatable = (_board, _cpuToken, _humanToken) => {
   throw new Error(
-    'chooseCpuMoveUnbeatable runs in Web Worker (src/workers/ai.worker.js), not in domain layer'
+    'chooseCpuMoveUnbeatable runs in Web Worker (src/workers/ai.worker.js), not in domain layer',
   )
 }

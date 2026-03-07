@@ -83,17 +83,17 @@ export const playWinMusic = () => {
 
   // Melody notes: C4 → E4 → G4 → C5, then a final major chord
   const melody = [
-    { freq: 261.63, start: 0,    dur: 0.25 },  // C4
-    { freq: 329.63, start: 0.2,  dur: 0.25 },  // E4
-    { freq: 392.0,  start: 0.4,  dur: 0.25 },  // G4
-    { freq: 523.25, start: 0.6,  dur: 0.6  },  // C5 (sustained)
+    { freq: 261.63, start: 0, dur: 0.25 }, // C4
+    { freq: 329.63, start: 0.2, dur: 0.25 }, // E4
+    { freq: 392.0, start: 0.4, dur: 0.25 }, // G4
+    { freq: 523.25, start: 0.6, dur: 0.6 }, // C5 (sustained)
   ]
 
   // Final chord: C5 + E5 + G5 together
   const chord = [
-    { freq: 523.25, start: 0.9, dur: 0.9 },  // C5
-    { freq: 659.25, start: 0.9, dur: 0.9 },  // E5
-    { freq: 783.99, start: 0.9, dur: 0.9 },  // G5
+    { freq: 523.25, start: 0.9, dur: 0.9 }, // C5
+    { freq: 659.25, start: 0.9, dur: 0.9 }, // E5
+    { freq: 783.99, start: 0.9, dur: 0.9 }, // G5
   ]
 
   melody.forEach(({ freq, start, dur }) => {
@@ -134,11 +134,11 @@ export const playLossMusic = () => {
 
   // Descending melody: E4 → D4 → C4 → B3 → low G3
   const notes = [
-    { freq: 329.63, start: 0,    dur: 0.35 },  // E4
-    { freq: 293.66, start: 0.3,  dur: 0.35 },  // D4
-    { freq: 261.63, start: 0.6,  dur: 0.35 },  // C4
-    { freq: 246.94, start: 0.9,  dur: 0.35 },  // B3
-    { freq: 196.0,  start: 1.2,  dur: 0.8  },  // G3 (sustained)
+    { freq: 329.63, start: 0, dur: 0.35 }, // E4
+    { freq: 293.66, start: 0.3, dur: 0.35 }, // D4
+    { freq: 261.63, start: 0.6, dur: 0.35 }, // C4
+    { freq: 246.94, start: 0.9, dur: 0.35 }, // B3
+    { freq: 196.0, start: 1.2, dur: 0.8 }, // G3 (sustained)
   ]
 
   notes.forEach(({ freq, start, dur }) => {

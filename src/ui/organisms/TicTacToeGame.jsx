@@ -51,17 +51,21 @@ const TicTacToeGame = () => {
     setFirstPlayer,
   } = useTicTacToe()
 
-  const { soundEnabled, toggleSound, playMove, playNav, playTap, playWin, playLoss, playDraw } = useSoundEffects()
+  const { soundEnabled, toggleSound, playMove, playNav, playTap, playWin, playLoss, playDraw } =
+    useSoundEffects()
   const { settings, setColorTheme, setMode, setColorblind } = useTheme()
 
   // Coin flip state - show at app startup
   const [coinFlipDone, setCoinFlipDone] = useState(false)
-  const handleCoinFlipComplete = useCallback((isXFirst) => {
-    if (!isXFirst) {
-      setFirstPlayer(TOKENS.CPU)
-    }
-    setCoinFlipDone(true)
-  }, [setFirstPlayer])
+  const handleCoinFlipComplete = useCallback(
+    (isXFirst) => {
+      if (!isXFirst) {
+        setFirstPlayer(TOKENS.CPU)
+      }
+      setCoinFlipDone(true)
+    },
+    [setFirstPlayer],
+  )
 
   // Auto-reset countdown (30 s)
   const { secondsLeft, resetNow } = useAutoReset(gameState.isOver, handleReset)
@@ -124,7 +128,18 @@ const TicTacToeGame = () => {
 
     prevBoardRef.current = board
     prevGameOverRef.current = gameState.isOver
-  }, [board, gameState.isOver, gameState.winner, status, playMove, playWin, playLoss, playDraw, enqueue, clearNotifications])
+  }, [
+    board,
+    gameState.isOver,
+    gameState.winner,
+    status,
+    playMove,
+    playWin,
+    playLoss,
+    playDraw,
+    enqueue,
+    clearNotifications,
+  ])
 
   // Keep countdown notification's text in sync with secondsLeft
   useEffect(() => {
@@ -161,7 +176,9 @@ const TicTacToeGame = () => {
   }, [canUndo, canRedo, handleUndo, handleRedo])
 
   const containerClass = useMemo(() => {
-    const outcomeClass = outcome ? styles[`outcome${outcome.charAt(0).toUpperCase() + outcome.slice(1)}`] : null
+    const outcomeClass = outcome
+      ? styles[`outcome${outcome.charAt(0).toUpperCase() + outcome.slice(1)}`]
+      : null
     return cx(styles.root, outcomeClass)
   }, [outcome])
 
@@ -196,9 +213,14 @@ const TicTacToeGame = () => {
 
       <div className={containerClass}>
         {!coinFlipDone && <CoinFlip onFlipComplete={handleCoinFlipComplete} />}
-        <a href="#game-board" className={styles.skipToContent}>Skip to game board</a>
+        <a href="#game-board" className={styles.skipToContent}>
+          Skip to game board
+        </a>
         {showConfetti && (
-          <ConfettiOverlay className={styles.confettiCanvas} onDone={() => setShowConfetti(false)} />
+          <ConfettiOverlay
+            className={styles.confettiCanvas}
+            onDone={() => setShowConfetti(false)}
+          />
         )}
 
         <div className={styles.boardArea} id="game-board">
@@ -212,11 +234,7 @@ const TicTacToeGame = () => {
             onNav={playNav}
             onTap={playTap}
           />
-          <NotificationBanner
-            notification={notification}
-            onDismiss={dismiss}
-            onAction={resetNow}
-          />
+          <NotificationBanner notification={notification} onDismiss={dismiss} onAction={resetNow} />
         </div>
 
         <MoveTimeline

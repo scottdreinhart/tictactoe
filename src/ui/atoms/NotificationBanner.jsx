@@ -54,7 +54,7 @@ const NotificationBanner = ({ notification, onDismiss, onAction }) => {
         notification.variant === 'loss' && styles.loss,
         notification.variant === 'draw' && styles.draw,
         notification.variant === 'countdown' && styles.countdown,
-        notification.variant === 'info' && styles.info
+        notification.variant === 'info' && styles.info,
       )}
       role="status"
       aria-live="polite"
@@ -63,11 +63,7 @@ const NotificationBanner = ({ notification, onDismiss, onAction }) => {
     >
       <p className={styles.message}>{notification.message}</p>
       {notification.hasAction && onAction && (
-        <button
-          type="button"
-          className={styles.action}
-          onClick={onAction}
-        >
+        <button type="button" className={styles.action} onClick={onAction}>
           Reset Now
         </button>
       )}

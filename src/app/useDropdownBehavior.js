@@ -21,13 +21,7 @@ import { useEffect } from 'react'
  *
  * @returns void (hook manages event listeners internally)
  */
-const useDropdownBehavior = ({
-  open,
-  onClose,
-  triggerRef,
-  panelRef,
-  onOutsideClick,
-} = {}) => {
+const useDropdownBehavior = ({ open, onClose, triggerRef, panelRef, onOutsideClick } = {}) => {
   // Close on outside click / touch / Escape
   useEffect(() => {
     if (!open) return

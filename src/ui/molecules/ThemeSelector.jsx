@@ -81,7 +81,9 @@ const ThemeSelector = React.memo(({ settings, onColorTheme, onMode, onColorblind
                   key={t.id}
                   type="button"
                   className={cx(styles.swatch, settings.colorTheme === t.id && styles.swatchActive)}
-                  style={{ background: `linear-gradient(135deg, ${t.gradient[0]}, ${t.gradient[1]})` }}
+                  style={{
+                    background: `linear-gradient(135deg, ${t.gradient[0]}, ${t.gradient[1]})`,
+                  }}
                   onClick={() => onColorTheme(t.id)}
                   aria-label={t.label}
                   aria-pressed={settings.colorTheme === t.id}
@@ -118,7 +120,10 @@ const ThemeSelector = React.memo(({ settings, onColorTheme, onMode, onColorblind
                 <button
                   key={cb.id}
                   type="button"
-                  className={cx(styles.colorblindBtn, settings.colorblind === cb.id && styles.colorblindActive)}
+                  className={cx(
+                    styles.colorblindBtn,
+                    settings.colorblind === cb.id && styles.colorblindActive,
+                  )}
                   onClick={() => onColorblind(cb.id)}
                   aria-pressed={settings.colorblind === cb.id}
                   title={cb.description || cb.label}

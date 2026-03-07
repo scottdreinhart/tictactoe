@@ -464,7 +464,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 |-------|---------|-------|
 | `index` (app) | Game logic + UI components | 81 modules total |
 | `vendor-react` | React + ReactDOM | Cached independently from app code |
-| CSS | Styles + theme base | 27.70 kB raw (6.60 kB gzip) |
+| CSS | Styles + theme base | 27.64 kB raw (6.58 kB gzip) |
 | Theme chunks (×6) | Ocean, Sunset, Forest, Rose, Midnight, High Contrast | ~0.5–1 kB each (gzip), lazy-loaded |
 | `ai.worker` | Minimax AI (Web Worker) | ~1.2 kB gzip, loaded on demand |
 | Sounds | Web Audio API synthesis | ~3 kB lazy chunk |
@@ -485,7 +485,7 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
   - Modern build target (`es2020`) — no legacy polyfills
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
-  - **Build size**: 81 modules, 27.70 kB CSS (6.60 kB gzip)
+  - **Build size**: 81 modules, 27.64 kB CSS (6.58 kB gzip)
 - **CSS Code-Splitting** (Vite + dynamic imports):
   - Theme CSS split into separate chunks (ocean, sunset, forest, rose, midnight, highcontrast)
   - Classic theme bundled in main stylesheet (~6 KB gzipped)
@@ -724,6 +724,7 @@ The app is built with React + Vite. All platforms with a web browser can run the
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
 - [x] **CVE remediation** — all 8 vulnerabilities resolved (5 high tar, 2 moderate esbuild/electron, 1 low @tootallnate/once)
 - [ ] **Dependabot auto-merge** — enable auto-updates for future vulnerability alerts
+- [ ] **Custom app icons** — generate PNG icons from `icon.svg` for Electron builds (win `.ico`, mac `.icns`, linux `.png`) and configure in `electron-builder`
 
 ### Gameplay
 - [ ] **Local multiplayer** — human vs human mode on the same device (remove CPU AI, alternate turns)

@@ -60,7 +60,9 @@
   flex-direction: column;
   align-items: center;
   gap: clamp(8px, 2vh, 20px);
-  transition: background-color 300ms ease, box-shadow 300ms ease;
+  transition:
+    background-color 300ms ease,
+    box-shadow 300ms ease;
 
   /* Board dimension tokens (shared with BoardGrid + MoveTimeline) */
   --board-size: clamp(240px, 75vw, 400px);
@@ -109,11 +111,14 @@
 }
 
 @keyframes winGlow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 12px 48px var(--card-shadow);
   }
   50% {
-    box-shadow: 0 0 40px 8px rgba(250, 204, 21, 0.5), 0 12px 48px var(--card-shadow);
+    box-shadow:
+      0 0 40px 8px rgba(250, 204, 21, 0.5),
+      0 12px 48px var(--card-shadow);
   }
 }
 
@@ -123,15 +128,34 @@
 }
 
 @keyframes lossShake {
-  0%, 100% { transform: translateX(0); }
-  10% { transform: translateX(-6px); }
-  20% { transform: translateX(6px); }
-  30% { transform: translateX(-5px); }
-  40% { transform: translateX(5px); }
-  50% { transform: translateX(-3px); }
-  60% { transform: translateX(3px); }
-  70% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-6px);
+  }
+  20% {
+    transform: translateX(6px);
+  }
+  30% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  50% {
+    transform: translateX(-3px);
+  }
+  60% {
+    transform: translateX(3px);
+  }
+  70% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
 }
 
 /* Draw — brief desaturation pulse */
@@ -140,7 +164,8 @@
 }
 
 @keyframes drawFade {
-  0%, 100% {
+  0%,
+  100% {
     filter: none;
   }
   40% {

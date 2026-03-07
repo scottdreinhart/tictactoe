@@ -14,7 +14,9 @@
   min-height: 48px;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
-  transition: background-color 200ms ease, transform 200ms ease;
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease;
   line-height: 1;
 }
 

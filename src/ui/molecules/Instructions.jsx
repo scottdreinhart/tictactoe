@@ -69,19 +69,16 @@ const Instructions = () => {
       </button>
 
       {open && (
-        <div
-          ref={tooltipRef}
-          className={cx(styles.tooltip, styles[placement])}
-          role="tooltip"
-        >
+        <div ref={tooltipRef} className={cx(styles.tooltip, styles[placement])} role="tooltip">
           <h3 className={styles.title}>How to Play</h3>
           <ul className={styles.list}>
-            <li className={styles.listItem}>You are <strong>X</strong>, the CPU is <strong>O</strong></li>
+            <li className={styles.listItem}>
+              You are <strong>X</strong>, the CPU is <strong>O</strong>
+            </li>
             <li className={styles.listItem}>You move first</li>
             <li className={styles.listItem}>
-              <strong>Click</strong> a cell, or use{' '}
-              <strong>Arrow Keys / WASD</strong> to navigate and{' '}
-              <strong>Space/Enter</strong> to select
+              <strong>Click</strong> a cell, or use <strong>Arrow Keys / WASD</strong> to navigate
+              and <strong>Space/Enter</strong> to select
             </li>
             <li className={styles.listItem}>First to get 3 in a row wins!</li>
           </ul>

@@ -17,8 +17,7 @@ const getSounds = () => {
  * Sound is treated as a "motion" cue — we mute when reduced-motion is active.
  */
 const prefersReducedMotion = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
  * useSoundEffects — application hook

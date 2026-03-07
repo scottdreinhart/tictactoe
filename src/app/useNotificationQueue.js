@@ -37,7 +37,7 @@ const useNotificationQueue = () => {
       const id = idRef.current
       setQueue((prev) => [...prev, { id, message, variant, duration, hasAction }])
     },
-    []
+    [],
   )
 
   /** Dismiss the current (head) notification, advancing the queue. */

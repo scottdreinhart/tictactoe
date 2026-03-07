@@ -1,10 +1,6 @@
 import { getEmptyCells } from '../domain/board.js'
 import { getWinnerToken } from '../domain/rules.js'
-import {
-  chooseCpuMoveRandom,
-  chooseCpuMoveSmart,
-  chooseCpuMoveMedium,
-} from '../domain/ai.js'
+import { chooseCpuMoveRandom, chooseCpuMoveSmart, chooseCpuMoveMedium } from '../domain/ai.js'
 
 // ============================================================================
 // PHASE C: Minimax AI with Alpha-Beta Pruning (Unbeatable)

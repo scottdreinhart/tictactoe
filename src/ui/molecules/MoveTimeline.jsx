@@ -7,7 +7,17 @@ import { cx } from '../utils/cssModules.js'
  * MoveTimeline - Sliding drawer from the right side showing move history,
  * score, streak, best time, and undo/redo controls.
  */
-export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRedo, canUndo, canRedo, score, streak = 0, bestTime = null }) => {
+export const MoveTimeline = ({
+  moveHistory = [],
+  currentIndex = 0,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
+  score,
+  streak = 0,
+  bestTime = null,
+}) => {
   const [isOpen, setIsOpen] = useState(false)
   const drawerRef = useRef(null)
   const moves = moveHistory.slice(1) // skip initial empty board
@@ -53,11 +63,7 @@ export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRed
         <div className={styles.container}>
           <div className={styles.header}>
             <h3 className={styles.title}>Game Info</h3>
-            <button
-              className={styles.closeBtn}
-              onClick={() => setIsOpen(false)}
-              aria-label="Close"
-            >
+            <button className={styles.closeBtn} onClick={() => setIsOpen(false)} aria-label="Close">
               ✕
             </button>
           </div>
@@ -92,7 +98,9 @@ export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRed
               {bestTime !== null && (
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Best</span>
-                  <span className={cx(styles.statValue, styles.bestTimeValue)}>{bestTime.toFixed(1)}s</span>
+                  <span className={cx(styles.statValue, styles.bestTimeValue)}>
+                    {bestTime.toFixed(1)}s
+                  </span>
                 </div>
               )}
             </div>
@@ -138,7 +146,7 @@ export const MoveTimeline = ({ moveHistory = [], currentIndex = 0, onUndo, onRed
                       className={cx(
                         styles.move,
                         isCurrent && styles.current,
-                        !isCurrentOrBefore && styles.future
+                        !isCurrentOrBefore && styles.future,
                       )}
                       onClick={() => {
                         if (currentIndex > moveIndex) {

@@ -24,7 +24,16 @@ import { cx } from '../utils/cssModules.js'
  *   onTap: () => void,
  * }} props
  */
-const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, winLine, onNav, onTap }) => {
+const BoardGrid = ({
+  board,
+  focusedIndex,
+  onFocusChange,
+  onSelect,
+  isGameOver,
+  winLine,
+  onNav,
+  onTap,
+}) => {
   const cellRefs = useRef([])
   const gridRef = useRef(null)
   const [isResetting, setIsResetting] = useState(false)
@@ -64,10 +73,18 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
       let next = focusedIndex
 
       switch (direction) {
-        case 'up':    next = row > 0 ? focusedIndex - BOARD_SIZE : focusedIndex; break
-        case 'down':  next = row < BOARD_SIZE - 1 ? focusedIndex + BOARD_SIZE : focusedIndex; break
-        case 'left':  next = col > 0 ? focusedIndex - 1 : focusedIndex; break
-        case 'right': next = col < BOARD_SIZE - 1 ? focusedIndex + 1 : focusedIndex; break
+        case 'up':
+          next = row > 0 ? focusedIndex - BOARD_SIZE : focusedIndex
+          break
+        case 'down':
+          next = row < BOARD_SIZE - 1 ? focusedIndex + BOARD_SIZE : focusedIndex
+          break
+        case 'left':
+          next = col > 0 ? focusedIndex - 1 : focusedIndex
+          break
+        case 'right':
+          next = col < BOARD_SIZE - 1 ? focusedIndex + 1 : focusedIndex
+          break
       }
 
       if (next !== focusedIndex) {
@@ -77,7 +94,7 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
         if (navigator.vibrate) navigator.vibrate(10)
       }
     },
-    [focusedIndex, onFocusChange, onNav]
+    [focusedIndex, onFocusChange, onNav],
   )
   useSwipeGesture(gridRef, handleSwipe)
 
@@ -88,7 +105,7 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
       if (navigator.vibrate) navigator.vibrate(15)
       onSelect(index)
     },
-    [onSelect, onTap]
+    [onSelect, onTap],
   )
 
   // Detect board reset (board went from having marks to all empty)
@@ -124,7 +141,9 @@ const BoardGrid = ({ board, focusedIndex, onFocusChange, onSelect, isGameOver, w
 
         return (
           <CellButton
-            ref={(el) => { cellRefs.current[index] = el }}
+            ref={(el) => {
+              cellRefs.current[index] = el
+            }}
             key={index}
             value={value}
             disabled={isDisabled}

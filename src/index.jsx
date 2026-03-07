@@ -14,7 +14,7 @@ import './styles.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <TicTacToeGame />
-  </React.StrictMode>
+  </React.StrictMode>,
 )
 
 /* Register service worker for offline / instant-repeat-visit caching */

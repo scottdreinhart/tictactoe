@@ -24,9 +24,15 @@ import OMark from './OMark.jsx'
  * }} props
  */
 const CellButton = React.forwardRef(
-  ({ value, disabled, isFocused, isWinning, focusDirection, onClick, ariaLabel, tabIndex }, ref) => {
-    const focusClassName = isFocused && focusDirection ? styles[`focus${focusDirection.charAt(0).toUpperCase() + focusDirection.slice(1)}`] : ''
-    
+  (
+    { value, disabled, isFocused, isWinning, focusDirection, onClick, ariaLabel, tabIndex },
+    ref,
+  ) => {
+    const focusClassName =
+      isFocused && focusDirection
+        ? styles[`focus${focusDirection.charAt(0).toUpperCase() + focusDirection.slice(1)}`]
+        : ''
+
     return (
       <button
         ref={ref}
@@ -38,7 +44,7 @@ const CellButton = React.forwardRef(
           isFocused && styles.focused,
           focusClassName,
           disabled && styles.disabled,
-          isWinning && styles.winning
+          isWinning && styles.winning,
         )}
         onClick={disabled ? undefined : onClick}
         aria-label={ariaLabel}
@@ -49,7 +55,7 @@ const CellButton = React.forwardRef(
         {value === 'O' && <OMark className={cx(styles.mark, styles.marko)} />}
       </button>
     )
-  }
+  },
 )
 
 CellButton.displayName = 'CellButton'

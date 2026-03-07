@@ -18,7 +18,9 @@
   min-height: 48px;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
-  transition: background-color 200ms ease, transform 200ms ease;
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease;
   line-height: 1;
 }
 
@@ -86,7 +88,9 @@
   cursor: pointer;
   padding: 6px;
   box-sizing: content-box;
-  transition: transform 200ms ease, border-color 200ms ease;
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease;
   /* 48px touch target via padding (36 + 6*2) */
 }
 
@@ -96,7 +100,9 @@
 
 .swatchActive {
   border-color: var(--text-primary);
-  box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--text-primary);
+  box-shadow:
+    0 0 0 2px var(--card-bg),
+    0 0 0 4px var(--text-primary);
 }
 
 /* Mode buttons */
@@ -148,7 +154,9 @@
   font-weight: 600;
   cursor: pointer;
   color: var(--text-primary);
-  transition: background-color 200ms ease, border-color 200ms ease;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
 }
 
 .colorblindBtn:hover:not(.colorblindActive) {

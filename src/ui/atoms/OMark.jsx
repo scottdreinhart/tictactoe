@@ -7,11 +7,7 @@ import PropTypes from 'prop-types'
  * Uses CSS stroke-dasharray / stroke-dashoffset for a draw-on effect.
  */
 const OMark = React.memo(({ className }) => (
-  <svg
-    className={className}
-    viewBox="0 0 100 100"
-    aria-hidden="true"
-  >
+  <svg className={className} viewBox="0 0 100 100" aria-hidden="true">
     <circle cx="50" cy="50" r="30" />
   </svg>
 ))

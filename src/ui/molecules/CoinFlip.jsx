@@ -47,7 +47,7 @@ export const CoinFlip = ({ onFlipComplete }) => {
       if (flipTimerRef.current) clearTimeout(flipTimerRef.current)
       if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
     }
-  }, [ready]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ready])
 
   if (!ready) return null
 
@@ -60,7 +60,9 @@ export const CoinFlip = ({ onFlipComplete }) => {
         <div
           className={styles.coinWrapper}
           onClick={stopFlip}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') stopFlip() }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') stopFlip()
+          }}
           role="button"
           tabIndex={0}
           aria-label="Tap to stop coin flip"
@@ -75,11 +77,11 @@ export const CoinFlip = ({ onFlipComplete }) => {
           </div>
         </div>
         {result ? (
-          <p className={styles.result}>
-            {result === 'X' ? 'You go first!' : 'CPU goes first!'}
-          </p>
+          <p className={styles.result}>{result === 'X' ? 'You go first!' : 'CPU goes first!'}</p>
         ) : (
-          <p className={styles.resultPlaceholder} aria-hidden="true">&nbsp;</p>
+          <p className={styles.resultPlaceholder} aria-hidden="true">
+            &nbsp;
+          </p>
         )}
       </div>
     </div>

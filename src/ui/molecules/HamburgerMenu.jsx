@@ -31,7 +31,9 @@ const HamburgerMenu = ({ children }) => {
     const rect = btnRef.current.getBoundingClientRect()
     // Find the board grid element to align the panel's right edge with the board's right edge
     const boardEl = document.getElementById('game-board')
-    const boardRect = boardEl ? boardEl.getBoundingClientRect() : { left: 0, right: window.innerWidth }
+    const boardRect = boardEl
+      ? boardEl.getBoundingClientRect()
+      : { left: 0, right: window.innerWidth }
     const panelWidth = 240
     const pad = 8
     // Align panel's right edge to the board's right edge
@@ -73,19 +75,20 @@ const HamburgerMenu = ({ children }) => {
         </span>
       </button>
 
-      {open && createPortal(
-        <div
-          ref={panelRef}
-          id="game-menu-panel"
-          className={styles.panel}
-          role="menu"
-          aria-label="Game settings"
-          style={panelPos ? { top: panelPos.top, left: panelPos.left } : { visibility: 'hidden' }}
-        >
-          {children}
-        </div>,
-        document.body
-      )}
+      {open &&
+        createPortal(
+          <div
+            ref={panelRef}
+            id="game-menu-panel"
+            className={styles.panel}
+            role="menu"
+            aria-label="Game settings"
+            style={panelPos ? { top: panelPos.top, left: panelPos.left } : { visibility: 'hidden' }}
+          >
+            {children}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

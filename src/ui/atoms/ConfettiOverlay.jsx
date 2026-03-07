@@ -4,8 +4,14 @@ import PropTypes from 'prop-types'
 const PARTICLE_COUNT = 80
 const GRAVITY = 0.003
 const COLORS = [
-  '#667eea', '#764ba2', '#f97316', '#22c55e',
-  '#f43f5e', '#0ea5e9', '#a78bfa', '#fbbf24',
+  '#667eea',
+  '#764ba2',
+  '#f97316',
+  '#22c55e',
+  '#f43f5e',
+  '#0ea5e9',
+  '#a78bfa',
+  '#fbbf24',
 ]
 
 /**
@@ -94,13 +100,7 @@ const ConfettiOverlay = ({ onDone, className }) => {
     }
   }, [onDone])
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className={className}
-      aria-hidden="true"
-    />
-  )
+  return <canvas ref={canvasRef} className={className} aria-hidden="true" />
 }
 
 ConfettiOverlay.propTypes = {

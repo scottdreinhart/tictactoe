@@ -207,19 +207,13 @@ export const useTicTacToe = () => {
 
   // ── Handlers (stable references via useCallback) ─────────────────────────
 
-  const handleHumanSelect = useCallback(
-    (index) => {
-      dispatch({ type: ACTIONS.HUMAN_MOVE, payload: { index } })
-    },
-    []
-  )
+  const handleHumanSelect = useCallback((index) => {
+    dispatch({ type: ACTIONS.HUMAN_MOVE, payload: { index } })
+  }, [])
 
-  const handleFocusChange = useCallback(
-    (index) => {
-      dispatch({ type: ACTIONS.SET_FOCUSED_INDEX, payload: index })
-    },
-    []
-  )
+  const handleFocusChange = useCallback((index) => {
+    dispatch({ type: ACTIONS.SET_FOCUSED_INDEX, payload: index })
+  }, [])
 
   const handleReset = useCallback(() => {
     if (cpuTimeoutRef.current !== null) {

@@ -103,7 +103,9 @@
   background: linear-gradient(135deg, #d4a017, #f5d061, #c8960c);
   color: #7a5c00;
   border: 3px solid rgba(255, 215, 0, 0.5);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 200, 0.5);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 200, 0.5);
 }
 
 .coinBack {
@@ -111,7 +113,9 @@
   color: #7a5c00;
   transform: rotateY(180deg);
   border: 3px solid rgba(255, 215, 0, 0.5);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 200, 0.5);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 200, 0.5);
 }
 
 .coinMark {
