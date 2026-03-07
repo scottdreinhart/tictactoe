@@ -30,7 +30,7 @@ export const COLORBLIND_MODES = [
 
 /** Default settings */
 export const DEFAULT_SETTINGS = {
-  colorTheme: 'classic',
+  colorTheme: 'highcontrast',
   mode: 'system',
   colorblind: 'none',
 }

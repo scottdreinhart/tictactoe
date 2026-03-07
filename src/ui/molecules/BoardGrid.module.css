@@ -2,17 +2,34 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: clamp(5px, 1.5vw, 10px);
-  padding: clamp(8px, 1.5vw, 14px);
+  gap: var(--board-gap);
+  padding: var(--board-pad);
   background: var(--board-bg);
   border-radius: 12px;
-  width: clamp(240px, 75vw, 400px);
+  width: var(--board-size);
   aspect-ratio: 1;
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: background-color 300ms ease, transform 250ms ease, opacity 250ms ease;
+  position: relative;
+  overflow: hidden;
   touch-action: none;  /* we handle swipes ourselves */
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* Background image overlay — 90% visible (0.9 opacity) */
+.root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg-image, none);
+  background-size: 388px 394px;
+  background-position: 10px 12px;
+  background-repeat: repeat;
+  opacity: 0.9;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Board reset animation */

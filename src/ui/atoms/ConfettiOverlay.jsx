@@ -15,7 +15,7 @@ const COLORS = [
  * self-cleans after the animation completes (~3 seconds).
  * Rendered as a fixed overlay covering the game container.
  */
-const ConfettiOverlay = ({ onDone }) => {
+const ConfettiOverlay = ({ onDone, className }) => {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -97,7 +97,7 @@ const ConfettiOverlay = ({ onDone }) => {
   return (
     <canvas
       ref={canvasRef}
-      className="confetti-canvas"
+      className={className}
       aria-hidden="true"
     />
   )
@@ -105,6 +105,7 @@ const ConfettiOverlay = ({ onDone }) => {
 
 ConfettiOverlay.propTypes = {
   onDone: PropTypes.func,
+  className: PropTypes.string,
 }
 
 export default ConfettiOverlay

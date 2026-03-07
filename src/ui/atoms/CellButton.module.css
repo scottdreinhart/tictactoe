@@ -7,7 +7,7 @@
 
 .root {
   aspect-ratio: 1;
-  background: var(--cell-bg);
+  background: color-mix(in srgb, var(--cell-bg) 8%, transparent);
   border: 2px solid var(--cell-border);
   border-radius: 10px;
   cursor: pointer;
@@ -23,6 +23,7 @@
   appearance: none;
   padding: 10%;
   position: relative;
+  z-index: 1;
   overflow: hidden;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -31,7 +32,7 @@
 }
 
 .root:hover:not(.disabled) {
-  background: var(--cell-hover-bg);
+  background: color-mix(in srgb, var(--cell-hover-bg) 25%, transparent);
   border-color: var(--accent);
   transform: scale(1.05);
   box-shadow: 0 4px 16px var(--accent-glow);
@@ -119,11 +120,11 @@
 
 /* Token-specific cell styling — subtle tint, no filled-disc look */
 .tokenX {
-  border-color: color-mix(in srgb, var(--x-color) 40%, var(--cell-border));
+  border-color: var(--x-color);
 }
 
 .tokenO {
-  border-color: color-mix(in srgb, var(--o-color) 40%, var(--cell-border));
+  border-color: var(--o-color);
 }
 
 /* SVG Marks */
@@ -137,7 +138,7 @@
 
 /* X mark — two lines */
 .markx line {
-  stroke: var(--x-color);
+  stroke: color-mix(in srgb, var(--x-color) 50%, white);
   stroke-width: var(--mark-stroke-width);
   stroke-dasharray: 85;
   stroke-dashoffset: 85;
@@ -150,7 +151,7 @@
 
 /* O mark — circle */
 .marko circle {
-  stroke: var(--o-color);
+  stroke: color-mix(in srgb, var(--o-color) 50%, white);
   stroke-width: var(--mark-stroke-width);
   stroke-dasharray: 189; /* 2 * π * 30 ≈ 188.5 */
   stroke-dashoffset: 189;
@@ -160,23 +161,6 @@
 @keyframes drawStroke {
   to {
     stroke-dashoffset: 0;
-  }
-}
-
-/* Cell placement pop-in */
-.pop {
-  animation: cellPop 300ms ease-out;
-}
-
-@keyframes cellPop {
-  0% {
-    transform: scale(0.85);
-  }
-  50% {
-    transform: scale(1.08);
-  }
-  100% {
-    transform: scale(1);
   }
 }
 

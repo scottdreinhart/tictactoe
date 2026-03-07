@@ -7,7 +7,7 @@ import { useCallback, useRef, useState } from 'react'
 let soundsPromise = null
 const getSounds = () => {
   if (!soundsPromise) {
-    soundsPromise = import('../domain/sounds.js')
+    soundsPromise = import('./sounds.js')
   }
   return soundsPromise
 }

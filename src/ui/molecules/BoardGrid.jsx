@@ -148,6 +148,8 @@ BoardGrid.propTypes = {
   onSelect: PropTypes.func.isRequired,
   isGameOver: PropTypes.bool.isRequired,
   winLine: PropTypes.arrayOf(PropTypes.number),
+  onNav: PropTypes.func,
+  onTap: PropTypes.func,
 }
 
 export default BoardGrid
