@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { COLOR_THEMES, DEFAULT_SETTINGS } from '../domain/themes.js'
+import { load, save } from './storageService.js'
 
 const STORAGE_KEY = 'ttt-theme-settings'
 
@@ -84,15 +85,8 @@ const applyThemeCSS = async (themeId) => {
  * Read persisted settings from localStorage (or return defaults).
  */
 const loadSettings = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      return { ...DEFAULT_SETTINGS, ...parsed }
-    }
-  } catch {
-    /* ignore corrupt storage */
-  }
+  const parsed = load(STORAGE_KEY)
+  if (parsed) return { ...DEFAULT_SETTINGS, ...parsed }
   return { ...DEFAULT_SETTINGS }
 }
 
@@ -100,11 +94,7 @@ const loadSettings = () => {
  * Persist settings to localStorage.
  */
 const saveSettings = (settings) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-  } catch {
-    /* storage full / unavailable — silently ignore */
-  }
+  save(STORAGE_KEY, settings)
 }
 
 /**

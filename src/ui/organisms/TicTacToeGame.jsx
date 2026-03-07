@@ -1,9 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useTicTacToe } from '../../app/useTicTacToe.js'
 import useSoundEffects from '../../app/useSoundEffects.js'
 import useTheme from '../../app/useTheme.js'
 import useAutoReset from '../../app/useAutoReset.js'
 import useNotificationQueue from '../../app/useNotificationQueue.js'
+import useKeyboardShortcuts from '../../app/useKeyboardShortcuts.js'
+import useGameOrchestration from '../../app/useGameOrchestration.js'
 import { TOKENS } from '../../domain/constants.js'
 import DifficultyToggle from '../atoms/DifficultyToggle.jsx'
 import SoundToggle from '../atoms/SoundToggle.jsx'
@@ -21,7 +23,7 @@ import { cx } from '../utils/cssModules.js'
 /**
  * TicTacToeGame — Organism
  *
- * Top-level game component. Orchestrates the application hook
+ * Top-level game component. Orchestrates the application hooks
  * and composes atoms / molecules — contains ZERO inline markup
  * beyond the wrapping container div.
  *
@@ -79,108 +81,50 @@ const TicTacToeGame = () => {
     updateCurrent,
   } = useNotificationQueue()
 
-  // Outcome visual state: 'win' | 'loss' | 'draw' | null
-  const [outcome, setOutcome] = useState(null)
-  const [showConfetti, setShowConfetti] = useState(false)
+  // Stable references for orchestration hook
+  const sounds = useMemo(
+    () => ({ playMove, playWin, playLoss, playDraw }),
+    [playMove, playWin, playLoss, playDraw],
+  )
+  const notifications = useMemo(
+    () => ({ enqueue, clear: clearNotifications, updateCurrent }),
+    [enqueue, clearNotifications, updateCurrent],
+  )
 
-  // Track previous board to detect moves (for move sound)
-  const prevBoardRef = useRef(board)
-  const prevGameOverRef = useRef(false)
+  // Outcome styles lookup for orchestration
+  const outcomeStyles = useMemo(
+    () => ({
+      win: styles.outcomeWin,
+      loss: styles.outcomeLoss,
+      draw: styles.outcomeDraw,
+    }),
+    [],
+  )
 
-  useEffect(() => {
-    const boardChanged = prevBoardRef.current !== board
-    const justEnded = gameState.isOver && !prevGameOverRef.current
-
-    if (boardChanged && !justEnded) {
-      playMove()
-    }
-
-    if (justEnded) {
-      let outcomeType = 'draw'
-      if (gameState.winner === TOKENS.HUMAN) {
-        playWin()
-        outcomeType = 'win'
-        setShowConfetti(true)
-      } else if (gameState.winner === TOKENS.CPU) {
-        playLoss()
-        outcomeType = 'loss'
-      } else {
-        playDraw()
-      }
-      setOutcome(outcomeType)
-
-      // Queue: outcome announcement → countdown with reset action
-      enqueue({ message: status, variant: outcomeType, duration: 4000 })
-      enqueue({
-        message: 'New game in 30 seconds',
-        variant: 'countdown',
-        duration: 0,
-        hasAction: true,
-      })
-    }
-
-    // Clear everything when game resets
-    if (!gameState.isOver && prevGameOverRef.current) {
-      setOutcome(null)
-      setShowConfetti(false)
-      clearNotifications()
-    }
-
-    prevBoardRef.current = board
-    prevGameOverRef.current = gameState.isOver
-  }, [
+  // Game orchestration — sounds, confetti, notifications, outcome CSS
+  const { showConfetti, setShowConfetti, containerClass } = useGameOrchestration({
     board,
-    gameState.isOver,
-    gameState.winner,
+    gameState,
     status,
-    playMove,
-    playWin,
-    playLoss,
-    playDraw,
-    enqueue,
-    clearNotifications,
-  ])
-
-  // Keep countdown notification's text in sync with secondsLeft
-  useEffect(() => {
-    if (notification?.variant === 'countdown' && secondsLeft !== null && secondsLeft > 0) {
-      updateCurrent({
-        message: `New game in ${secondsLeft} ${secondsLeft === 1 ? 'second' : 'seconds'}`,
-      })
-    }
-  }, [secondsLeft, notification?.variant, updateCurrent])
+    secondsLeft,
+    notification,
+    sounds,
+    notifications,
+    outcomeStyles,
+    rootClass: styles.root,
+    cx,
+  })
 
   // Keyboard shortcuts for undo/redo
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Ctrl+Z or Cmd+Z for undo
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-        e.preventDefault()
-        if (canUndo) {
-          handleUndo()
-        }
-      }
-      // Ctrl+Y or Cmd+Shift+Z for redo
-      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
-        e.preventDefault()
-        if (canRedo) {
-          handleRedo()
-        }
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [canUndo, canRedo, handleUndo, handleRedo])
-
-  const containerClass = useMemo(() => {
-    const outcomeClass = outcome
-      ? styles[`outcome${outcome.charAt(0).toUpperCase() + outcome.slice(1)}`]
-      : null
-    return cx(styles.root, outcomeClass)
-  }, [outcome])
+  const shortcuts = useMemo(
+    () => [
+      { key: 'z', ctrl: true, shift: false, handler: handleUndo, enabled: canUndo },
+      { key: 'y', ctrl: true, handler: handleRedo, enabled: canRedo },
+      { key: 'z', ctrl: true, shift: true, handler: handleRedo, enabled: canRedo },
+    ],
+    [canUndo, canRedo, handleUndo, handleRedo],
+  )
+  useKeyboardShortcuts(shortcuts)
 
   return (
     <div className={styles.page}>

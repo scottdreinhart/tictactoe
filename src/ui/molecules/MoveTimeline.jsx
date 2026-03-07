@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import PropTypes from 'prop-types'
+import useDropdownBehavior from '../../app/useDropdownBehavior.js'
 import styles from './MoveTimeline.module.css'
 import { cx } from '../utils/cssModules.js'
 
@@ -20,23 +21,24 @@ export const MoveTimeline = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const drawerRef = useRef(null)
+  const toggleRef = useRef(null)
   const moves = moveHistory.slice(1) // skip initial empty board
 
-  // Close drawer on Escape
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false)
-      }
-    }
-    document.addEventListener('keydown', handleKey)
-    return () => document.removeEventListener('keydown', handleKey)
-  }, [isOpen])
+  const handleClose = useCallback(() => setIsOpen(false), [])
+
+  // Close drawer on Escape / outside click via reusable hook
+  useDropdownBehavior({
+    open: isOpen,
+    onClose: handleClose,
+    triggerRef: toggleRef,
+    panelRef: drawerRef,
+  })
 
   return (
     <>
       {/* Toggle tab on right edge */}
       <button
+        ref={toggleRef}
         className={cx(styles.toggleBtn, isOpen && styles.active)}
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? 'Close move history' : 'Open move history'}

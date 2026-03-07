@@ -4,6 +4,8 @@ import { BOARD_SIZE } from '../../domain/constants.js'
 import CellButton from '../atoms/CellButton.jsx'
 import useGridKeyboard from '../../app/useGridKeyboard.js'
 import useSwipeGesture from '../../app/useSwipeGesture.js'
+import usePrevious from '../../app/usePrevious.js'
+import { tick, tap } from '../../app/haptics.js'
 import styles from './BoardGrid.module.css'
 import { cx } from '../utils/cssModules.js'
 
@@ -38,21 +40,19 @@ const BoardGrid = ({
   const gridRef = useRef(null)
   const [isResetting, setIsResetting] = useState(false)
   const [focusDirection, setFocusDirection] = useState(null)
-  const prevBoardRef = useRef(board)
-  const prevFocusedRef = useRef(focusedIndex)
+  const prevBoard = usePrevious(board)
+  const prevFocused = usePrevious(focusedIndex)
 
   // Keyboard navigation via reusable hook
   useGridKeyboard(focusedIndex, onFocusChange, onSelect, onNav)
 
   // Track focus direction for kinetic animation
   useEffect(() => {
-    if (focusedIndex !== prevFocusedRef.current) {
-      const prev = prevFocusedRef.current
-      const curr = focusedIndex
-      const prevRow = Math.floor(prev / BOARD_SIZE)
-      const prevCol = prev % BOARD_SIZE
-      const currRow = Math.floor(curr / BOARD_SIZE)
-      const currCol = curr % BOARD_SIZE
+    if (prevFocused !== undefined && focusedIndex !== prevFocused) {
+      const prevRow = Math.floor(prevFocused / BOARD_SIZE)
+      const prevCol = prevFocused % BOARD_SIZE
+      const currRow = Math.floor(focusedIndex / BOARD_SIZE)
+      const currCol = focusedIndex % BOARD_SIZE
 
       let direction = null
       if (currRow < prevRow) direction = 'up'
@@ -61,9 +61,8 @@ const BoardGrid = ({
       else if (currCol > prevCol) direction = 'right'
 
       setFocusDirection(direction)
-      prevFocusedRef.current = focusedIndex
     }
-  }, [focusedIndex])
+  }, [focusedIndex, prevFocused])
 
   // Swipe gestures — map swipe direction to focus movement
   const handleSwipe = useCallback(
@@ -91,7 +90,7 @@ const BoardGrid = ({
         onFocusChange(next)
         onNav()
         // Haptic feedback for swipe navigation
-        if (navigator.vibrate) navigator.vibrate(10)
+        tick()
       }
     },
     [focusedIndex, onFocusChange, onNav],
@@ -102,7 +101,7 @@ const BoardGrid = ({
   const handleSelect = useCallback(
     (index) => {
       onTap()
-      if (navigator.vibrate) navigator.vibrate(15)
+      tap()
       onSelect(index)
     },
     [onSelect, onTap],
@@ -110,15 +109,15 @@ const BoardGrid = ({
 
   // Detect board reset (board went from having marks to all empty)
   useEffect(() => {
-    const hadMarks = prevBoardRef.current.some((cell) => cell !== null)
+    if (prevBoard === undefined) return
+    const hadMarks = prevBoard.some((cell) => cell !== null)
     const nowEmpty = board.every((cell) => cell === null)
     if (hadMarks && nowEmpty) {
       setIsResetting(true)
       const timer = setTimeout(() => setIsResetting(false), 300)
       return () => clearTimeout(timer)
     }
-    prevBoardRef.current = board
-  }, [board])
+  }, [board, prevBoard])
 
   // Sync DOM focus whenever focusedIndex changes
   useEffect(() => {

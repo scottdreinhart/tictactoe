@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React from 'react'
 import XMark from '../atoms/XMark.jsx'
 import OMark from '../atoms/OMark.jsx'
+import useCoinFlipAnimation from '../../app/useCoinFlipAnimation.js'
 import styles from './CoinFlip.module.css'
 
 /**
@@ -8,46 +9,9 @@ import styles from './CoinFlip.module.css'
  * Auto-flips on mount, returns winner (who goes first)
  */
 export const CoinFlip = ({ onFlipComplete }) => {
-  const [isFlipping, setIsFlipping] = useState(true)
-  const [result, setResult] = useState(null)
-  const [ready, setReady] = useState(false)
-  const callbackRef = useRef(onFlipComplete)
-  const flipTimerRef = useRef(null)
-  const resultTimerRef = useRef(null)
-  const isFlippingRef = useRef(true)
-  callbackRef.current = onFlipComplete
-
-  const stopFlip = () => {
-    if (!isFlippingRef.current) return
-    isFlippingRef.current = false
-    // Clear the auto-stop timer since user tapped early
-    if (flipTimerRef.current) clearTimeout(flipTimerRef.current)
-    setIsFlipping(false)
-    const isXFirst = Math.random() > 0.5
-    setResult(isXFirst ? 'X' : 'O')
-    resultTimerRef.current = setTimeout(() => {
-      callbackRef.current(isXFirst)
-    }, 1200)
-  }
-
-  // Delay rendering by one frame to avoid StrictMode double-mount flash
-  useEffect(() => {
-    const rafId = requestAnimationFrame(() => setReady(true))
-    return () => cancelAnimationFrame(rafId)
-  }, [])
-
-  useEffect(() => {
-    if (!ready) return
-    // Auto-stop after 3.5 seconds if user doesn't tap
-    flipTimerRef.current = setTimeout(() => {
-      stopFlip()
-    }, 3500)
-
-    return () => {
-      if (flipTimerRef.current) clearTimeout(flipTimerRef.current)
-      if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
-    }
-  }, [ready])
+  const { isFlipping, result, ready, stopFlip } = useCoinFlipAnimation({
+    onComplete: onFlipComplete,
+  })
 
   if (!ready) return null
 
