@@ -5,7 +5,6 @@ import useTheme from '../../app/useTheme.js'
 import useAutoReset from '../../app/useAutoReset.js'
 import useNotificationQueue from '../../app/useNotificationQueue.js'
 import { TOKENS } from '../../domain/constants.js'
-import GameTitle from '../atoms/GameTitle.jsx'
 import DifficultyToggle from '../atoms/DifficultyToggle.jsx'
 import SoundToggle from '../atoms/SoundToggle.jsx'
 import ThemeSelector from '../atoms/ThemeSelector.jsx'
@@ -126,30 +125,29 @@ const TicTacToeGame = () => {
       {showConfetti && (
         <ConfettiOverlay onDone={() => setShowConfetti(false)} />
       )}
-      <GameTitle text="Tic-Tac-Toe: Human vs CPU" />
-
-      <div className="game-toolbar">
-        <DifficultyToggle difficulty={difficulty} onSelect={handleSetDifficulty} />
-        <HamburgerMenu>
-          <div className="menu-section" role="group" aria-label="Sound">
-            <span className="menu-section-label">Sound</span>
-            <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
-          </div>
-          <div className="menu-section" role="group" aria-label="Theme">
-            <span className="menu-section-label">Theme</span>
-            <ThemeSelector
-              settings={settings}
-              onColorTheme={setColorTheme}
-              onMode={setMode}
-              onColorblind={setColorblind}
-            />
-          </div>
-          <div className="menu-section" role="group" aria-label="Help">
-            <span className="menu-section-label">Help</span>
-            <Instructions />
-          </div>
-        </HamburgerMenu>
-      </div>
+      <HamburgerMenu>
+        <div className="menu-section" role="group" aria-label="Difficulty">
+          <span className="menu-section-label">Difficulty</span>
+          <DifficultyToggle difficulty={difficulty} onSelect={handleSetDifficulty} />
+        </div>
+        <div className="menu-section" role="group" aria-label="Sound">
+          <span className="menu-section-label">Sound</span>
+          <SoundToggle soundEnabled={soundEnabled} onToggle={toggleSound} />
+        </div>
+        <div className="menu-section" role="group" aria-label="Theme">
+          <span className="menu-section-label">Theme</span>
+          <ThemeSelector
+            settings={settings}
+            onColorTheme={setColorTheme}
+            onMode={setMode}
+            onColorblind={setColorblind}
+          />
+        </div>
+        <div className="menu-section" role="group" aria-label="Help">
+          <span className="menu-section-label">Help</span>
+          <Instructions />
+        </div>
+      </HamburgerMenu>
 
       <ScoreBoard score={score} />
 

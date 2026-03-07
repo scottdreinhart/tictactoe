@@ -1,7 +1,7 @@
 {
   "name": "tictactoe-game",
   "version": "1.0.0",
-  "description": "React Single-Player Tic-Tac-Toe (Human vs CPU)",
+  "description": "React Tic-Tac-Toe with CLEAN Architecture and Atomic Design",
   "type": "module",
   "scripts": {
     "dev": "fuser -k 5173/tcp 2>/dev/null; vite --host",

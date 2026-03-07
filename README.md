@@ -1,4 +1,4 @@
-# Tic-Tac-Toe: Human vs CPU
+# Tic-Tac-Toe
 
 A clean, modular React Tic-Tac-Toe game with animated SVG marks, 6 color themes (light/dark + colorblind modes), keyboard/mouse/touch controls, synthesized sound effects, and a unified notification queue — built with **CLEAN Architecture** and **Atomic Design**.
 
@@ -26,7 +26,6 @@ src/
 │   │   ├── CellButton.jsx            # Single cell with SVG mark rendering + winning highlight
 │   │   ├── XMark.jsx                 # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx                 # Animated SVG "O" (React.memo, draw-on effect)
-│   │   ├── GameTitle.jsx             # Game heading (React.memo)
 │   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + animated panel
 │   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard AI toggle (React.memo)
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
@@ -217,7 +216,7 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 ## Technical Highlights
 
 - **React 18** with Hooks (`useReducer` for state, `useState` for score + difficulty, `useCallback`/`useMemo` for stable refs)
-- **React.memo** on pure atoms (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
+- **React.memo** on pure atoms (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard, ThemeSelector) to skip unnecessary re-renders
 - **PropTypes** runtime validation on all components that accept props (stripped from production builds)
 - **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
 - **Production build optimizations**:
@@ -279,7 +278,7 @@ The **Hard** AI uses `chooseCpuMoveSmart` with priority:
 ### Code Quality & Testing
 - [x] ~~**ESLint + Prettier**~~ — done (flat config, React + hooks plugins, `lint`/`format` scripts)
 - [x] ~~**`getWinner` returns winning line**~~ — done (returns `{ token, line }`, `getWinnerToken` convenience)
-- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, DifficultyToggle, SoundToggle, ScoreBoard)
+- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, DifficultyToggle, SoundToggle, ScoreBoard)
 - [ ] **Unit tests** — domain functions (`board.js`, `rules.js`, `ai.js`) are pure and test-ready; add Vitest or Jest suite
 - [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, NotificationBanner
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification

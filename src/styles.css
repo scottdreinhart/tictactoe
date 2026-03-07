@@ -390,16 +390,6 @@ body {
   transition: background-color 300ms ease, box-shadow 300ms ease;
 }
 
-/* ─── Typography ─── */
-.game-container h1 {
-  color: var(--text-primary);
-  font-size: clamp(1.1rem, 4.5vw, 1.8rem);
-  font-weight: 800;
-  line-height: 1.2;
-  text-align: center;
-  letter-spacing: -0.02em;
-}
-
 /* (Instructions h2 removed — now inside tooltip) */
 
 /* ─── Score Board ─── */
@@ -795,14 +785,6 @@ body {
 }
 
 /* ─── Difficulty Toggle ─── */
-.game-toolbar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
 .difficulty-toggle {
   display: flex;
   justify-content: center;
@@ -1373,11 +1355,6 @@ body {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  .game-container h1 {
-    font-size: 1rem;
-    width: 100%;
   }
 
   .board-grid {
