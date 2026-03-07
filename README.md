@@ -30,21 +30,32 @@ src/
 ├── ui/
 │   ├── atoms/
 │   │   ├── CellButton.jsx            # Single cell with SVG mark rendering + winning highlight
+│   │   ├── CellButton.module.css     # Scoped styles for CellButton
 │   │   ├── XMark.jsx                 # Animated SVG "X" (React.memo, draw-on effect)
 │   │   ├── OMark.jsx                 # Animated SVG "O" (React.memo, draw-on effect)
 │   │   ├── DifficultyToggle.jsx      # Easy/Medium/Hard/Unbeatable AI toggle (React.memo)
+│   │   ├── DifficultyToggle.module.css # Scoped styles for DifficultyToggle
 │   │   ├── SoundToggle.jsx           # Sound on/off toggle (React.memo)
+│   │   ├── SoundToggle.module.css    # Scoped styles for SoundToggle
 │   │   ├── ConfettiOverlay.jsx       # Canvas-based confetti particle animation on win
-│   │   └── NotificationBanner.jsx    # Floating queued notification overlay on board center
+│   │   ├── NotificationBanner.jsx    # Floating queued notification overlay on board center
+│   │   └── NotificationBanner.module.css # Scoped styles for NotificationBanner
 │   ├── molecules/
 │   │   ├── BoardGrid.jsx             # 3×3 grid with background image overlay + reset animation
+│   │   ├── BoardGrid.module.css      # Scoped styles for BoardGrid
 │   │   ├── CoinFlip.jsx              # Animated virtual coin flip (X/O sides) at app start
+│   │   ├── CoinFlip.module.css       # Scoped styles for CoinFlip
 │   │   ├── HamburgerMenu.jsx         # Accessible ☰ menu with focus trap + portal-based panel
+│   │   ├── HamburgerMenu.module.css  # Scoped styles for HamburgerMenu
 │   │   ├── Instructions.jsx          # ⓘ info icon with auto-positioned tooltip
+│   │   ├── Instructions.module.css   # Scoped styles for Instructions
 │   │   ├── MoveTimeline.jsx          # Sliding drawer with score, streak, best-time, move history & undo/redo
-│   │   └── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
+│   │   ├── MoveTimeline.module.css   # Scoped styles for MoveTimeline
+│   │   ├── ThemeSelector.jsx         # Collapsible theme/mode/colorblind settings panel
+│   │   └── ThemeSelector.module.css  # Scoped styles for ThemeSelector
 │   ├── organisms/
-│   │   └── TicTacToeGame.jsx         # Top-level game component (pure composition)
+│   │   ├── TicTacToeGame.jsx         # Top-level game component (pure composition)
+│   │   └── TicTacToeGame.module.css  # Scoped styles for TicTacToeGame
 │   ├── ui-constants.js               # UI layout constants (sizes, breakpoints)
 │   └── utils/
 │       └── cssModules.js             # cx() conditional class binding utility
@@ -66,19 +77,27 @@ public/
 │   ├── cityscape.png                 # Midnight theme background
 │   ├── laser.png                     # Ocean theme background
 │   └── matrix.png                    # High contrast theme background
+├── apple-touch-icon.svg              # Apple touch icon for iOS home screen
+├── icon-maskable.svg                 # Maskable icon for PWA adaptive icons
+├── icon.svg                          # Standard app icon
 ├── manifest.json                     # PWA manifest
 ├── sw.js                             # Service worker for offline play
 └── offline.html                      # Offline fallback page
 
 index.html                            # HTML entry point
 package.json                          # Dependencies & scripts
+pnpm-lock.yaml                        # pnpm lockfile
+pnpm-workspace.yaml                   # pnpm workspace config
+LICENSE                               # Proprietary license terms
 electron/
 ├── main.js                           # Electron main process (BrowserWindow, dev/prod loading)
-└── preload.js                        # Sandboxed context bridge (exposes platform info)
+├── preload.js                        # Sandboxed context bridge (exposes platform info)
+└── launch-dev.sh                     # WSL helper to launch Windows Electron from WSL
 
 vite.config.js                        # Vite configuration + rollup-plugin-visualizer
 eslint.config.js                      # ESLint flat config (React + hooks + Prettier)
 .prettierrc                           # Prettier formatting rules
+.gitignore                            # Git ignore rules (node_modules, dist, release, etc.)
 ```
 
 ## Features
@@ -204,22 +223,22 @@ The project enforces four complementary design patterns:
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Start development server (accessible on LAN via 0.0.0.0)
 # Cross-platform: works on Windows, macOS, Linux (uses kill-port instead of fuser)
-npm run dev
+pnpm dev
 
 # Build for production
-npm run build
+pnpm build
 
 # Lint
-npm run lint          # check for issues
-npm run lint:fix      # auto-fix issues
+pnpm lint          # check for issues
+pnpm lint:fix      # auto-fix issues
 
 # Format
-npm run format        # format all source files
-npm run format:check  # check formatting without writing
+pnpm format        # format all source files
+pnpm format:check  # check formatting without writing
 ```
 
 The app will be available at `http://localhost:5173`
@@ -228,13 +247,13 @@ The app will be available at `http://localhost:5173`
 
 ```bash
 # Development: launches Vite + Electron together
-npm run electron:dev
+pnpm electron:dev
 
 # Production build: creates distributable in release/
-npm run electron:build
+pnpm electron:build
 
 # Pack without installer (for testing)
-npm run electron:pack
+pnpm electron:pack
 ```
 
 Electron wraps the same web app in a native desktop window. In dev mode it connects to the Vite dev server (`localhost:5173`); in production it loads the built `dist/` files directly.
