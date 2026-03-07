@@ -53,15 +53,18 @@ const getNextIndex = (current, key) => {
  * @param {number} focusedIndex  — currently focused cell index
  * @param {(index: number) => void} onFocusChange — callback to move focus
  * @param {(index: number) => void} onSelect — callback to select a cell
+ * @param {() => void} onNav — callback to trigger nav sound effect
  */
-const useGridKeyboard = (focusedIndex, onFocusChange, onSelect) => {
+const useGridKeyboard = (focusedIndex, onFocusChange, onSelect, onNav) => {
   const focusedRef = useRef(focusedIndex)
   const selectRef = useRef(onSelect)
   const focusChangeRef = useRef(onFocusChange)
+  const navRef = useRef(onNav)
 
   focusedRef.current = focusedIndex
   selectRef.current = onSelect
   focusChangeRef.current = onFocusChange
+  navRef.current = onNav
 
   useEffect(() => {
     const handler = (e) => {
@@ -73,6 +76,7 @@ const useGridKeyboard = (focusedIndex, onFocusChange, onSelect) => {
         const next = getNextIndex(focusedRef.current, key)
         if (next !== focusedRef.current) {
           focusChangeRef.current(next)
+          if (navRef.current) navRef.current()
         }
         return
       }

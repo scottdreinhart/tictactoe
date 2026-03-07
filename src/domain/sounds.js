@@ -56,6 +56,22 @@ export const playMoveSound = () => {
 }
 
 /**
+ * Navigation (keyboard, WASD, swipe, swipe) — subtle tick sound for focus movement
+ * Higher pitch, faster attack, minimal presence
+ */
+export const playNavSound = () => {
+  playTone(800, 0.05, 'sine', 0.08)
+}
+
+/**
+ * Tap / Cell selection — satisfying press feedback (thicker than nav)
+ * Middle pitch, slightly longer sustain
+ */
+export const playTapSound = () => {
+  playTone(650, 0.07, 'sine', 0.1)
+}
+
+/**
  * Win music — triumphant fanfare with harmonics (~2 s)
  * Ascending C-major arpeggio capped by a bright sustained chord.
  */

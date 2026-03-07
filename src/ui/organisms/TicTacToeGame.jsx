@@ -39,7 +39,7 @@ const TicTacToeGame = () => {
     handleSetDifficulty,
   } = useTicTacToe()
 
-  const { soundEnabled, toggleSound, playMove, playWin, playLoss, playDraw } = useSoundEffects()
+  const { soundEnabled, toggleSound, playMove, playNav, playTap, playWin, playLoss, playDraw } = useSoundEffects()
   const { settings, setColorTheme, setMode, setColorblind } = useTheme()
 
   // Auto-reset countdown (30 s)
@@ -160,6 +160,8 @@ const TicTacToeGame = () => {
           onSelect={handleHumanSelect}
           isGameOver={gameState.isOver}
           winLine={gameState.winLine}
+          onNav={playNav}
+          onTap={playTap}
         />
         <NotificationBanner
           notification={notification}

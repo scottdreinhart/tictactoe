@@ -30,7 +30,10 @@ const prefersReducedMotion = () =>
  *   soundEnabled  — current on/off state
  *   toggleSound   — stable callback to flip the toggle
  *   playMove      — call after a move is placed
+ *   playNav       — call on keyboard/swipe navigation (focus change)
+ *   playTap       — call on cell selection tap
  *   playWin       — call when a player wins
+ *   playLoss      — call when the player loses
  *   playDraw      — call when the game is a draw
  */
 const useSoundEffects = () => {
@@ -50,6 +53,14 @@ const useSoundEffects = () => {
     if (shouldPlay()) getSounds().then((m) => m.playMoveSound())
   }, [shouldPlay])
 
+  const playNav = useCallback(() => {
+    if (shouldPlay()) getSounds().then((m) => m.playNavSound())
+  }, [shouldPlay])
+
+  const playTap = useCallback(() => {
+    if (shouldPlay()) getSounds().then((m) => m.playTapSound())
+  }, [shouldPlay])
+
   const playWin = useCallback(() => {
     if (shouldPlay()) getSounds().then((m) => m.playWinMusic())
   }, [shouldPlay])
@@ -62,7 +73,7 @@ const useSoundEffects = () => {
     if (shouldPlay()) getSounds().then((m) => m.playDrawSound())
   }, [shouldPlay])
 
-  return { soundEnabled, toggleSound, playMove, playWin, playLoss, playDraw }
+  return { soundEnabled, toggleSound, playMove, playNav, playTap, playWin, playLoss, playDraw }
 }
 
 export default useSoundEffects
