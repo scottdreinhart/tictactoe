@@ -367,14 +367,14 @@ DEFAULT_SETTINGS  // { colorTheme: 'highcontrast', mode: 'system', colorblind: '
 - **9 application hooks**: `useTicTacToe`, `useGridKeyboard`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useNotificationQueue`, `useSmartPosition`, `useDropdownBehavior` — extracted for composability and reuse
 
 ### Build & Performance Optimization
-- **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
+- **Vite 7** for fast development and builds
 - **Production build optimizations**:
   - Vendor chunk splitting — React/ReactDOM cached independently from app code
   - PropTypes stripped from production via `babel-plugin-transform-react-remove-prop-types`
   - Modern build target (`es2020`) — no legacy polyfills
   - Sounds module lazy-loaded via dynamic `import()` — deferred from critical path
   - `modulePreload` polyfill removed — modern browsers handle it natively
-  - **Build size**: 86 modules, 26.89 kB CSS (6.33 kB gzip)
+  - **Build size**: 81 modules, 27.70 kB CSS (6.60 kB gzip)
 - **CSS Code-Splitting** (Vite + dynamic imports):
   - Theme CSS split into separate chunks (ocean, sunset, forest, rose, midnight, highcontrast)
   - Classic theme bundled in main stylesheet (~6 KB gzipped)
@@ -585,7 +585,7 @@ The app is built with React + Vite. All platforms with a web browser can run the
 - **Proprietary license** — LICENSE file with full terms and copyright holder identification
 - **PWA support** — `manifest.json` + service worker for offline play and home-screen install
 - **Bundle analysis** — `rollup-plugin-visualizer` generates `dist/bundle-report.html` on build
-- **Dependency updates** — React 19.2.4, eslint 10.0.3, @vitejs/plugin-react 5.1.4 upgraded March 7, 2026
+- **Dependency updates** — React 19.2.4, Vite 7.3.1, Electron 40.8.0, electron-builder 26.8.1; all 8 CVEs resolved (0 vulnerabilities)
 
 ## Remaining Work
 
@@ -611,7 +611,8 @@ The app is built with React + Vite. All platforms with a web browser can run the
 ### DevOps & Deployment
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
-- [ ] **Dependabot auto-merge** — resolve existing moderate vulnerability alert and enable auto-updates
+- [x] **CVE remediation** — all 8 vulnerabilities resolved (5 high tar, 2 moderate esbuild/electron, 1 low @tootallnate/once)
+- [ ] **Dependabot auto-merge** — enable auto-updates for future vulnerability alerts
 
 ### Gameplay
 - [ ] **Local multiplayer** — human vs human mode on the same device (remove CPU AI, alternate turns)
