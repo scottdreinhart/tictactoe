@@ -38,12 +38,14 @@ A draw occurs when the board is full with no winner.
 
 Turn flow:
 1. Human clicks/selects a cell → place "X"
-2. Check win/draw
-3. If game not over → CPU places "O" after 250ms delay
+2. Check win/draw; if win, highlight winning 3 cells and update score
+3. If game not over → CPU places "O" after `CPU_DELAY_MS` (400ms) delay
 4. CPU move happens automatically once per human move
+5. Score (wins/losses/draws) persists across rounds until page refresh
 
-CPU logic (basic version):
-Choose a random empty cell from the available moves.
+CPU logic (smart AI — active):
+Deterministic priority: win → block → center → corner → edge.
+Random AI (`chooseCpuMoveRandom`) remains exported for easy-mode use.
 
 Architecture expectations:
 Use CLEAN architecture + Atomic Design and keep code modular.
@@ -57,28 +59,31 @@ Required structure:
 ```
 src/
   domain/                        # Pure, framework-agnostic
-    constants.js                 # TOKENS, WIN_LINES, BOARD_SIZE
+    constants.js                 # TOKENS, WIN_LINES, BOARD_SIZE, CPU_DELAY_MS
     board.js                     # createEmptyBoard, isCellEmpty, applyMove, getEmptyCells
-    rules.js                     # getWinner, isBoardFull, isDraw, getGameState
-    ai.js                        # chooseCpuMoveRandom, chooseCpuMoveSmart
+    rules.js                     # getWinner → {token, line}, getWinnerToken, isBoardFull, isDraw, getGameState
+    ai.js                        # chooseCpuMoveRandom, chooseCpuMoveSmart (active)
   app/
-    useTicTacToe.js              # useReducer + CPU scheduling
+    useTicTacToe.js              # useReducer + useState (score) + CPU scheduling
   ui/
     atoms/
-      CellButton.jsx             # Single cell with SVG mark rendering
-      XMark.jsx                  # Animated SVG "X" (draw-on effect)
-      OMark.jsx                  # Animated SVG "O" (draw-on effect)
-      GameTitle.jsx              # Game heading atom
-      ResetButton.jsx            # Reset button atom
+      CellButton.jsx             # Single cell with SVG mark rendering + winning highlight
+      XMark.jsx                  # Animated SVG "X" (React.memo, draw-on effect)
+      OMark.jsx                  # Animated SVG "O" (React.memo, draw-on effect)
+      GameTitle.jsx              # Game heading atom (React.memo)
+      ResetButton.jsx            # Reset button atom (React.memo)
     molecules/
-      BoardGrid.jsx              # 3×3 grid + document-level keyboard navigation
+      BoardGrid.jsx              # 3×3 grid + keyboard nav + reset animation
       StatusBar.jsx              # Game status display (aria-live)
+      ScoreBoard.jsx             # Win/loss/draw score display (React.memo)
       GameControls.jsx           # Composes ResetButton
       Instructions.jsx           # How-to-play section
     organisms/
       TicTacToeGame.jsx          # Top-level game (pure composition, zero inline markup)
   index.jsx
   styles.css                     # CSS variables, dark mode, animations, media queries
+eslint.config.js                 # ESLint flat config (React + hooks + Prettier)
+.prettierrc                      # Prettier formatting rules
 ```
 
 Visual requirements:
@@ -98,6 +103,18 @@ Display current game status above the board:
 "X wins!"
 "O wins!"
 "Draw!"
+
+Display a score board between the status bar and the board grid:
+You (X): N | Draws: N | CPU (O): N
+
+After a win, highlight the 3 winning cells with a pulsing glow animation.
+On reset, animate the board with a fade/scale transition.
+
+Code quality:
+• ESLint (flat config) + Prettier configured with `lint`, `lint:fix`, `format`, `format:check` scripts
+• React.memo on pure atoms (XMark, OMark, GameTitle, ResetButton) and ScoreBoard molecule
+• `getWinner` returns `{ token, line }` — UI uses `winLine` to highlight winning cells
+• `CPU_DELAY_MS` constant in `constants.js` (currently 400ms)
 
 Include a Reset button to restart the game.
 

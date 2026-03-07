@@ -7,22 +7,23 @@ A clean, modular React Tic-Tac-Toe game with animated SVG marks, dark mode, keyb
 ```
 src/
 ├── domain/                        # Pure, framework-agnostic logic
-│   ├── constants.js               # TOKENS, WIN_LINES, BOARD_SIZE
+│   ├── constants.js               # TOKENS, WIN_LINES, BOARD_SIZE, CPU_DELAY_MS
 │   ├── board.js                   # Board operations (create, apply move, get empty cells)
-│   ├── rules.js                   # Win/draw detection
+│   ├── rules.js                   # Win/draw detection (returns winning line)
 │   └── ai.js                     # CPU move selection (random + smart)
 ├── app/
-│   └── useTicTacToe.js            # Game state management hook (useReducer)
+│   └── useTicTacToe.js            # Game state + score management hook (useReducer + useState)
 ├── ui/
 │   ├── atoms/
-│   │   ├── CellButton.jsx         # Single cell with SVG mark rendering
-│   │   ├── XMark.jsx              # Animated SVG "X" (draw-on effect)
-│   │   ├── OMark.jsx              # Animated SVG "O" (draw-on effect)
-│   │   ├── GameTitle.jsx          # Game heading
-│   │   └── ResetButton.jsx        # Reset/new-game button
+│   │   ├── CellButton.jsx         # Single cell with SVG mark rendering + winning highlight
+│   │   ├── XMark.jsx              # Animated SVG "X" (React.memo, draw-on effect)
+│   │   ├── OMark.jsx              # Animated SVG "O" (React.memo, draw-on effect)
+│   │   ├── GameTitle.jsx          # Game heading (React.memo)
+│   │   └── ResetButton.jsx        # Reset/new-game button (React.memo)
 │   ├── molecules/
-│   │   ├── BoardGrid.jsx          # 3×3 grid with document-level keyboard navigation
+│   │   ├── BoardGrid.jsx          # 3×3 grid with keyboard nav + reset animation
 │   │   ├── StatusBar.jsx          # Game status display (aria-live)
+│   │   ├── ScoreBoard.jsx         # Win/loss/draw score display (React.memo)
 │   │   ├── GameControls.jsx       # Action buttons (composes ResetButton)
 │   │   └── Instructions.jsx       # How-to-play section
 │   └── organisms/
@@ -33,6 +34,8 @@ src/
 index.html                         # HTML entry point
 package.json                       # Dependencies & scripts
 vite.config.js                     # Vite configuration (host, port, strictPort)
+eslint.config.js                   # ESLint flat config (React + hooks + Prettier)
+.prettierrc                        # Prettier formatting rules
 ```
 
 ## Features
@@ -42,14 +45,18 @@ vite.config.js                     # Vite configuration (host, port, strictPort)
 - **Board Representation**: 9-cell array with immutable updates
 - **Win Detection**: All 8 winning lines checked (3 rows, 3 columns, 2 diagonals)
 - **Draw Detection**: Board full + no winner = draw
-- **CPU Move**: Phase A (random) active; Phase B (smart priority) available
+- **CPU Move**: Smart priority AI active (win → block → center → corner → edge)
+- **Score Tracking**: Win/loss/draw tallies persisted across rounds
+- **Win-Line Highlight**: Winning 3 cells pulse with animated glow
 
 ### Visual Design
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect
 - **Dark Mode**: Automatic via `prefers-color-scheme: dark` media query
 - **CSS Custom Properties**: All colors/sizes driven by CSS variables for easy theming
-- **Cell Animations**: Pop-in effect when marks are placed
+- **Cell Animations**: Pop-in effect when marks are placed; winning cells pulse
+- **Board Reset Animation**: Fade/scale transition when board is cleared
 - **Responsive Layout**: `clamp()` sizing adapts from small phones to large desktops
+- **Score Board**: Color-coded X/O/Draw tallies between status bar and board
 
 ### Controls
 - **Mouse**: Click any empty cell to move
@@ -98,6 +105,14 @@ npm run dev
 
 # Build for production
 npm run build
+
+# Lint
+npm run lint          # check for issues
+npm run lint:fix      # auto-fix issues
+
+# Format
+npm run format        # format all source files
+npm run format:check  # check formatting without writing
 ```
 
 The app will be available at `http://localhost:5173`
@@ -106,9 +121,9 @@ The app will be available at `http://localhost:5173`
 
 1. **Human's Turn**: Click a cell or use keyboard to select
 2. **Board Update**: Cell is marked with animated X, game checks for win/draw
-3. **CPU's Turn**: After 250ms delay, CPU automatically selects an empty cell (animated O)
-4. **Game End**: When someone wins or board is full
-5. **Reset**: Click "Reset Game" to start over
+3. **CPU's Turn**: After 400ms delay, smart AI selects a move (animated O)
+4. **Game End**: Winning cells pulse; score updates automatically
+5. **Reset**: Click "Reset Game" — board fades out/in, score persists
 
 ## Domain Layer API
 
@@ -122,42 +137,39 @@ applyMove(board, idx, token) // → new board (throws if occupied)
 getEmptyCells(board)         // → number[]
 
 // Game rules
-getWinner(board)             // → "X" | "O" | null
+getWinner(board)             // → { token: "X"|"O", line: number[] } | null
+getWinnerToken(board)        // → "X" | "O" | null (convenience)
 isBoardFull(board)           // → boolean
 isDraw(board)                // → boolean
-getGameState(board)          // → { winner, isDraw, isOver }
+getGameState(board)          // → { winner, winLine, isDraw, isOver }
 
 // AI
 chooseCpuMoveRandom(board)                       // Phase A — random
 chooseCpuMoveSmart(board, cpuToken, humanToken)   // Phase B — priority-based
 ```
 
-## Phase B Upgrade
+## Smart AI (Active)
 
-To enable smarter AI, replace `chooseCpuMoveRandom` with `chooseCpuMoveSmart` in `useTicTacToe.js`:
-
-```javascript
-// Current (Phase A — random)
-cpuIndex = chooseCpuMoveRandom(state.board)
-
-// Upgrade to Phase B (smart priority)
-cpuIndex = chooseCpuMoveSmart(state.board, TOKENS.CPU, TOKENS.HUMAN)
-```
-
-Smart AI priority:
-1. Win if possible
-2. Block human from winning
+The CPU uses `chooseCpuMoveSmart` with deterministic priority:
+1. Win if possible this turn
+2. Block human from winning next turn
 3. Take center
 4. Take corner
 5. Take edge
 
+The random AI (`chooseCpuMoveRandom`) remains exported for testing or easy-mode use.
+
 ## Technical Highlights
 
-- **React 18** with Hooks (`useReducer` for state, `useCallback`/`useMemo` for stable refs)
-- **Vite 5** for fast development and builds
+- **React 18** with Hooks (`useReducer` for state, `useState` for score, `useCallback`/`useMemo` for stable refs)
+- **React.memo** on pure atoms (XMark, OMark, GameTitle, ResetButton, ScoreBoard) to skip unnecessary re-renders
+- **Vite 5** for fast development and builds (pinned to `^5.4.21` for Node 18 compat)
+- **ESLint + Prettier** for code quality (flat config, React + hooks plugins)
 - **CSS Grid** with `aspect-ratio: 1` for perfect square cells
 - **CSS Custom Properties** with light/dark theme sets
 - **SVG Animations** via `stroke-dasharray` / `stroke-dashoffset` draw-on keyframes
+- **Win-pulse animation** on the 3 winning cells
+- **Board reset animation** (scale + fade transition)
 - **Zero TypeScript**: Pure JavaScript for simplicity
 - **No external game libraries**: All logic built from scratch
 
@@ -174,32 +186,33 @@ Smart AI priority:
 ## Potential Improvements
 
 ### Technical — AI
-- [ ] **Activate smart AI** — `chooseCpuMoveSmart` is already exported but not wired; add a difficulty toggle (Easy/Hard) in the UI that swaps the AI function
+- [x] ~~**Activate smart AI**~~ — done (priority: win → block → center → corner → edge)
 - [ ] **Minimax AI (Phase C)** — implement full minimax with alpha-beta pruning for unbeatable CPU play
-- [ ] **Configurable CPU delay** — expose the 250ms timeout as a UI setting (or remove for instant play)
+- [x] ~~**Configurable CPU delay**~~ — done (`CPU_DELAY_MS` constant, currently 400ms)
+- [ ] **Difficulty toggle** — UI switch between Easy (random) and Hard (smart) AI
 - [ ] **Web Worker AI** — move CPU computation to a Web Worker so the UI thread never blocks
 
 ### Visual & UX
-- [ ] **Win-line highlight** — after a win, animate/glow the 3 winning cells (return winning indices from `getWinner`)
-- [ ] **Score tracking display** — persist win/loss/draw tallies across rounds (in-memory or `localStorage`) and show a scoreboard
+- [x] ~~**Win-line highlight**~~ — done (winning cells pulse with `win-pulse` animation)
+- [x] ~~**Score tracking display**~~ — done (ScoreBoard molecule: You/Draws/CPU tallies)
+- [x] ~~**Smooth board reset transition**~~ — done (fade + scale `board-reset` animation)
 - [ ] **Sound effects** — move placement, win, draw sounds (respect `prefers-reduced-motion`)
 - [ ] **Confetti / particle effect** on win
 - [ ] **Move history timeline** — visual sidebar showing each move in order
 - [ ] **Theme picker** — user-selectable color schemes beyond auto light/dark
-- [ ] **Smooth board reset transition** — fade-out / fade-in on reset instead of instant clear
 - [ ] **Touch gesture support** — swipe navigation on mobile as alternative to button taps
 
 ### Code Quality & Testing
+- [x] ~~**ESLint + Prettier**~~ — done (flat config, React + hooks plugins, `lint`/`format` scripts)
+- [x] ~~**`getWinner` returns winning line**~~ — done (returns `{ token, line }`, `getWinnerToken` convenience)
+- [x] ~~**`React.memo` on atoms**~~ — done (XMark, OMark, GameTitle, ResetButton, ScoreBoard)
 - [ ] **Unit tests** — domain functions (`board.js`, `rules.js`, `ai.js`) are pure and test-ready; add Vitest or Jest suite
 - [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, StatusBar
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
 - [ ] **PropTypes or TypeScript** — add runtime prop validation (PropTypes) or migrate to TypeScript for static type safety
-- [ ] **ESLint + Prettier** — enforce consistent code style and catch common issues
 - [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
-- [ ] **`getWinner` returns winning line** — change return type to `{ token, line }` so UI can highlight winning cells
 
 ### Performance
-- [ ] **`React.memo` on atoms** — `CellButton`, `XMark`, `OMark` are pure; wrapping in `memo()` would skip re-renders for unchanged cells
 - [ ] **Lazy SVG mount** — only mount `XMark`/`OMark` when `value` transitions from `null` (currently conditional render handles this, but `Suspense` could be used for heavier marks)
 
 ### Architecture

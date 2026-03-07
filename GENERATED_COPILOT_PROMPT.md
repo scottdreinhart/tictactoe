@@ -92,19 +92,17 @@ O**      **O
 *O*      *O*
 **O      O**
 
-CPU MOVE LOGIC (PHASED IMPLEMENTATION):
-Phase A (baseline correctness — REQUIRED):
-- CPU selects a random empty cell after the human move (use availableMoves list).
-- CPU does NOT move if winner exists or draw reached after human move.
-- CPU move scheduled via `setTimeout` (250ms delay) with ref cleanup.
-
-Phase B (upgrade path — OPTIONAL if time permits):
-Replace random with deterministic priority:
+CPU MOVE LOGIC:
+Smart AI (ACTIVE — chooseCpuMoveSmart):
+Deterministic priority:
 1) Win if possible this turn
 2) Block X if X could win next turn
 3) Take center if available
 4) Take a corner if available
 5) Else take an edge
+- CPU does NOT move if winner exists or draw reached after human move.
+- CPU move scheduled via `setTimeout` (CPU_DELAY_MS = 400ms) with ref cleanup.
+- Random AI (`chooseCpuMoveRandom`) remains exported for easy-mode or testing use.
 Keep CPU logic isolated in /domain as pure functions.
 
 ARCHITECTURE REQUIREMENTS (SOC + CLEAN + ATOMIC + DRY):
@@ -151,12 +149,15 @@ src/
     molecules/
       BoardGrid.jsx
       StatusBar.jsx
+      ScoreBoard.jsx
       GameControls.jsx
       Instructions.jsx
     organisms/
       TicTacToeGame.jsx
   index.jsx
   styles.css
+eslint.config.js
+.prettierrc
 
 DOMAIN CONTRACTS:
 - board: Array(9) where each value is null | "X" | "O"
@@ -166,8 +167,9 @@ DOMAIN FILE REQUIREMENTS:
 
 src/domain/constants.js
 - export TOKENS = { HUMAN: "X", CPU: "O" }
-- export WIN_LINES = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]]
 - export BOARD_SIZE = 3
+- export CPU_DELAY_MS = 400
+- export WIN_LINES = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]]
 
 src/domain/board.js
 - export createEmptyBoard() => Array(9).fill(null)
@@ -176,17 +178,17 @@ src/domain/board.js
 - export getEmptyCells(board) => number[]
 
 src/domain/rules.js
-- export getWinner(board) => "X" | "O" | null
+- export getWinner(board) => { token: "X"|"O", line: number[] } | null
+- export getWinnerToken(board) => "X" | "O" | null (convenience helper)
 - export isBoardFull(board) => boolean
 - export isDraw(board) => boolean (full AND no winner)
-- export getGameState(board) => { winner, isDraw, isOver }
+- export getGameState(board) => { winner, winLine, isDraw, isOver }
 
 src/domain/ai.js
-Phase A (required):
-- export chooseCpuMoveRandom(board) => idx (from empty cells)
-Phase B (optional):
-- export chooseCpuMoveSmart(board, cpuToken, humanToken) => idx
-- helper: findWinningMove(board, token) => idx | null
+- export chooseCpuMoveRandom(board) => idx (from empty cells) — exported but not active
+- export chooseCpuMoveSmart(board, cpuToken, humanToken) => idx — ACTIVE in useTicTacToe
+  Priority: 1) win, 2) block, 3) center, 4) corner, 5) edge
+- helper: findWinningMove(board, token) => idx | null (uses getWinnerToken)
 
 HOOK REQUIREMENTS:
 
@@ -209,14 +211,19 @@ Must implement:
 
 CPU scheduling:
 - useEffect watching [state.turn, gameState.isOver]
-- if turn === CPU && !isOver → setTimeout(dispatch CPU_MOVE, 250ms)
+- if turn === CPU && !isOver → setTimeout(dispatch CPU_MOVE, CPU_DELAY_MS)
 - store timeout ID in ref; clear on cleanup and reset
 
 Derived state:
 - gameState via useMemo → getGameState(state.board)
 - status text via useMemo → winner/draw/turn message
 
-Return: { board, turn, focusedIndex, gameState, status, handleHumanSelect, handleFocusChange, handleReset }
+Must also manage:
+- score state via useState: { X: number, O: number, draws: number }
+- useEffect to track game-over transitions and increment score
+- score persists across resets (only resets on page refresh)
+
+Return: { board, turn, focusedIndex, gameState, status, score, handleHumanSelect, handleFocusChange, handleReset }
 
 UI + ACCESSIBILITY REQUIREMENTS:
 - Board rendered as a 3×3 CSS grid of <button> cells with `role="grid"`
@@ -248,6 +255,8 @@ CSS Custom Properties:
 Animations:
 - `@keyframes draw-stroke` for SVG mark draw-on effect
 - `@keyframes cell-pop` for cell placement pop-in
+- `@keyframes win-pulse` for winning cell pulsing glow
+- `@keyframes board-reset` for board clear transition (scale + fade)
 - Disable all via `@media (prefers-reduced-motion: reduce)`
 
 Responsive Breakpoints:
@@ -274,34 +283,45 @@ styles.css:
 ATOMIC COMPONENT RESPONSIBILITIES:
 
 src/ui/atoms/XMark.jsx
+- React.memo
 - SVG with two crossing lines, className="mark mark-x", aria-hidden="true"
 - CSS handles all animation
 
 src/ui/atoms/OMark.jsx
+- React.memo
 - SVG with circle, className="mark mark-o", aria-hidden="true"
 - CSS handles all animation
 
 src/ui/atoms/CellButton.jsx
 - React.forwardRef
-- props: value, disabled, isFocused, onClick, ariaLabel, tabIndex
+- props: value, disabled, isFocused, isWinning, onClick, ariaLabel, tabIndex
 - Renders XMark when value==="X", OMark when value==="O"
-- apply focus/disabled/token CSS classes
+- apply focus/disabled/token/winning CSS classes (cell-winning)
 - Uses aria-disabled (NOT HTML disabled)
 
 src/ui/atoms/GameTitle.jsx
+- React.memo
 - props: text
 - Renders <h1>{text}</h1>
 
 src/ui/atoms/ResetButton.jsx
+- React.memo
 - props: onClick, label (default "Reset Game")
 - Renders styled <button>
 
 src/ui/molecules/BoardGrid.jsx
-- props: board, focusedIndex, onFocusChange, onSelect, isGameOver
-- Maps board → 9 CellButtons with refs
+- props: board, focusedIndex, onFocusChange, onSelect, isGameOver, winLine
+- Maps board → 9 CellButtons with refs; passes isWinning based on winLine
 - Document-level keydown listener (useEffect, empty deps, mutable refs)
 - Syncs DOM focus via useEffect watching focusedIndex
+- Detects board reset and applies board-resetting class (300ms fade/scale animation)
 - role="grid", aria-label="Tic-Tac-Toe board"
+
+src/ui/molecules/ScoreBoard.jsx
+- React.memo
+- props: score ({ X: number, O: number, draws: number })
+- Displays 3 score items: You (X), Draws, CPU (O) with color-coded values
+- aria-label="Score"
 
 src/ui/molecules/StatusBar.jsx
 - props: statusText
@@ -317,7 +337,8 @@ src/ui/molecules/Instructions.jsx
 
 src/ui/organisms/TicTacToeGame.jsx
 - Uses useTicTacToe hook
-- Renders ONLY: GameTitle, StatusBar, BoardGrid, GameControls, Instructions
+- Renders ONLY: GameTitle, StatusBar, ScoreBoard, BoardGrid, GameControls, Instructions
+- Passes winLine to BoardGrid and score to ScoreBoard
 - ZERO inline HTML — pure composition of atoms/molecules
 - Wrapping container div.game-container is the ONLY raw element
 
@@ -329,19 +350,25 @@ DELIVERABLE OUTPUT FORMAT:
 
 QUALITY CHECKLIST (MUST PASS):
 - Single user: Human is X, CPU is O
+- CPU uses smart AI (win → block → center → corner → edge)
 - CPU moves automatically after human (unless game over)
 - Mouse + keyboard selection both work (arrows + WASD)
 - Win/draw detection correct for all 8 lines
+- Winning 3 cells highlighted with pulsing glow animation
+- Score (wins/losses/draws) tracks across rounds, persists through resets
 - Taken cells cannot be overwritten
 - Reset clears board, cancels pending CPU timeout, restores initial state
+- Board reset triggers fade/scale animation
 - Domain logic is pure and not duplicated in UI
 - DRY: WIN_LINES and TOKENS defined once
 - Organism has ZERO inline HTML beyond container div
 - SVG marks animate with draw-on effect
+- Pure atoms wrapped in React.memo (XMark, OMark, GameTitle, ResetButton, ScoreBoard)
 - Dark mode works automatically via prefers-color-scheme
 - Animations disabled when prefers-reduced-motion: reduce
 - Responsive across phone → tablet → desktop
 - All ARIA attributes present and correct
 - Keyboard navigation works via document-level listener (not per-button onKeyDown)
+- ESLint + Prettier configured with lint/format npm scripts
 
 BEGIN IMPLEMENTATION NOW.
