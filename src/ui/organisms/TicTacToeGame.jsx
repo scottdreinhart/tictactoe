@@ -3,15 +3,14 @@ import { useTicTacToe } from '../../app/useTicTacToe.js'
 import useSoundEffects from '../../app/useSoundEffects.js'
 import useTheme from '../../app/useTheme.js'
 import useAutoReset from '../../app/useAutoReset.js'
+import useNotificationQueue from '../../app/useNotificationQueue.js'
 import { TOKENS } from '../../domain/constants.js'
 import GameTitle from '../atoms/GameTitle.jsx'
 import DifficultyToggle from '../atoms/DifficultyToggle.jsx'
 import SoundToggle from '../atoms/SoundToggle.jsx'
 import ThemeSelector from '../atoms/ThemeSelector.jsx'
 import ConfettiOverlay from '../atoms/ConfettiOverlay.jsx'
-import CountdownOverlay from '../atoms/CountdownOverlay.jsx'
-import ResetDialog from '../atoms/ResetDialog.jsx'
-import StatusBar from '../molecules/StatusBar.jsx'
+import NotificationBanner from '../atoms/NotificationBanner.jsx'
 import BoardGrid from '../molecules/BoardGrid.jsx'
 import ScoreBoard from '../molecules/ScoreBoard.jsx'
 import Instructions from '../molecules/Instructions.jsx'
@@ -23,7 +22,8 @@ import Instructions from '../molecules/Instructions.jsx'
  * and composes atoms / molecules — contains ZERO inline markup
  * beyond the wrapping container div.
  *
- * Sound effects are wired here by reacting to game-state changes.
+ * All transient status (outcome, countdown, reset) is communicated
+ * via a notification queue that renders over the board's center row.
  */
 const TicTacToeGame = () => {
   const {
@@ -45,6 +45,15 @@ const TicTacToeGame = () => {
   // Auto-reset countdown (30 s)
   const { secondsLeft, resetNow } = useAutoReset(gameState.isOver, handleReset)
 
+  // Notification queue — unified status / countdown / reset messaging
+  const {
+    current: notification,
+    enqueue,
+    dismiss,
+    clear: clearNotifications,
+    updateCurrent,
+  } = useNotificationQueue()
+
   // Outcome visual state: 'win' | 'loss' | 'draw' | null
   const [outcome, setOutcome] = useState(null)
   const [showConfetti, setShowConfetti] = useState(false)
@@ -58,34 +67,52 @@ const TicTacToeGame = () => {
     const justEnded = gameState.isOver && !prevGameOverRef.current
 
     if (boardChanged && !justEnded) {
-      // A move was placed but game didn't just end — play move sound
       playMove()
     }
 
     if (justEnded) {
-      // Game just ended — play appropriate sound + set outcome effect
+      let outcomeType = 'draw'
       if (gameState.winner === TOKENS.HUMAN) {
         playWin()
-        setOutcome('win')
+        outcomeType = 'win'
         setShowConfetti(true)
       } else if (gameState.winner === TOKENS.CPU) {
         playLoss()
-        setOutcome('loss')
+        outcomeType = 'loss'
       } else {
         playDraw()
-        setOutcome('draw')
       }
+      setOutcome(outcomeType)
+
+      // Queue: outcome announcement → countdown with reset action
+      enqueue({ message: status, variant: outcomeType, duration: 4000 })
+      enqueue({
+        message: 'New game in 30 seconds',
+        variant: 'countdown',
+        duration: 0,
+        hasAction: true,
+      })
     }
 
-    // Clear outcome when game resets (board goes empty after being non-empty)
+    // Clear everything when game resets
     if (!gameState.isOver && prevGameOverRef.current) {
       setOutcome(null)
       setShowConfetti(false)
+      clearNotifications()
     }
 
     prevBoardRef.current = board
     prevGameOverRef.current = gameState.isOver
-  }, [board, gameState.isOver, gameState.winner, playMove, playWin, playLoss, playDraw])
+  }, [board, gameState.isOver, gameState.winner, status, playMove, playWin, playLoss, playDraw, enqueue, clearNotifications])
+
+  // Keep countdown notification's text in sync with secondsLeft
+  useEffect(() => {
+    if (notification?.variant === 'countdown' && secondsLeft !== null && secondsLeft > 0) {
+      updateCurrent({
+        message: `New game in ${secondsLeft} ${secondsLeft === 1 ? 'second' : 'seconds'}`,
+      })
+    }
+  }, [secondsLeft, notification?.variant, updateCurrent])
 
   const containerClass = useMemo(() => {
     const classes = ['game-container']
@@ -112,8 +139,6 @@ const TicTacToeGame = () => {
         <Instructions />
       </div>
 
-      <StatusBar statusText={status} isOverlay={false} />
-
       <ScoreBoard score={score} />
 
       <div className="board-area">
@@ -125,17 +150,12 @@ const TicTacToeGame = () => {
           isGameOver={gameState.isOver}
           winLine={gameState.winLine}
         />
-        {outcome && (
-          <StatusBar statusText={status} isOverlay outcome={outcome} />
-        )}
-        {secondsLeft !== null && secondsLeft > 0 && (
-          <CountdownOverlay seconds={secondsLeft} />
-        )}
+        <NotificationBanner
+          notification={notification}
+          onDismiss={dismiss}
+          onAction={resetNow}
+        />
       </div>
-
-      {secondsLeft !== null && secondsLeft > 0 && (
-        <ResetDialog seconds={secondsLeft} onReset={resetNow} />
-      )}
     </div>
   )
 }

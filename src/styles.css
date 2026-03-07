@@ -458,60 +458,6 @@ body {
   margin: 0;
 }
 
-/* ─── Status Bar — Floating Overlay (win / loss / draw) ─── */
-.status-bar--overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  z-index: 9;
-  width: auto;
-  min-width: 60%;
-  max-width: 90%;
-  border-left: none;
-  border-radius: 14px;
-  padding: clamp(14px, 2.5vh, 24px) clamp(20px, 4vw, 36px);
-  font-size: clamp(1.2rem, 4vw, 1.8rem);
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-  pointer-events: none;
-  animation: status-slide-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@keyframes status-slide-in {
-  0% {
-    opacity: 0;
-    translate: -50% -30%;
-    scale: 0.8;
-  }
-  100% {
-    opacity: 1;
-    translate: -50% -50%;
-    scale: 1;
-  }
-}
-
-/* Win: golden glow */
-.status-bar--win {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: #1a1a2e;
-  box-shadow: 0 0 24px rgba(251, 191, 36, 0.5), 0 8px 32px rgba(0, 0, 0, 0.25);
-}
-
-/* Loss: muted red */
-.status-bar--loss {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: #fff;
-  box-shadow: 0 0 24px rgba(239, 68, 68, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25);
-}
-
-/* Draw: neutral blue-grey */
-.status-bar--draw {
-  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-  color: #fff;
-  box-shadow: 0 0 24px rgba(100, 116, 139, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25);
-}
-
 /* ─── Score Board ─── */
 .score-board {
   display: flex;
@@ -816,103 +762,92 @@ body {
   }
 }
 
-/* ─── Board Area (positions countdown overlay over the grid) ─── */
+/* ─── Board Area ─── */
 .board-area {
   position: relative;
   display: flex;
   justify-content: center;
 }
 
-/* ─── Countdown Overlay (on top of the board) ─── */
-.countdown-overlay {
+/* ─── Notification Banner (queued overlay on board center row) ─── */
+.notification-banner {
   position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  border-radius: 12px;
-  z-index: 8;
-  pointer-events: none;
-  animation: overlay-fade-in 400ms ease;
-}
-
-@keyframes overlay-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-.countdown-overlay__number {
-  font-size: clamp(2.5rem, 10vw, 4.5rem);
-  font-weight: 900;
-  color: #fff;
-  line-height: 1;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-  animation: countdown-pulse 1s ease-in-out infinite;
-}
-
-@keyframes countdown-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50%      { transform: scale(1.08); opacity: 0.85; }
-}
-
-.countdown-overlay__label {
-  font-size: clamp(0.7rem, 2.5vw, 1rem);
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-/* ─── Reset Dialog ─── */
-.reset-dialog {
-  border: none;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 9;
+  min-width: 65%;
+  max-width: 92%;
   border-radius: 14px;
-  padding: 0;
-  background: var(--card-bg, #fff);
-  color: var(--text-primary);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
-  max-width: 340px;
-  width: calc(100% - 32px);
-  animation: dialog-pop 250ms ease;
-}
-
-.reset-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.45);
-  animation: overlay-fade-in 300ms ease;
-}
-
-@keyframes dialog-pop {
-  from { opacity: 0; transform: scale(0.9) translateY(10px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.reset-dialog__body {
+  padding: clamp(14px, 2.5vh, 22px) clamp(18px, 4vw, 32px);
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 28px 24px;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: notif-enter 450ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-.reset-dialog__text {
-  font-size: clamp(0.95rem, 3vw, 1.15rem);
-  text-align: center;
+@keyframes notif-enter {
+  0% {
+    opacity: 0;
+    translate: -50% -30%;
+    scale: 0.8;
+  }
+  100% {
+    opacity: 1;
+    translate: -50% -50%;
+    scale: 1;
+  }
+}
+
+.notification-banner__message {
   margin: 0;
-  line-height: 1.5;
-  color: var(--text-secondary);
+  font-size: clamp(1.1rem, 4vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.3;
 }
 
-.reset-dialog__countdown {
-  font-size: 1.4em;
-  font-weight: 900;
-  color: var(--accent);
+.notification-banner__action {
+  font-size: clamp(0.78rem, 2vw, 0.92rem);
+  padding: 8px 22px;
 }
 
-.reset-dialog__btn {
-  min-width: 160px;
+/* Variant: win — golden glow */
+.notification--win {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #1a1a2e;
+  box-shadow: 0 0 28px rgba(251, 191, 36, 0.55), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Variant: loss — red */
+.notification--loss {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  box-shadow: 0 0 28px rgba(239, 68, 68, 0.45), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Variant: draw — blue-grey */
+.notification--draw {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(100, 116, 139, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Variant: countdown — accent gradient */
+.notification--countdown {
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Variant: info — neutral */
+.notification--info {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--cell-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 /* ─── Controls (kept for potential future use) ─── */
@@ -1394,7 +1329,7 @@ body {
   }
 
   .info-icon-wrapper,
-  .reset-dialog {
+  .notification-banner {
     display: none;
   }
 }
@@ -1421,8 +1356,7 @@ body {
 
   .reset-button,
   .info-icon-wrapper,
-  .reset-dialog,
-  .countdown-overlay {
+  .notification-banner {
     display: none;
   }
 
