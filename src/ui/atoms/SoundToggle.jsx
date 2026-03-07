@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import styles from './SoundToggle.module.css'
 
 /**
  * SoundToggle — Atom (pure presentational)
@@ -12,7 +13,7 @@ import PropTypes from 'prop-types'
 const SoundToggle = React.memo(({ soundEnabled, onToggle }) => (
   <button
     type="button"
-    className="sound-toggle"
+    className={styles.root}
     onClick={onToggle}
     aria-label={soundEnabled ? 'Mute sound effects' : 'Enable sound effects'}
     title={soundEnabled ? 'Sound on' : 'Sound off'}

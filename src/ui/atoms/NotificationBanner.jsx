@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
+import styles from './NotificationBanner.module.css'
+import { cx } from '../utils/cssModules.js'
 
 /**
  * NotificationBanner — Atom
@@ -46,17 +48,24 @@ const NotificationBanner = ({ notification, onDismiss, onAction }) => {
 
   return (
     <div
-      className={`notification-banner notification--${notification.variant}`}
+      className={cx(
+        styles.root,
+        notification.variant === 'win' && styles.win,
+        notification.variant === 'loss' && styles.loss,
+        notification.variant === 'draw' && styles.draw,
+        notification.variant === 'countdown' && styles.countdown,
+        notification.variant === 'info' && styles.info
+      )}
       role="status"
       aria-live="polite"
       aria-atomic="true"
       key={notification.id}
     >
-      <p className="notification-banner__message">{notification.message}</p>
+      <p className={styles.message}>{notification.message}</p>
       {notification.hasAction && onAction && (
         <button
           type="button"
-          className="reset-button notification-banner__action"
+          className={cx(styles.action, 'reset-button')}
           onClick={onAction}
         >
           Reset Now

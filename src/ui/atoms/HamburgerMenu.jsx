@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import useSmartPosition from '../../app/useSmartPosition.js'
 import useDropdownBehavior from '../../app/useDropdownBehavior.js'
+import styles from './HamburgerMenu.module.css'
 
 /**
  * HamburgerMenu — Atom
@@ -14,7 +15,7 @@ import useDropdownBehavior from '../../app/useDropdownBehavior.js'
  *   - Focus trap: Tab / Shift+Tab cycles within the panel
  *   - Closes on Escape, outside click, or outside touch
  *   - Smart positioning: auto-detects left vs. right alignment to avoid viewport overflow
- *   - Animated via CSS (`menu-panel-enter` keyframe)
+ *   - Animated via CSS (`panelEnter` keyframe)
  *
  * @param {{ children: React.ReactNode }} props
  */
@@ -45,11 +46,11 @@ const HamburgerMenu = ({ children }) => {
   })
 
   return (
-    <div className="hamburger-menu">
+    <div className={styles.root}>
       <button
         ref={btnRef}
         type="button"
-        className="hamburger-btn"
+        className={styles.button}
         onClick={toggle}
         aria-haspopup="true"
         aria-expanded={open}
@@ -57,10 +58,10 @@ const HamburgerMenu = ({ children }) => {
         aria-label={open ? 'Close menu' : 'Open menu'}
         title="Menu"
       >
-        <span className="hamburger-icon" aria-hidden="true">
-          <span className={`hamburger-line${open ? ' line-open' : ''}`} />
-          <span className={`hamburger-line${open ? ' line-open' : ''}`} />
-          <span className={`hamburger-line${open ? ' line-open' : ''}`} />
+        <span className={styles.icon} aria-hidden="true">
+          <span className={`${styles.line}${open ? ` ${styles.lineOpen}` : ''}`} />
+          <span className={`${styles.line}${open ? ` ${styles.lineOpen}` : ''}`} />
+          <span className={`${styles.line}${open ? ` ${styles.lineOpen}` : ''}`} />
         </span>
       </button>
 
@@ -68,8 +69,7 @@ const HamburgerMenu = ({ children }) => {
         <div
           ref={panelRef}
           id="game-menu-panel"
-          className="menu-panel"
-          data-alignment={alignment}
+          className={alignment === 'left' ? styles.panelLeft : styles.panel}
           role="menu"
           aria-label="Game settings"
         >
