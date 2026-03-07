@@ -322,10 +322,10 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 
 ### Technical — AI
 - [x] ~~**Activate smart AI**~~ — done (priority: win → block → center → corner → edge)
-- [ ] **Minimax AI (Phase C)** — implement full minimax with alpha-beta pruning for unbeatable CPU play
+- [x] ~~**Minimax AI (Phase C)**~~ — done (full minimax with alpha-beta pruning, unbeatable CPU difficulty level)
 - [x] ~~**Configurable CPU delay**~~ — done (`CPU_DELAY_MS` constant, currently 400ms)
-- [x] ~~**Difficulty toggle**~~ — done (Easy = random, Hard = smart; pill-shaped toggle)
-- [ ] **Web Worker AI** — move CPU computation to a Web Worker so the UI thread never blocks
+- [x] ~~**Difficulty toggle**~~ — done (Easy/Medium/Hard/Unbeatable; pill-shaped toggle)
+- [x] ~~**Web Worker AI**~~ — done (CPU computation off-main-thread in `ai.worker.js`, 60 FPS guaranteed)
 
 ### Visual & UX
 - [x] ~~**Win-line highlight**~~ — done (winning cells pulse with `win-pulse` animation)
