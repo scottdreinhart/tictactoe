@@ -856,6 +856,10 @@ Before publishing to marketplace (App Store, Google Play, PWA stores):
 2. **MEDIUM**: CSS code-splitting → Vite dynamic imports for theme files (prevents unused CSS for slower networks)
 3. **LOW**: CSS Modules or CSS-in-JS (nice-to-have for maintainability, minimal performance impact)
 
+**Implementation Guides**:
+- **[IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)** — Technical details for the 2 remaining features (cross-platform dev script, CSS code-splitting)
+- **[PROGRESS.md](PROGRESS.md)** — Milestone tracking, critical path to marketplace, implementation timeline
+
 ---
 
 ## Conclusion

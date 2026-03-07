@@ -352,9 +352,9 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - [ ] **TypeScript migration** — gradual opt-in via `.jsx` → `.tsx` conversion; domain layer is pure and would benefit most from type safety
 
 ### Performance
-- [ ] **Lazy SVG mount** — only mount `XMark`/`OMark` when `value` transitions from `null` (currently conditional render handles this, but `Suspense` could be used for heavier marks)
+- [x] ~~**Lazy SVG mount**~~ — done (`React.lazy` + `Suspense` fallback in [CellButton.jsx](src/ui/atoms/CellButton.jsx#L4-L5))
 - [ ] **CSS code-splitting** — split theme-variant CSS into on-demand chunks so unused themes don't ship in the initial stylesheet
-- [ ] **Service Worker caching** — precache built assets for instant repeat-visit loads (pairs with PWA support)
+- [x] ~~**Service Worker caching**~~ — done (precache critical shell + cache-first for `/assets/*` in [sw.js](public/sw.js))
 
 ### Architecture
 - [x] ~~**Extract keyboard hook**~~ — done (`useGridKeyboard.js` — reusable document-level keydown logic)
@@ -362,17 +362,18 @@ DEFAULT_SETTINGS  // { colorTheme: 'classic', mode: 'system', colorblind: 'none'
 - [ ] **Cross-platform dev script** — replace `fuser -k 5173/tcp` in `npm run dev` with a cross-platform port-kill (e.g. `kill-port` package) so it works on native Windows/macOS, not just WSL/Linux
 
 ### Accessibility
-- [ ] **Remove `user-scalable=no`** — the viewport meta tag currently disables pinch-to-zoom, which conflicts with WCAG 2.1 SC 1.4.4 (Resize Text); removing it would make the AA compliance claim fully accurate
-- [ ] **Skip-to-content link** — hidden link that becomes visible on focus to let keyboard/screen-reader users jump past the toolbar
-- [ ] **High-contrast theme** — a dedicated theme designed for maximal contrast beyond what `forced-colors` provides
+- [x] ~~**Remove `user-scalable=no`**~~ — done (viewport meta tag already has `user-scalable=yes` in [index.html](index.html#L5), fully WCAG 2.1 SC 1.4.4 compliant)
+- [x] ~~**Skip-to-content link**~~ — done (hidden `<a href="#game-board">Skip to game board</a>` in [TicTacToeGame.jsx](src/ui/organisms/TicTacToeGame.jsx#L125), visible on focus)
+- [x] ~~**High-contrast theme**~~ — done (dedicated [highcontrast.css](src/themes/highcontrast.css) + `@media (forced-colors: active)` support in [styles.css](src/styles.css#L1370))
 
 ### DevOps & Deployment
 - [ ] **Add LICENSE file** — the repo is public on GitHub but has no license; add MIT (or preferred) so others can legally use/fork the code
 - [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
 - [ ] **Dependabot auto-merge** — resolve the existing moderate vulnerability alert and enable auto-updates
-- [ ] **PWA support** — add `manifest.json` + service worker for offline play and home-screen install
+- [x] ~~**PWA support**~~ — done (`manifest.json` + service worker for offline play and home-screen install)
 - [x] ~~**Bundle analysis**~~ — done (`rollup-plugin-visualizer` generates `dist/bundle-report.html` on build)
+- [x] ~~**Dependency updates**~~ — done (React 19.2.4, eslint 10.0.3, @vitejs/plugin-react 5.1.4 upgraded March 7, 2026)
 - [ ] **Browser compatibility documentation** — document minimum browser versions (Chrome 80+, Firefox 80+, Safari 14+, Edge 80+) given `es2020` target, `aspect-ratio`, Web Audio API, and CSS `translate` usage
 
 ### Gameplay
