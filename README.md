@@ -12,12 +12,18 @@
 [![Prettier](https://img.shields.io/badge/Prettier-3-F7B93E?logo=prettier&logoColor=black)](https://github.com/prettier/prettier)
 [![Android](https://img.shields.io/badge/Android-SDK_36-34A853?logo=android&logoColor=white)](https://github.com/android/platform-tools)
 [![All Rights Reserved](https://img.shields.io/badge/License-All%20Rights%20Reserved-red.svg)](LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-scottdreinhart%2Ftictactoe-181717?logo=github&logoColor=white)](https://github.com/scottdreinhart/tictactoe)
+
+> [!CAUTION]
+> CURRENTLY FOCUSED ON UI/UX AESTHETICS AND STANDARDIZING THEM ACROSS ALL SUPPORTED PLATFORMS BY WAY OF MEDIA TYPES
 
 **⚠️ PROPRIETARY SOFTWARE — All Rights Reserved**
 
 © 2026 Scott Reinhart. This software is proprietary and confidential. 
 Unauthorized reproduction, distribution, or use is strictly prohibited.
 See [LICENSE](LICENSE) file for complete terms and conditions.
+
+[Project Structure](#project-structure) · [Installation & Running](#installation--running) · [Game Flow](#game-flow) · [Remaining Work](#remaining-work)
 
 ## Project Structure
 
@@ -113,6 +119,7 @@ vite.config.js                        # Vite configuration + rollup-plugin-visua
 eslint.config.js                      # ESLint flat config (React + hooks + Prettier)
 .prettierrc                           # Prettier formatting rules
 .gitignore                            # Git ignore rules (node_modules, dist, release, etc.)
+.nvmrc                                # Node.js version pin (v24) for nvm users
 ```
 
 ## Features
@@ -701,10 +708,6 @@ Simple browser games of similar scope and effort that could be built with the sa
 | **Snake** | Steer a growing snake to eat food without hitting walls or itself | Different — real-time game loop instead of turn-based |
 | **Monchola** | Traditional dice/board race game with capture mechanics | Similar — dice roll + board path + capture rules |
 | **Rock Paper Scissors** | Best-of-N rounds against the CPU with hand animations | Simpler — minimal state, animation-focused |
-
----
-
-[⬆ Back to top](#tic-tac-toe)
 
 ---
 
