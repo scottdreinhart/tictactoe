@@ -27,6 +27,7 @@ Desktop.ini
 # Logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 
 # Debug
 coverage/
