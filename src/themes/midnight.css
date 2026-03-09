@@ -1,0 +1,45 @@
+/* Midnight — light */
+[data-theme='midnight'] {
+  --bg-gradient-start: #312e81;
+  --bg-gradient-end: #7c3aed;
+  --bg-image: url('/backgrounds/circuit.png');
+  --accent: #a78bfa;
+  --accent-glow: rgba(167, 139, 250, 0.4);
+  --cell-hover-bg: #ede9fe;
+  --instructions-bg: #ede9fe;
+  --x-color: #7c3aed;
+  --o-color: #a855f7;
+  --x-glow: rgba(124, 58, 237, 0.3);
+  --o-glow: rgba(168, 85, 247, 0.3);
+  --win-pulse-shadow: rgba(167, 139, 250, 0.6);
+}
+
+/* Midnight — dark (system preference) */
+@media (prefers-color-scheme: dark) {
+  [data-theme='midnight']:not([data-mode='light']) {
+    --bg-gradient-start: #1e1b4b;
+    --bg-gradient-end: #312e81;
+    --accent: #c4b5fd;
+    --accent-glow: rgba(196, 181, 253, 0.35);
+    --instructions-bg: #253347;
+    --x-color: #a78bfa;
+    --o-color: #c084fc;
+    --x-glow: rgba(167, 139, 250, 0.35);
+    --o-glow: rgba(192, 132, 252, 0.35);
+    --win-pulse-shadow: rgba(196, 181, 253, 0.5);
+  }
+}
+
+/* Midnight — dark (manual override) */
+[data-mode='dark'][data-theme='midnight'] {
+  --bg-gradient-start: #1e1b4b;
+  --bg-gradient-end: #312e81;
+  --accent: #c4b5fd;
+  --accent-glow: rgba(196, 181, 253, 0.35);
+  --instructions-bg: #253347;
+  --x-color: #a78bfa;
+  --o-color: #c084fc;
+  --x-glow: rgba(167, 139, 250, 0.35);
+  --o-glow: rgba(192, 132, 252, 0.35);
+  --win-pulse-shadow: rgba(196, 181, 253, 0.5);
+}

@@ -1,0 +1,11 @@
+/**
+ * Molecules barrel export — composed UI components.
+ */
+
+export { default as BoardGrid } from './BoardGrid'
+export { default as CoinFlip } from './CoinFlip'
+export { default as HamburgerMenu } from './HamburgerMenu'
+export { default as Instructions } from './Instructions'
+export { default as MoveTimeline } from './MoveTimeline'
+export { default as Scoreboard } from './Scoreboard'
+export { default as ThemeSelector } from './ThemeSelector'

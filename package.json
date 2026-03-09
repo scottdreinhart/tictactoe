@@ -1,0 +1,142 @@
+{
+  "name": "tictactoe-game",
+  "version": "1.0.0",
+  "description": "Tic-Tac-Toe",
+  "type": "module",
+  "private": true,
+  "license": "PROPRIETARY",
+  "author": "Scott Reinhart",
+  "packageManager": "pnpm@10.31.0",
+  "engines": {
+    "node": "24.14.0",
+    "npm": "11.9.0",
+    "pnpm": "10.31.0"
+  },
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "vite --host",
+    "dev": "rimraf node_modules && pnpm install && vite --host",
+    "build": "rimraf node_modules && pnpm install && vite build",
+    "preview": "vite preview",
+    "build:preview": "pnpm build && pnpm preview",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write src/",
+    "format:check": "prettier --check src/",
+    "typecheck": "tsc",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck",
+    "fix": "pnpm lint:fix && pnpm format",
+    "validate": "pnpm check && pnpm build",
+    "clean": "rimraf dist release",
+    "clean:node": "rimraf node_modules",
+    "clean:all": "rimraf dist release node_modules",
+    "reinstall": "pnpm clean:all && pnpm install",
+    "prebuild": "pnpm clean",
+    "analyze": "vite build && npx open-cli dist/bundle-report.html",
+    "deps:check": "pnpm outdated || true",
+    "deps:audit": "pnpm audit",
+    "electron:dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:build": "vite build && electron-builder",
+    "electron:build:win": "vite build && electron-builder --win",
+    "electron:build:linux": "vite build && electron-builder --linux",
+    "electron:build:mac": "vite build && electron-builder --mac",
+    "electron:preview": "pnpm build && electron .",
+    "cap:init:android": "npx cap add android",
+    "cap:init:ios": "npx cap add ios",
+    "cap:sync": "vite build && npx cap sync",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios",
+    "cap:run:android": "npx cap run android",
+    "cap:run:ios": "npx cap run ios",
+    "cap:build:android": "vite build && npx cap sync && cd android && gradlew assembleDebug",
+    "test": "vitest",
+    "test:ci": "vitest run --coverage",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.css": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "@capacitor/android": "8.2.0",
+    "@capacitor/core": "8.2.0",
+    "@esbuild/linux-x64": "0.27.3",
+    "@rollup/rollup-linux-x64-gnu": "4.59.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.2.0",
+    "@eslint/js": "10.0.1",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "5.1.4",
+    "@vitest/coverage-v8": "4.0.18",
+    "astral-regex": "2.0.0",
+    "concurrently": "9.2.1",
+    "electron": "40.8.0",
+    "electron-builder": "26.8.1",
+    "eslint": "10.0.3",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-boundaries": "5.4.0",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.0.1",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "husky": "9.1.7",
+    "jsdom": "28.1.0",
+    "kill-port": "2.0.1",
+    "lint-staged": "16.3.2",
+    "prettier": "3.8.1",
+    "rimraf": "6.1.3",
+    "rollup-plugin-visualizer": "5.14.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.56.1",
+    "vite": "7.3.1",
+    "vitest": "4.0.18",
+    "wait-on": "8.0.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "electron-winstaller",
+      "esbuild"
+    ]
+  },
+  "build": {
+    "appId": "com.scottreinhart.tictactoe",
+    "productName": "Tic-Tac-Toe",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "signAndEditExecutable": false
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
+  }
+}

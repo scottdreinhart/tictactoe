@@ -1,0 +1,45 @@
+/* Rose — light */
+[data-theme='rose'] {
+  --bg-gradient-start: #be123c;
+  --bg-gradient-end: #fb7185;
+  --bg-image: url('/backgrounds/laser.png');
+  --accent: #f43f5e;
+  --accent-glow: rgba(244, 63, 94, 0.4);
+  --cell-hover-bg: #fff1f2;
+  --instructions-bg: #fff1f2;
+  --x-color: #e11d48;
+  --o-color: #db2777;
+  --x-glow: rgba(225, 29, 72, 0.3);
+  --o-glow: rgba(219, 39, 119, 0.3);
+  --win-pulse-shadow: rgba(244, 63, 94, 0.6);
+}
+
+/* Rose — dark (system preference) */
+@media (prefers-color-scheme: dark) {
+  [data-theme='rose']:not([data-mode='light']) {
+    --bg-gradient-start: #4c0519;
+    --bg-gradient-end: #881337;
+    --accent: #fb7185;
+    --accent-glow: rgba(251, 113, 133, 0.35);
+    --instructions-bg: #253347;
+    --x-color: #fb7185;
+    --o-color: #f472b6;
+    --x-glow: rgba(251, 113, 133, 0.35);
+    --o-glow: rgba(244, 114, 182, 0.35);
+    --win-pulse-shadow: rgba(251, 113, 133, 0.5);
+  }
+}
+
+/* Rose — dark (manual override) */
+[data-mode='dark'][data-theme='rose'] {
+  --bg-gradient-start: #4c0519;
+  --bg-gradient-end: #881337;
+  --accent: #fb7185;
+  --accent-glow: rgba(251, 113, 133, 0.35);
+  --instructions-bg: #253347;
+  --x-color: #fb7185;
+  --o-color: #f472b6;
+  --x-glow: rgba(251, 113, 133, 0.35);
+  --o-glow: rgba(244, 114, 182, 0.35);
+  --win-pulse-shadow: rgba(251, 113, 133, 0.5);
+}
