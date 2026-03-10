@@ -1,7 +1,6 @@
 /* Rose — light */
 [data-theme='rose'] {
-  --bg-gradient-start: #be123c;
-  --bg-gradient-end: #fb7185;
+  --bg: #be123c;
   --bg-image: url('/backgrounds/laser.png');
   --accent: #f43f5e;
   --accent-glow: rgba(244, 63, 94, 0.4);
@@ -17,8 +16,7 @@
 /* Rose — dark (system preference) */
 @media (prefers-color-scheme: dark) {
   [data-theme='rose']:not([data-mode='light']) {
-    --bg-gradient-start: #4c0519;
-    --bg-gradient-end: #881337;
+    --bg: #4c0519;
     --accent: #fb7185;
     --accent-glow: rgba(251, 113, 133, 0.35);
     --instructions-bg: #253347;
@@ -32,8 +30,7 @@
 
 /* Rose — dark (manual override) */
 [data-mode='dark'][data-theme='rose'] {
-  --bg-gradient-start: #4c0519;
-  --bg-gradient-end: #881337;
+  --bg: #4c0519;
   --accent: #fb7185;
   --accent-glow: rgba(251, 113, 133, 0.35);
   --instructions-bg: #253347;

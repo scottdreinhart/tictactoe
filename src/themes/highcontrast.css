@@ -23,8 +23,7 @@
 /* High Contrast — dark (system preference, preserve own variables) */
 @media (prefers-color-scheme: dark) {
   [data-theme='highcontrast']:not([data-mode='light']) {
-    --bg-gradient-start: #000000;
-    --bg-gradient-end: #1a1a1a;
+    --bg: #000000;
     --card-bg: #000000;
     --card-shadow: rgba(255, 255, 255, 0.2);
     --text-primary: #ffffff;
@@ -46,8 +45,7 @@
 
 /* High Contrast — dark (manual override, preserve own variables) */
 [data-mode='dark'][data-theme='highcontrast'] {
-  --bg-gradient-start: #000000;
-  --bg-gradient-end: #1a1a1a;
+  --bg: #000000;
   --card-bg: #000000;
   --card-shadow: rgba(255, 255, 255, 0.2);
   --text-primary: #ffffff;

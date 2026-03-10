@@ -38,7 +38,6 @@ export interface ColorTheme {
   id: string
   label: string
   accent: string
-  gradient: [string, string]
 }
 
 export interface ColorblindMode {

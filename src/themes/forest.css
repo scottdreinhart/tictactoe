@@ -1,7 +1,6 @@
 /* Forest — light */
 [data-theme='forest'] {
-  --bg-gradient-start: #166534;
-  --bg-gradient-end: #22c55e;
+  --bg: #166534;
   --bg-image: url('/backgrounds/matrix.png');
   --accent: #22c55e;
   --accent-glow: rgba(34, 197, 94, 0.4);
@@ -17,8 +16,7 @@
 /* Forest — dark (system preference) */
 @media (prefers-color-scheme: dark) {
   [data-theme='forest']:not([data-mode='light']) {
-    --bg-gradient-start: #052e16;
-    --bg-gradient-end: #14532d;
+    --bg: #052e16;
     --accent: #4ade80;
     --accent-glow: rgba(74, 222, 128, 0.35);
     --instructions-bg: #253347;
@@ -32,8 +30,7 @@
 
 /* Forest — dark (manual override) */
 [data-mode='dark'][data-theme='forest'] {
-  --bg-gradient-start: #052e16;
-  --bg-gradient-end: #14532d;
+  --bg: #052e16;
   --accent: #4ade80;
   --accent-glow: rgba(74, 222, 128, 0.35);
   --instructions-bg: #253347;

@@ -1,7 +1,6 @@
 /* Midnight — light */
 [data-theme='midnight'] {
-  --bg-gradient-start: #312e81;
-  --bg-gradient-end: #7c3aed;
+  --bg: #312e81;
   --bg-image: url('/backgrounds/circuit.png');
   --accent: #a78bfa;
   --accent-glow: rgba(167, 139, 250, 0.4);
@@ -17,8 +16,7 @@
 /* Midnight — dark (system preference) */
 @media (prefers-color-scheme: dark) {
   [data-theme='midnight']:not([data-mode='light']) {
-    --bg-gradient-start: #1e1b4b;
-    --bg-gradient-end: #312e81;
+    --bg: #1e1b4b;
     --accent: #c4b5fd;
     --accent-glow: rgba(196, 181, 253, 0.35);
     --instructions-bg: #253347;
@@ -32,8 +30,7 @@
 
 /* Midnight — dark (manual override) */
 [data-mode='dark'][data-theme='midnight'] {
-  --bg-gradient-start: #1e1b4b;
-  --bg-gradient-end: #312e81;
+  --bg: #1e1b4b;
   --accent: #c4b5fd;
   --accent-glow: rgba(196, 181, 253, 0.35);
   --instructions-bg: #253347;

@@ -1,7 +1,6 @@
 /* Sunset — light */
 [data-theme='sunset'] {
-  --bg-gradient-start: #dc2626;
-  --bg-gradient-end: #f97316;
+  --bg: #dc2626;
   --accent: #f97316;
   --accent-glow: rgba(249, 115, 22, 0.4);
   --cell-hover-bg: #fff7ed;
@@ -16,8 +15,7 @@
 /* Sunset — dark (system preference) */
 @media (prefers-color-scheme: dark) {
   [data-theme='sunset']:not([data-mode='light']) {
-    --bg-gradient-start: #431407;
-    --bg-gradient-end: #7c2d12;
+    --bg: #431407;
     --accent: #fb923c;
     --accent-glow: rgba(251, 146, 60, 0.35);
     --instructions-bg: #253347;
@@ -31,8 +29,7 @@
 
 /* Sunset — dark (manual override) */
 [data-mode='dark'][data-theme='sunset'] {
-  --bg-gradient-start: #431407;
-  --bg-gradient-end: #7c2d12;
+  --bg: #431407;
   --accent: #fb923c;
   --accent-glow: rgba(251, 146, 60, 0.35);
   --instructions-bg: #253347;

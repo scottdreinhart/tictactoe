@@ -1,7 +1,6 @@
 /* Ocean — light */
 [data-theme='ocean'] {
-  --bg-gradient-start: #0369a1;
-  --bg-gradient-end: #0ea5e9;
+  --bg: #0369a1;
   --bg-image: url('/backgrounds/cityscape.png');
   --accent: #0ea5e9;
   --accent-glow: rgba(14, 165, 233, 0.4);
@@ -17,8 +16,7 @@
 /* Ocean — dark (system preference) */
 @media (prefers-color-scheme: dark) {
   [data-theme='ocean']:not([data-mode='light']) {
-    --bg-gradient-start: #082f49;
-    --bg-gradient-end: #0c4a6e;
+    --bg: #082f49;
     --accent: #38bdf8;
     --accent-glow: rgba(56, 189, 248, 0.35);
     --instructions-bg: #253347;
@@ -32,8 +30,7 @@
 
 /* Ocean — dark (manual override) */
 [data-mode='dark'][data-theme='ocean'] {
-  --bg-gradient-start: #082f49;
-  --bg-gradient-end: #0c4a6e;
+  --bg: #082f49;
   --accent: #38bdf8;
   --accent-glow: rgba(56, 189, 248, 0.35);
   --instructions-bg: #253347;

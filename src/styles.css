@@ -11,14 +11,13 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════
    COLOR THEMES — Light variants (default)
-   Each theme sets: accent, gradients, X/O colors, glows
+   Each theme sets: accent, X/O colors, glows
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Classic (default) ── */
 :root,
 [data-theme='classic'] {
-  --bg-gradient-start: #667eea;
-  --bg-gradient-end: #764ba2;
+  --bg: #667eea;
   --bg-image: url('/backgrounds/matrix.png');
   --card-bg: #ffffff;
   --card-shadow: rgba(0, 0, 0, 0.25);
@@ -58,8 +57,7 @@
   /* Per-theme dark tweaks */
   [data-theme='classic']:not([data-mode='light']),
   :root:not([data-theme]):not([data-mode='light']) {
-    --bg-gradient-start: #1a1a2e;
-    --bg-gradient-end: #16213e;
+    --bg: #1a1a2e;
     --accent: #7b8cff;
     --accent-glow: rgba(123, 140, 255, 0.35);
     --instructions-bg: #253347;
@@ -84,8 +82,7 @@
 }
 [data-mode='dark'][data-theme='classic'],
 [data-mode='dark']:not([data-theme]) {
-  --bg-gradient-start: #1a1a2e;
-  --bg-gradient-end: #16213e;
+  --bg: #1a1a2e;
   --accent: #7b8cff;
   --accent-glow: rgba(123, 140, 255, 0.35);
   --instructions-bg: #253347;
@@ -183,7 +180,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--bg-gradient-start);
+  background: var(--bg);
   background-attachment: fixed;
   color: var(--text-primary);
   /* Minimal padding — safe areas only for notched devices */

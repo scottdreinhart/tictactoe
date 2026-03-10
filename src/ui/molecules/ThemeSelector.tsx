@@ -76,7 +76,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = React.memo(
                       settings.colorTheme === t.id && styles.swatchActive,
                     )}
                     style={{
-                      background: `linear-gradient(135deg, ${t.gradient[0]}, ${t.gradient[1]})`,
+                      background: t.accent,
                     }}
                     onClick={() => onColorTheme(t.id)}
                     aria-label={t.label}

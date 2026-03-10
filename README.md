@@ -388,12 +388,6 @@ graph TD
   APP -->|imports| DOMAIN
   WORKERS -->|imports| DOMAIN
   THEMES -.-x|no imports| THEMES
-
-  style UI fill:#1e1e2e,color:#89b4fa,stroke:#89b4fa
-  style APP fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
-  style DOMAIN fill:#1e1e2e,color:#f9e2af,stroke:#f9e2af
-  style WORKERS fill:#1e1e2e,color:#cba6f7,stroke:#cba6f7
-  style THEMES fill:#1e1e2e,color:#f38ba8,stroke:#f38ba8
 ```
 
 ### Hook Composition Diagram
@@ -430,11 +424,6 @@ graph TD
     rules_ts
     ai_worker
   end
-
-  style TicTacToeGame fill:#1e1e2e,color:#89b4fa,stroke:#89b4fa
-  style Domain fill:#1e1e2e,color:#f9e2af,stroke:#f9e2af
-  style useTheme fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
-  style useSoundEffects fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
 ```
 
 ### Data Flow Diagram
@@ -475,11 +464,6 @@ flowchart LR
   worker -->|onmessage| cpu
   cpu -->|"dispatch\nCPU_MOVE"| reducer
   raw --> comp --> dom
-
-  style Input fill:#1e1e2e,color:#f38ba8,stroke:#f38ba8
-  style Hooks fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
-  style State fill:#1e1e2e,color:#f9e2af,stroke:#f9e2af
-  style Render fill:#1e1e2e,color:#89b4fa,stroke:#89b4fa
 ```
 
 ### UI Screen Layout
@@ -627,15 +611,6 @@ block-beta
     end
   end
 
-  style root fill:#1e1e2e,color:#cdd6f4,stroke:#89b4fa
-  style theme fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
-  style sound fill:#1e1e2e,color:#f9e2af,stroke:#f9e2af
-  style error fill:#1e1e2e,color:#f38ba8,stroke:#f38ba8
-  style game fill:#1e1e2e,color:#cdd6f4,stroke:#89b4fa
-  style header fill:#313244,color:#cdd6f4,stroke:#585b70
-  style scoreboard fill:#313244,color:#cdd6f4,stroke:#585b70
-  style container fill:#313244,color:#cdd6f4,stroke:#585b70
-  style board fill:#45475a,color:#cdd6f4,stroke:#6c7086
 ```
 
 > **Conditional overlays** (`CoinFlip`, `ConfettiOverlay`, `GameOutcomeOverlay`, `WinLine`, `NotificationBanner`) mount inside the container but are omitted from the nesting diagram for clarity — see the UI Screen Layout above for their positions. `HamburgerMenu` children render via `createPortal` to `document.body`.
@@ -1040,10 +1015,6 @@ flowchart TD
     u2 --> u3[Evaluate all game trees]
     u3 --> u4[Return optimal move]
     u4 --> done
-
-    style start fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
-    style done fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
-    style diff fill:#1e1e2e,color:#f9e2af,stroke:#f9e2af
 ```
 
 ## Tech Stack
@@ -1094,12 +1065,6 @@ graph LR
     vite --> web["Web / PWA\nService Worker + manifest.json\nAny modern browser"]
     vite --> electron["Electron 40\nWindows · macOS · Linux\nPortable / DMG / AppImage"]
     vite --> capacitor["Capacitor 8\nAndroid · iOS\nNative WebView shell"]
-
-    style Source fill:#1e1e2e,color:#f9e2af,stroke:#f9e2af
-    style Build fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
-    style web fill:#1e1e2e,color:#89b4fa,stroke:#89b4fa
-    style electron fill:#1e1e2e,color:#cba6f7,stroke:#cba6f7
-    style capacitor fill:#1e1e2e,color:#f38ba8,stroke:#f38ba8
 ```
 
 ## Browser Compatibility
