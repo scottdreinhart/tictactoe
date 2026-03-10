@@ -367,7 +367,7 @@ The project enforces nine complementary design principles and architectural patt
 CLEAN architecture with enforced import boundaries. Arrows show allowed dependency directions — violations are caught by ESLint at lint time.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 50, 'padding': 20, 'htmlLabels': true}}}%%
 graph TD
   subgraph UI["ui/ — Presentational Components"]
     direction TB
@@ -407,7 +407,7 @@ graph TD
 How hooks compose inside `TicTacToeGame`. Each arrow means "calls / depends on".
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 50, 'padding': 20, 'htmlLabels': true}}}%%
 graph TD
   TicTacToeGame("TicTacToeGame<br/>(Organism)")
 
@@ -444,7 +444,7 @@ graph TD
 Unidirectional data flow from user input through state management to screen output.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 50, 'padding': 20, 'htmlLabels': true}}}%%
 flowchart LR
   subgraph Input["User Input"]
     click("Click / Tap")
@@ -569,7 +569,7 @@ Visual regions of the game interface as they appear on screen. Dashed outlines i
 How React components nest inside each other at runtime. Each box is a component boundary — inner components are rendered as children of outer components.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 50, 'padding': 20, 'htmlLabels': true}}}%%
 graph TD
   root("React.StrictMode") --> theme("ThemeProvider (Context)")
   theme --> sound("SoundProvider (Context)")
@@ -608,7 +608,7 @@ graph TD
 Lifecycle from app startup through gameplay, game-over, and reset.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'state': {'nodeSpacing': 30, 'rankSpacing': 40, 'padding': 20}}}%%
 stateDiagram-v2
     [*] --> Startup
 
@@ -678,7 +678,7 @@ stateDiagram-v2
 The game lifecycle follows 9 states and 19 legal transitions, shown below.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'state': {'nodeSpacing': 30, 'rankSpacing': 40, 'padding': 20}}}%%
 stateDiagram-v2
     [*] --> idle
 
@@ -715,7 +715,7 @@ stateDiagram-v2
 A single human turn followed by a CPU response, showing data flow across components, hooks, reducer, and the Web Worker.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'actorBkg': '#e8daf5', 'actorBorder': '#9370DB', 'actorTextColor': '#2d2d2d', 'activationBkgColor': '#f0e6ff', 'activationBorderColor': '#9370DB', 'signalColor': '#7c5cbf', 'signalTextColor': '#2d2d2d', 'noteBkgColor': '#f0e6ff', 'noteBorderColor': '#9370DB', 'noteTextColor': '#2d2d2d', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'actorBkg': '#e8daf5', 'actorBorder': '#9370DB', 'actorTextColor': '#2d2d2d', 'activationBkgColor': '#f0e6ff', 'activationBorderColor': '#9370DB', 'signalColor': '#7c5cbf', 'signalTextColor': '#2d2d2d', 'noteBkgColor': '#f0e6ff', 'noteBorderColor': '#9370DB', 'noteTextColor': '#2d2d2d', 'fontFamily': 'system-ui'}, 'sequence': {'boxMargin': 10, 'noteMargin': 15, 'messageMargin': 40, 'actorMargin': 60}}}%%
 sequenceDiagram
     participant User
     participant UI as CellButton
@@ -970,7 +970,7 @@ DEFAULT_SETTINGS // { colorTheme: 'highcontrast', mode: 'system', colorblind: 'n
 How each difficulty level selects its move. All four strategies funnel through the Web Worker.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 50, 'padding': 20, 'htmlLabels': true}}}%%
 flowchart TD
     start([AI's Turn]) --> diff{Difficulty?}
 
@@ -1043,7 +1043,7 @@ flowchart TD
 One shared codebase ships to three platforms from a single Vite build.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 50, 'padding': 20, 'htmlLabels': true}}}%%
 graph LR
     subgraph Source["Shared Codebase"]
         src("src/<br/>React + TypeScript")
