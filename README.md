@@ -371,36 +371,35 @@ CLEAN architecture with enforced import boundaries. Arrows show allowed dependen
 graph TD
   subgraph UI["ui/ — Presentational Components"]
     direction TB
-    organisms("organisms/\nTicTacToeGame")
-    molecules("molecules/\nBoardGrid · Scoreboard · CoinFlip\nHamburgerMenu · MoveTimeline\nThemeSelector · Instructions")
-    atoms("atoms/\nCellButton · XMark · OMark · WinLine\nGameOutcomeOverlay · DifficultyToggle\nSeriesSelector · SoundToggle\nConfettiOverlay · NotificationBanner\nErrorBoundary")
+    organisms("organisms/<br/>TicTacToeGame")
+    molecules("molecules/<br/>BoardGrid · Scoreboard · CoinFlip<br/>HamburgerMenu · MoveTimeline<br/>ThemeSelector · Instructions")
+    atoms("atoms/<br/>CellButton · XMark · OMark · WinLine<br/>GameOutcomeOverlay · DifficultyToggle<br/>SeriesSelector · SoundToggle<br/>ConfettiOverlay · NotificationBanner<br/>ErrorBoundary")
     organisms --> molecules --> atoms
   end
 
   subgraph APP["app/ — Hooks & Side Effects"]
     direction TB
-    hooks("hooks\nuseTicTacToe · useGameBoard\nuseCpuPlayer · useGameStats\nuseSeries · useAutoReset\nuseGameOrchestration …")
-    services("services\nhaptics.ts · sounds.ts\nstorageService.ts")
+    hooks("hooks<br/>useTicTacToe · useGameBoard<br/>useCpuPlayer · useGameStats<br/>useSeries · useAutoReset<br/>useGameOrchestration …")
+    services("services<br/>haptics.ts · sounds.ts<br/>storageService.ts")
   end
 
   subgraph DOMAIN["domain/ — Pure Business Logic"]
     direction TB
-    core("board.ts · rules.ts · ai.ts\ntypes.ts · constants.ts · themes.ts")
+    core("board.ts · rules.ts · ai.ts<br/>types.ts · constants.ts · themes.ts")
   end
 
   subgraph WORKERS["workers/ — Off-Thread"]
-    worker("ai.worker.ts\nMinimax + α-β pruning")
+    worker("ai.worker.ts<br/>Minimax + α-β pruning")
   end
 
   subgraph THEMES["themes/ — Pure CSS"]
-    css("ocean · sunset · forest\nrose · midnight · highcontrast")
+    css("ocean · sunset · forest<br/>rose · midnight · highcontrast")
   end
 
   UI -->|imports| APP
   UI -->|imports| DOMAIN
   APP -->|imports| DOMAIN
   WORKERS -->|imports| DOMAIN
-  THEMES -.-x|no imports| THEMES
 ```
 
 ### Hook Composition Diagram
@@ -410,7 +409,7 @@ How hooks compose inside `TicTacToeGame`. Each arrow means "calls / depends on".
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 graph TD
-  TicTacToeGame("TicTacToeGame\n(Organism)")
+  TicTacToeGame("TicTacToeGame<br/>(Organism)")
 
   TicTacToeGame --> useTicTacToe("useTicTacToe")
   TicTacToeGame --> useSeries("useSeries")
@@ -418,8 +417,8 @@ graph TD
   TicTacToeGame --> useNotificationQueue("useNotificationQueue")
   TicTacToeGame --> useKeyboardShortcuts("useKeyboardShortcuts")
   TicTacToeGame --> useGameOrchestration("useGameOrchestration")
-  TicTacToeGame --> useTheme("useTheme\n(Context)")
-  TicTacToeGame --> useSoundEffects("useSoundEffects\n(Context)")
+  TicTacToeGame --> useTheme("useTheme<br/>(Context)")
+  TicTacToeGame --> useSoundEffects("useSoundEffects<br/>(Context)")
 
   useTicTacToe --> useGameBoard("useGameBoard")
   useTicTacToe --> useGameStats("useGameStats")
@@ -454,30 +453,30 @@ flowchart LR
   end
 
   subgraph Hooks["Application Layer"]
-    handler("Event Handler\n(useTicTacToe)")
-    reducer("Reducer\n(useGameBoard)")
+    handler("Event Handler<br/>(useTicTacToe)")
+    reducer("Reducer<br/>(useGameBoard)")
     cpu("useCpuPlayer")
-    worker("Web Worker\n(ai.worker.ts)")
+    worker("Web Worker<br/>(ai.worker.ts)")
   end
 
   subgraph State["Derived State"]
-    raw("Board + Turn\n+ History")
+    raw("Board + Turn<br/>+ History")
   end
 
   subgraph Render["UI Layer"]
-    comp("React\nComponents")
+    comp("React<br/>Components")
     dom("DOM")
   end
 
   click --> handler
   key --> handler
   swipe --> handler
-  handler -->|"dispatch\nHUMAN_MOVE"| reducer
+  handler -->|"dispatch<br/>HUMAN_MOVE"| reducer
   reducer --> raw
   raw -->|"turn = CPU"| cpu
   cpu -->|postMessage| worker
   worker -->|onmessage| cpu
-  cpu -->|"dispatch\nCPU_MOVE"| reducer
+  cpu -->|"dispatch<br/>CPU_MOVE"| reducer
   raw --> comp --> dom
 ```
 
@@ -617,7 +616,7 @@ stateDiagram-v2
         [*] --> MountProviders
         MountProviders: ThemeProvider → SoundProvider → ErrorBoundary
         MountProviders --> InitHooks
-        InitHooks: useTicTacToe · useSeries · useAutoReset\nuseNotificationQueue · useGameOrchestration
+        InitHooks: useTicTacToe · useSeries · useAutoReset<br/>useNotificationQueue · useGameOrchestration
         InitHooks --> SpawnWorker
         SpawnWorker: ai.worker.ts (Web Worker)
         SpawnWorker --> CoinFlip
@@ -662,11 +661,11 @@ stateDiagram-v2
         DetermineOutcome --> PlaySound
         PlaySound: playWin() / playLoss() / playDraw()
         PlaySound --> ShowOverlays
-        ShowOverlays: ConfettiOverlay (win only)\nGameOutcomeOverlay
+        ShowOverlays: ConfettiOverlay (win only)<br/>GameOutcomeOverlay
         ShowOverlays --> UpdateStats
         UpdateStats: Score · streak · bestTime · series
         UpdateStats --> Countdown
-        Countdown: AutoReset 15 s countdown\nNotificationBanner
+        Countdown: AutoReset 15 s countdown<br/>NotificationBanner
     }
 
     GameOver --> Reset: Countdown = 0 / "Reset Now"
@@ -979,20 +978,20 @@ flowchart TD
     e1 --> e2("Pick random cell")
     e2 --> done([Return move])
 
-    diff -->|Medium| m1{Can CPU win\nthis turn?}
+    diff -->|Medium| m1{Can CPU win<br/>this turn?}
     m1 -->|Yes| mw("Take winning cell")
     mw --> done
-    m1 -->|No| m2{Can human win\nnext turn?}
-    m2 -->|Yes| mb("Block human's\nwinning cell")
+    m1 -->|No| m2{Can human win<br/>next turn?}
+    m2 -->|Yes| mb("Block human's<br/>winning cell")
     mb --> done
     m2 -->|No| m3("Pick random cell")
     m3 --> done
 
-    diff -->|Hard| h1{Can CPU win\nthis turn?}
+    diff -->|Hard| h1{Can CPU win<br/>this turn?}
     h1 -->|Yes| hw("Take winning cell")
     hw --> done
-    h1 -->|No| h2{Can human win\nnext turn?}
-    h2 -->|Yes| hb("Block human's\nwinning cell")
+    h1 -->|No| h2{Can human win<br/>next turn?}
+    h2 -->|Yes| hb("Block human's<br/>winning cell")
     hb --> done
     h2 -->|No| h3{Center free?}
     h3 -->|Yes| hc("Take center")
@@ -1047,18 +1046,18 @@ One shared codebase ships to three platforms from a single Vite build.
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 graph LR
     subgraph Source["Shared Codebase"]
-        src("src/\nReact + TypeScript")
+        src("src/<br/>React + TypeScript")
     end
 
     subgraph Build["Build Pipeline"]
-        vite("Vite 7\nbundle to dist/")
+        vite("Vite 7<br/>bundle to dist/")
     end
 
     src --> vite
 
-    vite --> web("Web / PWA\nService Worker + manifest.json\nAny modern browser")
-    vite --> electron("Electron 40\nWindows · macOS · Linux\nPortable / DMG / AppImage")
-    vite --> capacitor("Capacitor 8\nAndroid · iOS\nNative WebView shell")
+    vite --> web("Web / PWA<br/>Service Worker + manifest.json<br/>Any modern browser")
+    vite --> electron("Electron 40<br/>Windows · macOS · Linux<br/>Portable / DMG / AppImage")
+    vite --> capacitor("Capacitor 8<br/>Android · iOS<br/>Native WebView shell")
 ```
 
 ## Browser Compatibility
