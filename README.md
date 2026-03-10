@@ -482,87 +482,57 @@ flowchart LR
 
 ### UI Screen Layout
 
-Visual regions of the game interface as they appear on screen. Dashed outlines indicate conditional overlays.
+Visual regions of the game interface as they appear on screen.
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  HEADER                                             │
-│  ┌──────────────┐                        ┌────────┐ │
-│  │  Tic Tac Toe │                        │  ☰     │ │
-│  └──────────────┘                        │ Menu   │ │
-│                                          └────────┘ │
-├─────────────────────────────────────────────────────┤
-│  SCOREBOARD                                         │
-│  ╳ 3     ● 2     ═ 1     Turn: ╳                   │
-│  ─── Best of 5 ─── You 2 – 1 CPU ───               │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│  ┌─────────────────────────────────────┐            │
-│  │          BOARD  GRID  (3×3)         │            │
-│  │  ┌─────────┬─────────┬─────────┐   │            │
-│  │  │         │         │         │   │            │
-│  │  │    ╳    │         │    ●    │   │            │
-│  │  │         │         │         │   │            │
-│  │  ├─────────┼─────────┼─────────┤   │            │
-│  │  │         │         │         │   │            │
-│  │  │         │    ╳    │         │   │            │
-│  │  │         │         │         │   │            │
-│  │  ├─────────┼─────────┼─────────┤   │            │
-│  │  │         │         │         │   │            │
-│  │  │    ●    │         │         │   │            │
-│  │  │         │         │         │   │            │
-│  │  └─────────┴─────────┴─────────┘   │            │
-│  │                                     │            │
-│  │  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─┐  │            │
-│  │    WinLine (SVG overlay)            │            │
-│  │  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─┘  │            │
-│  │                                     │            │
-│  │  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─┐  │            │
-│  │    NotificationBanner               │            │
-│  │    "New game in 12 seconds"         │            │
-│  │              [ Reset Now ]          │            │
-│  │  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─┘  │            │
-│  └─────────────────────────────────────┘            │
-│                                                     │
-│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ │
-│    ConfettiOverlay (canvas, fullscreen)              │
-│  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ │
-│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ │
-│    GameOutcomeOverlay   "YOU WIN!"                   │
-│  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ │
-│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ │
-│    CoinFlip   (spinning X / O coin)                  │
-│  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ │
-│                                                     │
-│  ┌──────────────── MoveTimeline ────────────────┐   │
-│  │  ⏱ toggle button                            │   │
-│  │  ┌────── drawer (slides from bottom) ──────┐ │   │
-│  │  │  Score: ╳ 3  ● 2  ═ 1                  │ │   │
-│  │  │  Streak: 2 🔥   Best: 4.2s             │ │   │
-│  │  │  [⟲ Undo]  [Redo ⟳]                    │ │   │
-│  │  │  1. ╳ center   2. ● corner  ...        │ │   │
-│  │  └─────────────────────────────────────────┘ │   │
-│  └──────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────┘
++---------------------------------------+
+|  [A] Title          [B] Menu Button   |
++---------------------------------------+
+|  [C] Scoreboard / Series Progress     |
++---------------------------------------+
+|                                       |
+|  +-------------------------------+    |
+|  |                               |    |
+|  |         [D] Board Grid        |    |
+|  |          3 x 3 cells          |    |
+|  |                               |    |
+|  |  . . . [E] WinLine . . . .   |    |
+|  |  . . . [F] Banner  . . . .   |    |
+|  +-------------------------------+    |
+|                                       |
+|  . . . . [G] Confetti  . . . . .     |
+|  . . . . [H] Outcome   . . . . .     |
+|  . . . . [I] CoinFlip  . . . . .     |
+|                                       |
+|  [J] MoveTimeline (slide-up drawer)   |
++---------------------------------------+
 
-┌─────── HamburgerMenu (portal to body) ──────────┐
-│  Difficulty:  [Easy] [Med] [Hard] [Unbeatable]  │
-│  Series:      [Free] [Bo3] [Bo5] [Bo7]          │
-│  Sound:       [🔊 On]                           │
-│  Theme:       [🎨 ▾]                            │
-│    ┌── ThemeSelector (expandable) ──┐            │
-│    │  Color: ■ ■ ■ ■ ■ ■ ■         │            │
-│    │  Mode:  [System] [Light] [Dark]│            │
-│    │  CB:    [None] [Prot] ...      │            │
-│    └────────────────────────────────┘            │
-│  Help:        [ⓘ ▾]                             │
-│    ┌── Instructions (tooltip) ──────┐            │
-│    │  Game rules text...            │            │
-│    └────────────────────────────────┘            │
-└──────────────────────────────────────────────────┘
+[K] HamburgerMenu (portal to body)
+  +-----------------------------------+
+  |  [K1] Difficulty / Series / Sound |
+  |  [K2] ThemeSelector (expandable)  |
+  |  [K3] Instructions (tooltip)      |
+  +-----------------------------------+
 ```
 
-> Solid borders `─` = always visible. Dashed borders `─ ─` = conditional overlays (appear during specific game phases).
+| Key | Component | Visibility | Description |
+|-----|-----------|------------|-------------|
+| A | `h1` | Always | "Tic Tac Toe" title |
+| B | `HamburgerMenu` trigger | Always | Opens settings panel **K** |
+| C | `Scoreboard` | Always | X/O/Draw tallies, turn indicator, series progress |
+| D | `BoardGrid` + `CellButton` x9 | Always | 3x3 interactive grid with animated SVG marks |
+| E | `WinLine` | On win | SVG line drawn through winning 3 cells |
+| F | `NotificationBanner` | After game ends | "New game in N seconds" countdown + Reset button |
+| G | `ConfettiOverlay` | On human win | Canvas particle animation |
+| H | `GameOutcomeOverlay` | On game end | Large "YOU WIN!" / "YOU LOSE!" / "DRAW!" text |
+| I | `CoinFlip` | First render | Animated spinning coin (X/O sides), determines who goes first |
+| J | `MoveTimeline` | Toggle | Slide-up drawer: score, streak, best time, undo/redo, move list |
+| K | `HamburgerMenu` | Toggle | Portal to `document.body` — settings panel |
+| K1 | `DifficultyToggle` / `SeriesSelector` / `SoundToggle` | Inside K | AI difficulty, series mode, sound on/off |
+| K2 | `ThemeSelector` | Inside K | Color themes, light/dark mode, colorblind presets |
+| K3 | `Instructions` | Inside K | Auto-positioned tooltip with game rules |
+
+> Dotted regions (E–I) are **conditional overlays** — they appear during specific game phases and layer on top of the board.
 
 ### Component Encapsulation Diagram
 
