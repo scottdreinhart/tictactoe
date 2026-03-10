@@ -34,12 +34,18 @@ See [LICENSE](LICENSE) file for complete terms and conditions.
 
 ```
 src/
+├── __tests__/
+│   └── setup.ts                      # Vitest setup (DOM matchers, global config)
 ├── domain/                           # Pure, framework-agnostic logic
 │   ├── types.ts                      # Central type definitions (Token, Board, GameState, Score, etc.)
 │   ├── constants.ts                  # TOKENS, WIN_LINES, BOARD_SIZE, CPU_DELAY_MS
+│   ├── constants.test.ts             # Unit tests for constants
 │   ├── board.ts                      # Board operations (create, apply move, get empty cells)
+│   ├── board.test.ts                 # Unit tests for board operations
 │   ├── rules.ts                      # Win/draw detection (returns winning line)
+│   ├── rules.test.ts                 # Unit tests for game rules
 │   ├── ai.ts                         # CPU move selection (random / medium / smart / minimax unbeatable)
+│   ├── ai.test.ts                    # Unit tests for AI strategies (51 tests)
 │   └── themes.ts                     # Color theme, mode & colorblind definitions + DEFAULT_SETTINGS
 ├── app/
 │   ├── haptics.ts                    # Vibration API wrapper (tick, tap, heavy feedback)
@@ -149,6 +155,12 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 .npmrc                                # npm/pnpm config (save-exact=true)
 .gitignore                            # Git ignore rules (node_modules, dist, release, etc.)
 .nvmrc                                # Node.js version pin (v24) for nvm users
+vitest.config.ts                      # Vitest config (jsdom, coverage, test setup)
+.github/
+└── workflows/
+    └── ci.yml                        # GitHub Actions CI (lint → format → typecheck → test → build)
+.husky/
+└── pre-commit                        # Git pre-commit hook (lint-staged: ESLint + Prettier)
 ```
 
 ## Features
@@ -271,7 +283,7 @@ Also supports high-DPI/Retina displays and print media.
 - **Web Worker AI**: Worker bundled separately (~1.2 KB gzipped), loaded on demand
 - **Sound Synthesis**: Web Audio API — zero audio files, synthesized tones + music jingles (~3 KB lazy chunk)
 - **Bundle Analysis**: `rollup-plugin-visualizer` generates `dist/bundle-report.html` on build
-- **Build Output**: 100 modules, 32.62 kB CSS (7.44 kB gzip)
+- **Build Output**: 98 modules, 33.40 kB CSS (7.51 kB gzip)
 - **Service Worker & PWA**: Precache critical shell + cache-first for `/assets/*`; offline-capable with `manifest.json` + `offline.html`
 
 ### Architecture
@@ -1020,9 +1032,9 @@ flowchart TD
 
 | Chunk             | Purpose                                              | Notes                              |
 | ----------------- | ---------------------------------------------------- | ---------------------------------- |
-| `index` (app)     | Game logic + UI components                           | 100 modules total                  |
+| `index` (app)     | Game logic + UI components                           | 98 modules total                   |
 | `vendor-react`    | React + ReactDOM                                     | Cached independently from app code |
-| CSS               | Styles + theme base                                  | 32.62 kB raw (7.44 kB gzip)        |
+| CSS               | Styles + theme base                                  | 33.40 kB raw (7.51 kB gzip)        |
 | Theme chunks (×6) | Ocean, Sunset, Forest, Rose, Midnight, High Contrast | ~0.5–1 kB each (gzip), lazy-loaded |
 | `ai.worker`       | Minimax AI (Web Worker)                              | ~1.2 kB gzip, loaded on demand     |
 | Sounds            | Web Audio API synthesis                              | ~3 kB lazy chunk                   |
