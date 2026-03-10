@@ -181,7 +181,7 @@ eslint.config.js                      # ESLint flat config (React + hooks + Pret
 ### Visual Design
 
 - **SVG Marks**: X and O rendered as animated SVGs with stroke-dasharray draw-on effect and neon glow (`filter: drop-shadow()` using theme X/O colors)
-- **7 Color Themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight, High Contrast (default) — each with unique accent gradient
+- **7 Color Themes**: Classic, Ocean, Sunset, Forest, Rose, Midnight, High Contrast (default) — each with unique accent color
 - **Theme Background Images**: Per-theme background images (matrix, circuit, cityscape, laser) rendered as board overlays via `::before` pseudo-element, scaled to fill the entire board (`background-size: 100% 100%`)
 - **Light / Dark Mode**: System (auto), Light (forced), or Dark (forced) — persisted to localStorage
 - **4 Colorblind Modes**: Red Weakness, Green Weakness, Blue Weakness, Monochrome — overrides X/O colors for visibility
@@ -355,6 +355,7 @@ The project enforces nine complementary design principles and architectural patt
 CLEAN architecture with enforced import boundaries. Arrows show allowed dependency directions — violations are caught by ESLint at lint time.
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 graph TD
   subgraph UI["ui/ — Presentational Components"]
     direction TB
@@ -395,6 +396,7 @@ graph TD
 How hooks compose inside `TicTacToeGame`. Each arrow means "calls / depends on".
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 graph TD
   TicTacToeGame["TicTacToeGame\n(Organism)"]
 
@@ -431,6 +433,7 @@ graph TD
 Unidirectional data flow from user input through state management to screen output.
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart LR
   subgraph Input["User Input"]
     click["Click / Tap"]
@@ -555,62 +558,36 @@ Visual regions of the game interface as they appear on screen. Dashed outlines i
 How React components nest inside each other at runtime. Each box is a component boundary — inner components are rendered as children of outer components.
 
 ```mermaid
-block-beta
-  columns 1
+%%{init: {'theme': 'neutral'}}%%
+graph TD
+  root["React.StrictMode"] --> theme["ThemeProvider (Context)"]
+  theme --> sound["SoundProvider (Context)"]
+  sound --> error["ErrorBoundary"]
+  error --> game["TicTacToeGame (Organism)"]
 
-  block:root["React.StrictMode"]
-    columns 1
-    block:theme["ThemeProvider (Context)"]
-      columns 1
-      block:sound["SoundProvider (Context)"]
-        columns 1
-        block:error["ErrorBoundary"]
-          columns 1
-          block:game["TicTacToeGame (Organism)"]
-            columns 3
+  game --> header["header"]
+  game --> scoreboard["Scoreboard"]
+  game --> container["main container"]
 
-            block:header["header"]
-              columns 2
-              h1["h1 Tic Tac Toe"]
-              hm["HamburgerMenu ☰"]
-            end
+  header --> h1["h1 Tic Tac Toe"]
+  header --> hm["HamburgerMenu ☰"]
 
-            block:scoreboard["Scoreboard"]
-              columns 3
-              xm1["XMark"]
-              om1["OMark"]
-              turn["Turn indicator"]
-            end
+  scoreboard --> xm1["XMark"]
+  scoreboard --> om1["OMark"]
+  scoreboard --> turn["Turn indicator"]
 
-            space
+  container --> board["BoardGrid"]
+  container --> mt["MoveTimeline (drawer)"]
 
-            block:container["main container"]
-              columns 1
-
-              block:board["BoardGrid"]
-                columns 3
-                c0["CellButton"]
-                c1["CellButton"]
-                c2["CellButton"]
-                c3["CellButton"]
-                c4["CellButton"]
-                c5["CellButton"]
-                c6["CellButton"]
-                c7["CellButton"]
-                c8["CellButton"]
-              end
-
-              mt["MoveTimeline (drawer)"]
-            end
-
-            space
-            space
-          end
-        end
-      end
-    end
-  end
-
+  board --> c0["CellButton"]
+  board --> c1["CellButton"]
+  board --> c2["CellButton"]
+  board --> c3["CellButton"]
+  board --> c4["CellButton"]
+  board --> c5["CellButton"]
+  board --> c6["CellButton"]
+  board --> c7["CellButton"]
+  board --> c8["CellButton"]
 ```
 
 > **Conditional overlays** (`CoinFlip`, `ConfettiOverlay`, `GameOutcomeOverlay`, `WinLine`, `NotificationBanner`) mount inside the container but are omitted from the nesting diagram for clarity — see the UI Screen Layout above for their positions. `HamburgerMenu` children render via `createPortal` to `document.body`.
@@ -620,6 +597,7 @@ block-beta
 Lifecycle from app startup through gameplay, game-over, and reset.
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 stateDiagram-v2
     [*] --> Startup
 
@@ -689,6 +667,7 @@ stateDiagram-v2
 The game lifecycle follows 9 states and 19 legal transitions, shown below.
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 stateDiagram-v2
     [*] --> idle
 
@@ -725,6 +704,7 @@ stateDiagram-v2
 A single human turn followed by a CPU response, showing data flow across components, hooks, reducer, and the Web Worker.
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 sequenceDiagram
     participant User
     participant UI as CellButton
@@ -979,6 +959,7 @@ DEFAULT_SETTINGS // { colorTheme: 'highcontrast', mode: 'system', colorblind: 'n
 How each difficulty level selects its move. All four strategies funnel through the Web Worker.
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart TD
     start([AI's Turn]) --> diff{Difficulty?}
 
@@ -1051,6 +1032,7 @@ flowchart TD
 One shared codebase ships to three platforms from a single Vite build.
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 graph LR
     subgraph Source["Shared Codebase"]
         src["src/\nReact + TypeScript"]
