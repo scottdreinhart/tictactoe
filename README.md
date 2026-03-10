@@ -40,20 +40,7 @@ src/
 │   ├── board.ts                      # Board operations (create, apply move, get empty cells)
 │   ├── rules.ts                      # Win/draw detection (returns winning line)
 │   ├── ai.ts                         # CPU move selection (random / medium / smart / minimax unbeatable)
-│   ├── themes.ts                     # Color theme, mode & colorblind definitions + DEFAULT_SETTINGS
-│   ├── ports/                        # Hexagonal port interfaces (dependency inversion boundaries)
-│   │   ├── RandomSource.ts           # RandomSource port — abstract random number generation
-│   │   ├── StoragePort.ts            # StoragePort port — abstract persistence (load/save/remove)
-│   │   ├── SoundPort.ts              # SoundPort port — abstract audio playback
-│   │   ├── HapticsPort.ts            # HapticsPort port — abstract haptic feedback
-│   │   ├── TimerPort.ts              # TimerPort port — abstract setTimeout / clearTimeout / now
-│   │   ├── AiWorkerPort.ts           # AiWorkerPort port — abstract off-thread AI computation
-│   │   └── index.ts                  # Barrel export — re-exports all port interfaces
-│   ├── selectors/                    # Pure selector functions (derived state from domain models)
-│   │   └── index.ts                  # 14 selectors (selectWinner, selectAvailableMoves, etc.)
-│   ├── contracts/                    # FSM states, legal transitions, command types, strategy interface
-│   │   └── index.ts                  # GamePhase (9 states), LEGAL_TRANSITIONS, GameCommand (17 types)
-│   └── index.ts                      # Barrel export — re-exports all domain modules
+│   └── themes.ts                     # Color theme, mode & colorblind definitions + DEFAULT_SETTINGS
 ├── app/
 │   ├── haptics.ts                    # Vibration API wrapper (tick, tap, heavy feedback)
 │   ├── sounds.ts                     # Web Audio API synthesized SFX + jingles
@@ -77,31 +64,10 @@ src/
 │   ├── useSmartPosition.ts           # Auto-detect left/right alignment for dropdowns
 │   ├── useDropdownBehavior.ts        # Outside click/touch/Escape close + focus trap
 │   ├── usePrevious.ts                # Generic hook capturing previous render value
-│   ├── useWebWorker.ts               # Web Worker lifecycle management (create/terminate)
-│   ├── adapters/                     # Port implementations (Adapter pattern)
-│   │   ├── BrowserRandomSource.ts    # Math.random() adapter for RandomSource
-│   │   ├── LocalStorageAdapter.ts    # localStorage adapter for StoragePort
-│   │   ├── WebAudioSoundAdapter.ts   # Web Audio API adapter for SoundPort
-│   │   ├── NullSoundAdapter.ts       # No-op sound adapter (Null Object pattern)
-│   │   ├── BrowserHapticsAdapter.ts  # navigator.vibrate() adapter for HapticsPort
-│   │   ├── NullHapticsAdapter.ts     # No-op haptics adapter (Null Object pattern)
-│   │   ├── BrowserTimerAdapter.ts    # window timers adapter for TimerPort
-│   │   ├── WebWorkerAiAdapter.ts     # Web Worker adapter for AiWorkerPort
-│   │   ├── InMemoryStorageAdapter.ts # Map-backed storage for tests
-│   │   └── index.ts                  # Barrel export — re-exports all adapters
-│   ├── strategies/                   # Strategy implementations (Strategy pattern)
-│   │   └── index.ts                  # 4 AI strategies + registry + lookup
-│   ├── selectors/                    # App-layer selectors (presentation-ready derived state)
-│   │   └── index.ts                  # ScoreboardView, OutcomeView, SeriesView, CellView, etc.
-│   ├── policies/                     # Extracted magic numbers & configurable thresholds
-│   │   └── index.ts                  # Timing, animation, confetti, gesture, layout, sound policies
-│   ├── presenters/                   # Pure functions shaping domain state → display strings
-│   │   └── index.ts                  # presentOutcome, presentScore, presentSeries, etc.
-│   └── index.ts                      # Barrel export — re-exports all app hooks and services
+│   └── useWebWorker.ts               # Web Worker lifecycle management (create/terminate)
 ├── ui/
 │   ├── atoms/
 │   │   ├── ErrorBoundary.tsx          # React Error Boundary — crash isolation with themed fallback + retry
-│   │   ├── index.ts                  # Barrel export — re-exports all atoms
 │   │   ├── CellButton.tsx            # Single cell with SVG mark rendering + neon glow + winning highlight
 │   │   ├── CellButton.module.css     # Scoped styles for CellButton (neon drop-shadow filters)
 │   │   ├── XMark.tsx                 # Animated SVG "X" (React.memo, draw-on effect)
@@ -120,7 +86,6 @@ src/
 │   │   ├── NotificationBanner.tsx    # Floating queued notification overlay on board center
 │   │   └── NotificationBanner.module.css # Scoped styles for NotificationBanner
 │   ├── molecules/
-│   │   ├── index.ts                  # Barrel export — re-exports all molecules
 │   │   ├── BoardGrid.tsx             # 3×3 grid with WinLine overlay + background image + reset animation
 │   │   ├── BoardGrid.module.css      # Scoped styles for BoardGrid
 │   │   ├── Scoreboard.tsx            # Persistent score display with turn indicator + series progress
@@ -136,14 +101,11 @@ src/
 │   │   ├── ThemeSelector.tsx         # Collapsible theme/mode/colorblind settings panel
 │   │   └── ThemeSelector.module.css  # Scoped styles for ThemeSelector
 │   ├── organisms/
-│   │   ├── index.ts                  # Barrel export — re-exports all organisms
 │   │   ├── TicTacToeGame.tsx         # Top-level game component (pure composition)
 │   │   └── TicTacToeGame.module.css  # Scoped styles for TicTacToeGame
-│   ├── index.ts                      # Barrel export — re-exports all UI sub-layers
 │   ├── ui-constants.ts               # UI layout constants (sizes, breakpoints)
 │   └── utils/
-│       ├── cssModules.ts             # cx() conditional class binding utility
-│       └── index.ts                  # Barrel export — re-exports utilities
+│       └── cssModules.ts             # cx() conditional class binding utility
 ├── vite-env.d.ts                     # Ambient type declarations (CSS Modules, assets)
 ├── themes/                           # Lazy-loaded theme CSS chunks
 │   ├── forest.css
@@ -178,9 +140,7 @@ LICENSE                               # Proprietary license terms
 capacitor.config.ts                   # Capacitor native app configuration
 electron/
 ├── main.js                           # Electron main process (BrowserWindow, dev/prod loading)
-├── preload.js                        # Sandboxed context bridge (exposes platform info)
-└── launch-dev.sh                     # WSL helper to launch Windows Electron from WSL
-launch-linux-build.sh                 # WSL script to build Linux AppImage from WSL/Ubuntu
+└── preload.js                        # Sandboxed context bridge (exposes platform info)
 
 tsconfig.json                         # TypeScript config (strict mode + @/ path aliases)
 vite.config.js                        # Vite config + rollup-plugin-visualizer + @/ resolve aliases
@@ -318,7 +278,7 @@ Also supports high-DPI/Retina displays and print media.
 
 #### Design Principles (Enforced)
 
-The project enforces nineteen complementary design principles and architectural patterns:
+The project enforces nine complementary design principles and architectural patterns:
 
 1. **CLEAN Architecture** (Layer Separation)
    - `domain/` layer: Pure, framework-agnostic logic (zero React dependencies)
@@ -365,78 +325,22 @@ The project enforces nineteen complementary design principles and architectural 
    - Eliminates fragile `../../` relative imports across layers
    - **Benefit**: Imports are self-documenting (`@/domain/rules` vs `../../domain/rules`) and resilient to file moves
 
-7. **Barrel Exports** (`index.ts` per directory)
-   - Each layer exposes a single public API via its barrel file
-   - Internal module structure can change without breaking consumers
-   - **Benefit**: Explicit public APIs; refactoring internals doesn't cascade import changes
-
-8. **React Error Boundaries** (Crash Isolation)
+7. **React Error Boundaries** (Crash Isolation)
    - `ErrorBoundary` component wraps the game at the organism level
    - Catches render errors and displays a themed fallback UI with a retry button
    - Prevents a single component crash from taking down the entire app
    - **Benefit**: Graceful degradation — users see an actionable error, not a white screen
 
-9. **React Context for Dependency Injection** (ThemeProvider + SoundProvider)
+8. **React Context for Dependency Injection** (ThemeProvider + SoundProvider)
    - `ThemeProvider` wraps `useTheme` and provides theme state to the entire tree
    - `SoundProvider` wraps `useSoundEffects` and provides sound state + guarded play functions
    - Both wired at the root in `index.tsx`: `ThemeProvider > SoundProvider > ErrorBoundary > App`
    - **Benefit**: Any component can access theme or sound state without prop drilling
 
-10. **Ports & Adapters** (Hexagonal Architecture)
-    - Domain defines abstract port interfaces (`RandomSource`, `StoragePort`, `SoundPort`, `HapticsPort`, `TimerPort`, `AiWorkerPort`)
-    - App layer provides concrete adapters (`BrowserRandomSource`, `LocalStorageAdapter`, `WebAudioSoundAdapter`, etc.)
-    - Null Object adapters (`NullSoundAdapter`, `NullHapticsAdapter`) for testing and environments without hardware support
-    - **Benefit**: Domain logic never depends on browser APIs; adapters are swappable without changing business rules
-
-11. **Functional Core / Imperative Shell**
-    - Domain functions (`board.ts`, `rules.ts`, `ai.ts`, `selectors/`) are pure — no side effects, no I/O
-    - App hooks (`use*.ts`, `adapters/`) form the imperative shell — manage effects, scheduling, persistence
+9. **Functional Core / Imperative Shell**
+    - Domain functions (`board.ts`, `rules.ts`, `ai.ts`) are pure — no side effects, no I/O
+    - App hooks (`use*.ts`) form the imperative shell — manage effects, scheduling, persistence
     - **Benefit**: Pure core is trivially testable; side effects are isolated and mockable
-
-12. **Finite State Machine** (Game Lifecycle)
-    - `GamePhase` discriminated union models 9 explicit states: `idle`, `coinFlip`, `playerTurn`, `cpuThinking`, `roundWon`, `roundDraw`, `seriesComplete`, `resetting`, `error`
-    - `LEGAL_TRANSITIONS` map enforces valid state-to-state edges
-    - `isLegalTransition()` guard prevents illegal phase changes
-    - **Benefit**: Impossible game states are unrepresentable; transition bugs are caught at compile time
-
-13. **Command Pattern** (Explicit Intent)
-    - `GameCommand` discriminated union (17 types) models every user/system action as a typed data object
-    - Commands flow: `UI → Command → Reducer/Hook → State Update`
-    - **Benefit**: Actions are serializable, loggable, and replayable; supports undo/redo natively
-
-14. **Selectors / CQRS-Lite** (Derived State)
-    - Domain selectors (`domain/selectors/`): 14 pure functions deriving game state (`selectWinner`, `selectAvailableMoves`, `selectWinLinesForCell`, etc.)
-    - App selectors (`app/selectors/`): Presentation-ready view models (`ScoreboardView`, `OutcomeView`, `SeriesView`, `CellView`, `StatsView`, `MoveTimelineEntry`, `DifficultyOption`)
-    - **Benefit**: Derived state is computed once, memoizable, and never stored redundantly
-
-15. **Strategy Pattern** (AI Difficulty)
-    - `AiStrategy` interface defines a uniform contract: `{ label, difficulty, chooseMove }`
-    - Four concrete strategies: `EasyAiStrategy`, `MediumAiStrategy`, `HardAiStrategy`, `UnbeatableAiStrategy`
-    - `AI_STRATEGIES` registry + `getAiStrategy()` lookup centralise strategy resolution
-    - **Benefit**: Adding a new difficulty level requires one new object — zero changes to calling code
-
-16. **Design by Contract** (Invariants & Preconditions)
-    - Domain functions validate inputs: `applyMove` rejects occupied cells, `getWinner` handles empty boards
-    - Policy constants include JSDoc invariants (e.g., `CPU_MOVE_DELAY_MS` must be > 0)
-    - `GamePhase` FSM + `LEGAL_TRANSITIONS` enforce state machine contracts at the type level
-    - **Benefit**: Invalid states are caught early; contracts serve as executable documentation
-
-17. **Adapter Pattern** (Infrastructure Abstraction)
-    - `InMemoryStorageAdapter` enables hermetic tests without `localStorage`
-    - `NullSoundAdapter` / `NullHapticsAdapter` silence I/O in headless test environments
-    - Adapters implement narrow port interfaces — never leak platform details upstream
-    - **Benefit**: Tests run in any environment; production code remains decoupled from platform
-
-18. **Presenter / ViewModel** (Display Logic Extraction)
-    - Presenter functions (`app/presenters/`) transform domain state into display strings and view models
-    - `presentOutcome()`, `presentScore()`, `presentSeries()`, `presentCountdown()`, `presentCellAriaLabel()`, etc.
-    - JSX components receive pre-formatted data — zero formatting logic in render methods
-    - **Benefit**: Display logic is pure, testable, and separated from component lifecycle
-
-19. **Policy Objects** (Magic Number Extraction)
-    - All timing, animation, gesture, layout, and sound thresholds centralised in `app/policies/`
-    - Examples: `CPU_MOVE_DELAY_MS`, `AUTO_RESET_SECONDS`, `CONFETTI_PARTICLE_COUNT`, `SWIPE_THRESHOLD_PX`
-    - **Benefit**: Tuning knobs are discoverable and changeable in one place; no scattered literals
 
 #### Supporting Patterns
 
@@ -463,19 +367,12 @@ graph TD
   subgraph APP["app/ — Hooks & Side Effects"]
     direction TB
     hooks["hooks\nuseTicTacToe · useGameBoard\nuseCpuPlayer · useGameStats\nuseSeries · useAutoReset\nuseGameOrchestration …"]
-    adapters["adapters/\nBrowserRandomSource\nLocalStorageAdapter\nWebAudioSoundAdapter\nBrowserHapticsAdapter\nBrowserTimerAdapter …"]
-    strategies["strategies/\nEasy · Medium · Hard · Unbeatable"]
-    selectors_app["selectors/\nScoreboardView · OutcomeView\nSeriesView · CellView · StatsView\nMoveTimelineEntry · DifficultyOption"]
-    presenters["presenters/\npresentOutcome · presentScore\npresentSeries · presentCountdown\npresentCellAriaLabel …"]
-    policies["policies/\nCPU_MOVE_DELAY_MS\nAUTO_RESET_SECONDS\nCONFETTI_PARTICLE_COUNT …"]
+    services["services\nhaptics.ts · sounds.ts\nstorageService.ts"]
   end
 
   subgraph DOMAIN["domain/ — Pure Business Logic"]
     direction TB
     core["board.ts · rules.ts · ai.ts\ntypes.ts · constants.ts · themes.ts"]
-    selectors_dom["selectors/\nselectGameState · selectWinner\nselectAvailableMoves …"]
-    ports["ports/\nRandomSource · StoragePort\nSoundPort · HapticsPort\nTimerPort · AiWorkerPort"]
-    contracts["contracts/\nGamePhase FSM (9 states)\nGameCommand (17 types)\nAiStrategy interface"]
   end
 
   subgraph WORKERS["workers/ — Off-Thread"]
@@ -561,9 +458,6 @@ flowchart LR
 
   subgraph State["Derived State"]
     raw["Board + Turn\n+ History"]
-    dsel["Domain Selectors\n(14 pure fns)"]
-    asel["App Selectors\n(7 view models)"]
-    pres["Presenters\n(11 formatters)"]
   end
 
   subgraph Render["UI Layer"]
@@ -580,7 +474,7 @@ flowchart LR
   cpu -->|postMessage| worker
   worker -->|onmessage| cpu
   cpu -->|"dispatch\nCPU_MOVE"| reducer
-  raw --> dsel --> asel --> pres --> comp --> dom
+  raw --> comp --> dom
 
   style Input fill:#1e1e2e,color:#f38ba8,stroke:#f38ba8
   style Hooks fill:#1e1e2e,color:#a6e3a1,stroke:#a6e3a1
@@ -817,7 +711,7 @@ stateDiagram-v2
 
 ### Game State Machine (FSM)
 
-The `GamePhase` discriminated union defines 9 states and 19 legal transitions. This diagram mirrors the `LEGAL_TRANSITIONS` map in `domain/contracts/`.
+The game lifecycle follows 9 states and 19 legal transitions, shown below.
 
 ```mermaid
 stateDiagram-v2
@@ -948,6 +842,12 @@ pnpm format         # Prettier — format all source files
 pnpm format:check   # Prettier — check formatting without writing
 pnpm typecheck      # TypeScript type check (tsc --noEmit)
 
+# Testing
+pnpm test           # Run tests once
+pnpm test:watch     # Run tests in watch mode
+pnpm test:ci        # Run tests once (CI mode)
+pnpm test:coverage  # Run tests with v8 coverage report
+
 # Chains
 pnpm check          # lint + format:check + typecheck in one pass (quality gate)
 pnpm fix            # lint:fix + format in one pass (auto-fix everything)
@@ -998,17 +898,6 @@ pnpm electron:build:mac     # macOS .dmg
 Electron wraps the same web app in a native desktop window. In dev mode it connects to the Vite dev server (`localhost:5173`); in production it loads the built `dist/` files directly.
 
 > **Cross-platform builds**: Electron must be built on the target platform — a Windows machine produces `.exe`, a macOS machine produces `.dmg`, and a Linux machine produces `.AppImage`. You need access to each OS to release all three desktop binaries.
-
-#### Linux Builds via WSL
-
-Linux AppImage builds are done from WSL/Ubuntu because `node_modules` contains platform-specific native binaries that cannot be shared between Windows and Linux. A separate clone at `~/tictactoe-linux` on the Linux filesystem has its own `node_modules`.
-
-```bash
-# One-command Linux build (syncs code, installs deps, builds AppImage)
-wsl bash -lc "bash /mnt/c/Users/scott/tictactoe/launch-linux-build.sh"
-```
-
-The resulting `.AppImage` is automatically copied to `release/` on the Windows side.
 
 ### Capacitor Mobile App
 
@@ -1170,6 +1059,8 @@ flowchart TD
 | [CSS Modules](https://github.com/css-modules/css-modules)                 | —       | Scoped component styling                     |
 | [ESLint](https://github.com/eslint/eslint)                                | 10      | Linting (flat config, React + hooks plugins) |
 | [Prettier](https://github.com/prettier/prettier)                          | 3       | Code formatting                              |
+| [Vitest](https://github.com/vitest-dev/vitest)                            | 4       | Unit testing (51 domain tests, v8 coverage)  |
+| [Husky](https://github.com/typicode/husky)                                | 9       | Git hooks (pre-commit lint + format)         |
 | [pnpm](https://github.com/pnpm/pnpm)                                      | 10      | Fast, disk-efficient package manager         |
 | [Node.js](https://github.com/nodejs/node)                                 | 24      | Runtime (pinned via `.nvmrc`)                |
 
@@ -1283,14 +1174,15 @@ The app is built with React + Vite. All platforms with a web browser can run the
 
 ### Code Quality & Testing
 
-- [ ] **Unit tests** — domain functions (`board.ts`, `rules.ts`, `ai.ts`) are pure and test-ready; add Vitest or Jest suite
+- [x] **Unit tests** — 51 domain tests via Vitest (board, rules, ai, constants) with v8 coverage
+- [x] **Pre-commit hooks** — Husky + lint-staged (ESLint --fix + Prettier --write on staged files)
 - [ ] **Component tests** — React Testing Library tests for CellButton, BoardGrid, NotificationBanner
 - [ ] **Integration / E2E tests** — Playwright or Cypress for full game-flow verification
 - [ ] **Storybook** — catalog atoms/molecules in isolation for visual regression testing
 
 ### DevOps & Deployment
 
-- [ ] **CI/CD pipeline** — GitHub Actions workflow for lint → test → build → deploy
+- [x] **CI/CD pipeline** — GitHub Actions workflow: lint → format:check → typecheck → test:ci → build
 - [ ] **GitHub Pages / Vercel deploy** — auto-deploy `dist/` on push to `main`
 - [ ] **Dependabot auto-merge** — enable auto-updates for future vulnerability alerts
 - [ ] **Custom app icons** — generate PNG icons from `icon.svg` for Electron builds (win `.ico`, mac `.icns`, linux `.png`) and configure in `electron-builder`
