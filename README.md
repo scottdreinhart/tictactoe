@@ -355,33 +355,33 @@ The project enforces nine complementary design principles and architectural patt
 CLEAN architecture with enforced import boundaries. Arrows show allowed dependency directions — violations are caught by ESLint at lint time.
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 graph TD
   subgraph UI["ui/ — Presentational Components"]
     direction TB
-    organisms["organisms/\nTicTacToeGame"]
-    molecules["molecules/\nBoardGrid · Scoreboard · CoinFlip\nHamburgerMenu · MoveTimeline\nThemeSelector · Instructions"]
-    atoms["atoms/\nCellButton · XMark · OMark · WinLine\nGameOutcomeOverlay · DifficultyToggle\nSeriesSelector · SoundToggle\nConfettiOverlay · NotificationBanner\nErrorBoundary"]
+    organisms("organisms/\nTicTacToeGame")
+    molecules("molecules/\nBoardGrid · Scoreboard · CoinFlip\nHamburgerMenu · MoveTimeline\nThemeSelector · Instructions")
+    atoms("atoms/\nCellButton · XMark · OMark · WinLine\nGameOutcomeOverlay · DifficultyToggle\nSeriesSelector · SoundToggle\nConfettiOverlay · NotificationBanner\nErrorBoundary")
     organisms --> molecules --> atoms
   end
 
   subgraph APP["app/ — Hooks & Side Effects"]
     direction TB
-    hooks["hooks\nuseTicTacToe · useGameBoard\nuseCpuPlayer · useGameStats\nuseSeries · useAutoReset\nuseGameOrchestration …"]
-    services["services\nhaptics.ts · sounds.ts\nstorageService.ts"]
+    hooks("hooks\nuseTicTacToe · useGameBoard\nuseCpuPlayer · useGameStats\nuseSeries · useAutoReset\nuseGameOrchestration …")
+    services("services\nhaptics.ts · sounds.ts\nstorageService.ts")
   end
 
   subgraph DOMAIN["domain/ — Pure Business Logic"]
     direction TB
-    core["board.ts · rules.ts · ai.ts\ntypes.ts · constants.ts · themes.ts"]
+    core("board.ts · rules.ts · ai.ts\ntypes.ts · constants.ts · themes.ts")
   end
 
   subgraph WORKERS["workers/ — Off-Thread"]
-    worker["ai.worker.ts\nMinimax + α-β pruning"]
+    worker("ai.worker.ts\nMinimax + α-β pruning")
   end
 
   subgraph THEMES["themes/ — Pure CSS"]
-    css["ocean · sunset · forest\nrose · midnight · highcontrast"]
+    css("ocean · sunset · forest\nrose · midnight · highcontrast")
   end
 
   UI -->|imports| APP
@@ -396,29 +396,29 @@ graph TD
 How hooks compose inside `TicTacToeGame`. Each arrow means "calls / depends on".
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 graph TD
-  TicTacToeGame["TicTacToeGame\n(Organism)"]
+  TicTacToeGame("TicTacToeGame\n(Organism)")
 
-  TicTacToeGame --> useTicTacToe
-  TicTacToeGame --> useSeries
-  TicTacToeGame --> useAutoReset
-  TicTacToeGame --> useNotificationQueue
-  TicTacToeGame --> useKeyboardShortcuts
-  TicTacToeGame --> useGameOrchestration
-  TicTacToeGame --> useTheme["useTheme\n(Context)"]
-  TicTacToeGame --> useSoundEffects["useSoundEffects\n(Context)"]
+  TicTacToeGame --> useTicTacToe("useTicTacToe")
+  TicTacToeGame --> useSeries("useSeries")
+  TicTacToeGame --> useAutoReset("useAutoReset")
+  TicTacToeGame --> useNotificationQueue("useNotificationQueue")
+  TicTacToeGame --> useKeyboardShortcuts("useKeyboardShortcuts")
+  TicTacToeGame --> useGameOrchestration("useGameOrchestration")
+  TicTacToeGame --> useTheme("useTheme\n(Context)")
+  TicTacToeGame --> useSoundEffects("useSoundEffects\n(Context)")
 
-  useTicTacToe --> useGameBoard
-  useTicTacToe --> useGameStats
-  useTicTacToe --> useCpuPlayer
+  useTicTacToe --> useGameBoard("useGameBoard")
+  useTicTacToe --> useGameStats("useGameStats")
+  useTicTacToe --> useCpuPlayer("useCpuPlayer")
 
-  useGameBoard --> board_ts["board.ts"]
-  useGameBoard --> rules_ts["rules.ts"]
-  useCpuPlayer --> useWebWorker
-  useWebWorker --> ai_worker["ai.worker.ts"]
+  useGameBoard --> board_ts("board.ts")
+  useGameBoard --> rules_ts("rules.ts")
+  useCpuPlayer --> useWebWorker("useWebWorker")
+  useWebWorker --> ai_worker("ai.worker.ts")
 
-  useSeries --> storageService["storageService.ts"]
+  useSeries --> storageService("storageService.ts")
   useAutoReset -.->|resets after countdown| useGameBoard
 
   subgraph Domain["domain/ (pure functions)"]
@@ -433,28 +433,28 @@ graph TD
 Unidirectional data flow from user input through state management to screen output.
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 flowchart LR
   subgraph Input["User Input"]
-    click["Click / Tap"]
-    key["Keyboard"]
-    swipe["Swipe"]
+    click("Click / Tap")
+    key("Keyboard")
+    swipe("Swipe")
   end
 
   subgraph Hooks["Application Layer"]
-    handler["Event Handler\n(useTicTacToe)"]
-    reducer["Reducer\n(useGameBoard)"]
-    cpu["useCpuPlayer"]
-    worker["Web Worker\n(ai.worker.ts)"]
+    handler("Event Handler\n(useTicTacToe)")
+    reducer("Reducer\n(useGameBoard)")
+    cpu("useCpuPlayer")
+    worker("Web Worker\n(ai.worker.ts)")
   end
 
   subgraph State["Derived State"]
-    raw["Board + Turn\n+ History"]
+    raw("Board + Turn\n+ History")
   end
 
   subgraph Render["UI Layer"]
-    comp["React\nComponents"]
-    dom["DOM"]
+    comp("React\nComponents")
+    dom("DOM")
   end
 
   click --> handler
@@ -558,36 +558,36 @@ Visual regions of the game interface as they appear on screen. Dashed outlines i
 How React components nest inside each other at runtime. Each box is a component boundary — inner components are rendered as children of outer components.
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 graph TD
-  root["React.StrictMode"] --> theme["ThemeProvider (Context)"]
-  theme --> sound["SoundProvider (Context)"]
-  sound --> error["ErrorBoundary"]
-  error --> game["TicTacToeGame (Organism)"]
+  root("React.StrictMode") --> theme("ThemeProvider (Context)")
+  theme --> sound("SoundProvider (Context)")
+  sound --> error("ErrorBoundary")
+  error --> game("TicTacToeGame (Organism)")
 
-  game --> header["header"]
-  game --> scoreboard["Scoreboard"]
-  game --> container["main container"]
+  game --> header("header")
+  game --> scoreboard("Scoreboard")
+  game --> container("main container")
 
-  header --> h1["h1 Tic Tac Toe"]
-  header --> hm["HamburgerMenu ☰"]
+  header --> h1("h1 Tic Tac Toe")
+  header --> hm("HamburgerMenu ☰")
 
-  scoreboard --> xm1["XMark"]
-  scoreboard --> om1["OMark"]
-  scoreboard --> turn["Turn indicator"]
+  scoreboard --> xm1("XMark")
+  scoreboard --> om1("OMark")
+  scoreboard --> turn("Turn indicator")
 
-  container --> board["BoardGrid"]
-  container --> mt["MoveTimeline (drawer)"]
+  container --> board("BoardGrid")
+  container --> mt("MoveTimeline (drawer)")
 
-  board --> c0["CellButton"]
-  board --> c1["CellButton"]
-  board --> c2["CellButton"]
-  board --> c3["CellButton"]
-  board --> c4["CellButton"]
-  board --> c5["CellButton"]
-  board --> c6["CellButton"]
-  board --> c7["CellButton"]
-  board --> c8["CellButton"]
+  board --> c0("CellButton")
+  board --> c1("CellButton")
+  board --> c2("CellButton")
+  board --> c3("CellButton")
+  board --> c4("CellButton")
+  board --> c5("CellButton")
+  board --> c6("CellButton")
+  board --> c7("CellButton")
+  board --> c8("CellButton")
 ```
 
 > **Conditional overlays** (`CoinFlip`, `ConfettiOverlay`, `GameOutcomeOverlay`, `WinLine`, `NotificationBanner`) mount inside the container but are omitted from the nesting diagram for clarity — see the UI Screen Layout above for their positions. `HamburgerMenu` children render via `createPortal` to `document.body`.
@@ -597,7 +597,7 @@ graph TD
 Lifecycle from app startup through gameplay, game-over, and reset.
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 stateDiagram-v2
     [*] --> Startup
 
@@ -667,7 +667,7 @@ stateDiagram-v2
 The game lifecycle follows 9 states and 19 legal transitions, shown below.
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 stateDiagram-v2
     [*] --> idle
 
@@ -704,7 +704,7 @@ stateDiagram-v2
 A single human turn followed by a CPU response, showing data flow across components, hooks, reducer, and the Web Worker.
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'actorBkg': '#e8daf5', 'actorBorder': '#9370DB', 'actorTextColor': '#2d2d2d', 'activationBkgColor': '#f0e6ff', 'activationBorderColor': '#9370DB', 'signalColor': '#7c5cbf', 'signalTextColor': '#2d2d2d', 'noteBkgColor': '#f0e6ff', 'noteBorderColor': '#9370DB', 'noteTextColor': '#2d2d2d', 'fontFamily': 'system-ui'}}}%%
 sequenceDiagram
     participant User
     participant UI as CellButton
@@ -959,42 +959,42 @@ DEFAULT_SETTINGS // { colorTheme: 'highcontrast', mode: 'system', colorblind: 'n
 How each difficulty level selects its move. All four strategies funnel through the Web Worker.
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 flowchart TD
     start([AI's Turn]) --> diff{Difficulty?}
 
-    diff -->|Easy| e1[Get empty cells]
-    e1 --> e2[Pick random cell]
+    diff -->|Easy| e1("Get empty cells")
+    e1 --> e2("Pick random cell")
     e2 --> done([Return move])
 
     diff -->|Medium| m1{Can CPU win\nthis turn?}
-    m1 -->|Yes| mw[Take winning cell]
+    m1 -->|Yes| mw("Take winning cell")
     mw --> done
     m1 -->|No| m2{Can human win\nnext turn?}
-    m2 -->|Yes| mb[Block human's\nwinning cell]
+    m2 -->|Yes| mb("Block human's\nwinning cell")
     mb --> done
-    m2 -->|No| m3[Pick random cell]
+    m2 -->|No| m3("Pick random cell")
     m3 --> done
 
     diff -->|Hard| h1{Can CPU win\nthis turn?}
-    h1 -->|Yes| hw[Take winning cell]
+    h1 -->|Yes| hw("Take winning cell")
     hw --> done
     h1 -->|No| h2{Can human win\nnext turn?}
-    h2 -->|Yes| hb[Block human's\nwinning cell]
+    h2 -->|Yes| hb("Block human's\nwinning cell")
     hb --> done
     h2 -->|No| h3{Center free?}
-    h3 -->|Yes| hc[Take center]
+    h3 -->|Yes| hc("Take center")
     hc --> done
     h3 -->|No| h4{Corner free?}
-    h4 -->|Yes| hcr[Take corner]
+    h4 -->|Yes| hcr("Take corner")
     hcr --> done
-    h4 -->|No| he[Take edge]
+    h4 -->|No| he("Take edge")
     he --> done
 
-    diff -->|Unbeatable| u1[Post to Web Worker]
-    u1 --> u2[Minimax + α-β pruning]
-    u2 --> u3[Evaluate all game trees]
-    u3 --> u4[Return optimal move]
+    diff -->|Unbeatable| u1("Post to Web Worker")
+    u1 --> u2("Minimax + α-β pruning")
+    u2 --> u3("Evaluate all game trees")
+    u3 --> u4("Return optimal move")
     u4 --> done
 ```
 
@@ -1032,21 +1032,21 @@ flowchart TD
 One shared codebase ships to three platforms from a single Vite build.
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}}}%%
 graph LR
     subgraph Source["Shared Codebase"]
-        src["src/\nReact + TypeScript"]
+        src("src/\nReact + TypeScript")
     end
 
     subgraph Build["Build Pipeline"]
-        vite["Vite 7\nbundle to dist/"]
+        vite("Vite 7\nbundle to dist/")
     end
 
     src --> vite
 
-    vite --> web["Web / PWA\nService Worker + manifest.json\nAny modern browser"]
-    vite --> electron["Electron 40\nWindows · macOS · Linux\nPortable / DMG / AppImage"]
-    vite --> capacitor["Capacitor 8\nAndroid · iOS\nNative WebView shell"]
+    vite --> web("Web / PWA\nService Worker + manifest.json\nAny modern browser")
+    vite --> electron("Electron 40\nWindows · macOS · Linux\nPortable / DMG / AppImage")
+    vite --> capacitor("Capacitor 8\nAndroid · iOS\nNative WebView shell")
 ```
 
 ## Browser Compatibility
