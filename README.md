@@ -153,6 +153,10 @@ vite.config.js                        # Vite config + rollup-plugin-visualizer +
 eslint.config.js                      # ESLint flat config (React + hooks + Prettier + boundary enforcement)
 assembly/
 └── index.ts                          # AssemblyScript WASM source (4 AI difficulty functions)
+scripts/
+└── build-wasm.js                     # Compile AssemblyScript → WASM → base64 TS module
+.gitattributes                        # Line-ending normalization, binary rules, Linguist overrides
+.env.nocache                          # Vite env file for anti-cache mode (--mode nocache)
 .prettierrc                           # Prettier formatting rules
 .npmrc                                # npm/pnpm config (save-exact=true)
 .gitignore                            # Git ignore rules (node_modules, dist, release, etc.)
@@ -769,6 +773,15 @@ pnpm preview
 pnpm build:preview
 ```
 
+### WASM AI Build
+
+```bash
+pnpm wasm:build              # Compile AssemblyScript → optimized WASM → base64 TS module
+pnpm wasm:build:debug        # Same, but unoptimized with debug names
+```
+
+Rebuilds `assembly/index.ts` → `src/wasm/ai-wasm.ts` (2.4 KB base64-encoded binary). Only needed after editing AssemblyScript sources; the committed binary is ready to use.
+
 ### Code Quality
 
 ```bash
@@ -811,6 +824,10 @@ pnpm analyze        # production build + open bundle visualizer report
 ```
 
 > **Note**: `pnpm build` automatically runs `pnpm clean` first (via the `prebuild` lifecycle script) and reinstalls `node_modules` to ensure correct platform binaries.
+
+### Cross-Platform Line Endings
+
+`.gitattributes` normalizes all text files to LF in the repository (`* text=auto`). Shell scripts (`*.sh`) are forced to LF for WSL/Linux; batch files (`*.bat`) are forced to CRLF for Windows. Binary files (`*.png`, `*.wasm`) are excluded from text processing. GitHub Linguist overrides classify the AssemblyScript sources and generated WASM module as WebAssembly, and mark `pnpm-lock.yaml` as generated (hidden from diffs and language stats).
 
 The app will be available at `http://localhost:5173`
 
