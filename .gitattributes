@@ -1,0 +1,5 @@
+# Classify AssemblyScript sources as WebAssembly for GitHub Linguist
+assembly/**/*.ts linguist-language=WebAssembly
+
+# Classify the generated WASM base64 module as WebAssembly (not TypeScript)
+src/wasm/ai-wasm.ts linguist-language=WebAssembly
