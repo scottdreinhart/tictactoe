@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { CPU_DELAY_MS, TOKENS } from '../domain/constants.ts'
-import type { Board, Difficulty, WorkerResponse } from '../domain/types.ts'
-import useWebWorker from './useWebWorker.ts'
+import type { Board, Difficulty } from '../domain/types.ts'
+import { computeAiMove, ensureWasmReady } from './aiEngine.ts'
 
 interface UseCpuPlayerConfig {
   turn: string
@@ -26,52 +26,29 @@ const useCpuPlayer = ({
   const [difficulty, setDifficulty] = useState<Difficulty>('medium')
   const cpuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const createWorker = useCallback(
-    () =>
-      new Worker(new URL('../workers/ai.worker.ts', import.meta.url), {
-        type: 'module',
-      }),
-    [],
-  )
-  const { postMessage, setOnMessage, workerRef } = useWebWorker(createWorker)
+  // Ensure WASM is loaded before first AI move
+  useEffect(() => {
+    ensureWasmReady()
+  }, [])
 
   useEffect(() => {
     if (turn !== TOKENS.CPU) return
     if (isGameOver) return
 
-    const worker = workerRef.current
+    const { index } = computeAiMove(board, difficulty, TOKENS.CPU, TOKENS.HUMAN)
 
-    setOnMessage((event: MessageEvent<WorkerResponse>) => {
-      const { index, error } = event.data
-      if (error) {
-        console.error('AI Worker error:', error)
-        return
-      }
-      if (index === undefined || index === null) return
-
-      cpuTimeoutRef.current = setTimeout(() => {
-        onCpuMove(index)
-        cpuTimeoutRef.current = null
-      }, CPU_DELAY_MS)
-    })
-
-    postMessage({
-      board,
-      difficulty,
-      cpuToken: TOKENS.CPU,
-      humanToken: TOKENS.HUMAN,
-    })
+    cpuTimeoutRef.current = setTimeout(() => {
+      onCpuMove(index)
+      cpuTimeoutRef.current = null
+    }, CPU_DELAY_MS)
 
     return () => {
       if (cpuTimeoutRef.current !== null) {
         clearTimeout(cpuTimeoutRef.current)
         cpuTimeoutRef.current = null
       }
-      if (worker) {
-        worker.onmessage = null
-      }
     }
-  }, [turn, isGameOver, difficulty, board, onCpuMove, postMessage, setOnMessage, workerRef])
+  }, [turn, isGameOver, difficulty, board, onCpuMove])
 
   useEffect(() => {
     return () => {

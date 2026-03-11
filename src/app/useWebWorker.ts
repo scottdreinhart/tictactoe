@@ -10,7 +10,11 @@ const useWebWorker = (factory: () => Worker): UseWebWorkerReturn => {
   const workerRef = useRef<Worker | null>(null)
 
   useEffect(() => {
-    workerRef.current = factory()
+    const worker = factory()
+    worker.onerror = (e) => {
+      console.error('[useWebWorker] Worker error:', e.message, e)
+    }
+    workerRef.current = worker
 
     return () => {
       if (workerRef.current) {

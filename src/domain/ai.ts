@@ -71,7 +71,5 @@ export const chooseCpuMoveUnbeatable = (
   _cpuToken: Token,
   _humanToken: Token,
 ): number => {
-  throw new Error(
-    'chooseCpuMoveUnbeatable runs in Web Worker (src/workers/ai.worker.ts), not in domain layer',
-  )
+  throw new Error('chooseCpuMoveUnbeatable runs via WASM in aiEngine.ts, not in domain layer')
 }

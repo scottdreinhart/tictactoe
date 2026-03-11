@@ -56,7 +56,7 @@ src/
 │   ├── useTicTacToe.ts               # Composition: useGameBoard + useGameStats + useCpuPlayer
 │   ├── useGameBoard.ts               # Core reducer: board, turn, focus, history, undo/redo
 │   ├── useGameStats.ts               # Score, win-streak, best-time tracking
-│   ├── useCpuPlayer.ts               # AI difficulty + Web Worker scheduling
+│   ├── useCpuPlayer.ts               # AI difficulty + main-thread WASM scheduling
 │   ├── useGameOrchestration.ts       # Game-state → sounds, confetti, notifications, outcome CSS
 │   ├── useSeries.ts                  # Best-of-N series state (score, winner, games played)
 │   ├── useGridKeyboard.ts            # Reusable document-level keyboard navigation hook
@@ -70,7 +70,7 @@ src/
 │   ├── useSmartPosition.ts           # Auto-detect left/right alignment for dropdowns
 │   ├── useDropdownBehavior.ts        # Outside click/touch/Escape close + focus trap
 │   ├── usePrevious.ts                # Generic hook capturing previous render value
-│   └── useWebWorker.ts               # Web Worker lifecycle management (create/terminate)
+│   └── aiEngine.ts                   # Main-thread WASM AI engine (all 4 difficulties)
 ├── ui/
 │   ├── atoms/
 │   │   ├── ErrorBoundary.tsx          # React Error Boundary — crash isolation with themed fallback + retry
@@ -120,8 +120,8 @@ src/
 │   ├── ocean.css
 │   ├── rose.css
 │   └── sunset.css
-├── workers/
-│   └── ai.worker.ts                  # Off-main-thread minimax AI computation
+├── wasm/
+│   └── ai-wasm.ts                    # Base64-encoded WASM binary (2.4 KB)
 ├── index.tsx                         # React entry point
 └── styles.css                        # CSS with themes, animations, media queries
 
@@ -151,6 +151,8 @@ electron/
 tsconfig.json                         # TypeScript config (strict mode + @/ path aliases)
 vite.config.js                        # Vite config + rollup-plugin-visualizer + @/ resolve aliases
 eslint.config.js                      # ESLint flat config (React + hooks + Prettier + boundary enforcement)
+assembly/
+└── index.ts                          # AssemblyScript WASM source (4 AI difficulty functions)
 .prettierrc                           # Prettier formatting rules
 .npmrc                                # npm/pnpm config (save-exact=true)
 .gitignore                            # Git ignore rules (node_modules, dist, release, etc.)
@@ -179,7 +181,7 @@ vitest.config.ts                      # Vitest config (jsdom, coverage, test set
 - **Series Selector**: Pill-shaped Free/Bo3/Bo5/Bo7 series mode toggle
 - **Auto-Reset**: 15-second countdown after game end; auto-starts a new round ("Reset Now" button available)
 - **Sound Effects**: Synthesized via Web Audio API — move pop, win fanfare (C-major arpeggio + chord ~2s), loss jingle (descending E-minor ~2s), draw tone (toggleable, respects `prefers-reduced-motion`)
-- **Web Worker AI**: CPU move computation runs off-main-thread in `ai.worker.ts`; maintains 60 FPS during complex calculations
+- **WASM AI Engine**: CPU move computation via WebAssembly (AssemblyScript-compiled, 2.4 KB binary) for all 4 difficulty levels; JS minimax fallback if WASM unavailable
 - **Undo / Redo**: Step backward/forward through complete game history; keyboard shortcuts `Ctrl+Z` (undo), `Ctrl+Y` / `Ctrl+Shift+Z` (redo); click any move in the timeline to jump to that position
 - **Move History Timeline**: Sliding drawer with sequential move list, token icons, current position indicator, undo/redo buttons, score, streak, and best time
 - **First-Move Coin Flip**: Animated virtual coin with X/O sides flips at app start to determine who goes first
@@ -187,7 +189,7 @@ vitest.config.ts                      # Vitest config (jsdom, coverage, test set
 - **Best-Time Tracking**: Fastest win time measured in real-world seconds from first move to winning move; persists across rounds
 - **No External Game Libraries**: All logic built from scratch — board, rules, AI, sounds, themes
 - **React.memo Optimization**: Pure presentational components (`XMark`, `OMark`, `DifficultyToggle`, `SeriesSelector`, `SoundToggle`, `ThemeSelector`) wrapped in `React.memo` to skip unnecessary re-renders
-- **21 Application Hooks & Services**: `useTicTacToe` (composition), `useGameBoard`, `useGameStats`, `useCpuPlayer`, `useGameOrchestration`, `useSeries`, `useGridKeyboard`, `useKeyboardShortcuts`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useCoinFlipAnimation`, `useNotificationQueue`, `useSmartPosition`, `useDropdownBehavior`, `usePrevious`, `useWebWorker`, `haptics`, `storageService`, `sounds` — extracted for composability and reuse
+- **21 Application Hooks & Services**: `useTicTacToe` (composition), `useGameBoard`, `useGameStats`, `useCpuPlayer`, `useGameOrchestration`, `useSeries`, `useGridKeyboard`, `useKeyboardShortcuts`, `useSoundEffects`, `useTheme`, `useAutoReset`, `useSwipeGesture`, `useCoinFlipAnimation`, `useNotificationQueue`, `useSmartPosition`, `useDropdownBehavior`, `usePrevious`, `aiEngine`, `haptics`, `storageService`, `sounds` — extracted for composability and reuse
 - **Zero Known Vulnerabilities**: All 8 historical CVEs resolved (5 high, 2 moderate, 1 low); 0 known vulnerabilities
 
 ### Visual Design
@@ -280,10 +282,10 @@ Also supports high-DPI/Retina displays and print media.
   - Classic theme bundled in main stylesheet (~6 KB gzipped)
   - Non-classic themes lazy-loaded on-demand (~0.5–1 KB each, gzipped)
   - All themes preloaded at app startup for instant theme-switching (<1 ms per switch)
-- **Web Worker AI**: Worker bundled separately (~1.2 KB gzipped), loaded on demand
+- **WASM AI Engine**: AssemblyScript-compiled WebAssembly binary (2.4 KB) embedded as base64; all 4 difficulty levels run on the main thread in <1 ms
 - **Sound Synthesis**: Web Audio API — zero audio files, synthesized tones + music jingles (~3 KB lazy chunk)
 - **Bundle Analysis**: `rollup-plugin-visualizer` generates `dist/bundle-report.html` on build
-- **Build Output**: 98 modules, 33.40 kB CSS (7.51 kB gzip)
+- **Build Output**: ~100 modules, 33.40 kB CSS (7.51 kB gzip)
 - **Service Worker & PWA**: Precache critical shell + cache-first for `/assets/*`; offline-capable with `manifest.json` + `offline.html`
 
 ### Architecture
@@ -328,7 +330,7 @@ The project enforces nine complementary design principles and architectural patt
    - `domain/` → may only import from `domain/` (zero framework deps)
    - `app/` → may import `domain/` + `app/` (never `ui/`)
    - `ui/` → may import `domain/`, `app/`, and `ui/` (full downstream access)
-   - `workers/` → may only import `domain/` (pure computation)
+   - `wasm/` → standalone data module (base64 binary, no imports)
    - `themes/` → may not import anything (pure CSS data)
    - **Benefit**: CLEAN layer violations are caught at lint time, not at code review
 
@@ -358,7 +360,7 @@ The project enforces nine complementary design principles and architectural patt
 
 - **Pure Functions**: All domain logic is immutable and deterministic
 - **No Race Conditions**: CPU timeout managed via ref; cancelled on reset/unmount
-- **Reusable Hooks**: `useGridKeyboard`, `useSwipeGesture`, `useNotificationQueue`, `useAutoReset`, `useSmartPosition`, `useDropdownBehavior`, `usePrevious`, `useWebWorker`, `useKeyboardShortcuts`, `useCoinFlipAnimation`, `useSeries` — all extracted as composable application hooks
+- **Reusable Hooks**: `useGridKeyboard`, `useSwipeGesture`, `useNotificationQueue`, `useAutoReset`, `useSmartPosition`, `useDropdownBehavior`, `usePrevious`, `useKeyboardShortcuts`, `useCoinFlipAnimation`, `useSeries` — all extracted as composable application hooks
 - **TypeScript Interfaces**: Compile-time type safety on all component props and hook return values
 - **Composition Root**: Context providers wired at the root (`index.tsx`) — dependency graph is explicit and visible in one location
 
@@ -388,8 +390,8 @@ graph TD
     core("board.ts · rules.ts · ai.ts<br/>types.ts · constants.ts · themes.ts")
   end
 
-  subgraph WORKERS["workers/ — Off-Thread"]
-    worker("ai.worker.ts<br/>Minimax + α-β pruning")
+  subgraph WASM["wasm/ — AI Binary"]
+    wasmbin("ai-wasm.ts<br/>AssemblyScript WASM (2.4 KB)")
   end
 
   subgraph THEMES["themes/ — Pure CSS"]
@@ -399,7 +401,7 @@ graph TD
   UI -->|imports| APP
   UI -->|imports| DOMAIN
   APP -->|imports| DOMAIN
-  WORKERS -->|imports| DOMAIN
+  APP -->|imports| WASM
 ```
 
 ### Hook Composition Diagram
@@ -426,8 +428,8 @@ graph TD
 
   useGameBoard --> board_ts("board.ts")
   useGameBoard --> rules_ts("rules.ts")
-  useCpuPlayer --> useWebWorker("useWebWorker")
-  useWebWorker --> ai_worker("ai.worker.ts")
+  useCpuPlayer --> aiEngine("aiEngine.ts<br/>(WASM + JS fallback)")
+  aiEngine --> wasm("ai-wasm.ts<br/>(WASM binary)")
 
   useSeries --> storageService("storageService.ts")
   useAutoReset -.->|resets after countdown| useGameBoard
@@ -435,7 +437,6 @@ graph TD
   subgraph Domain["domain/ (pure functions)"]
     board_ts
     rules_ts
-    ai_worker
   end
 ```
 
@@ -456,7 +457,7 @@ flowchart LR
     handler("Event Handler<br/>(useTicTacToe)")
     reducer("Reducer<br/>(useGameBoard)")
     cpu("useCpuPlayer")
-    worker("Web Worker<br/>(ai.worker.ts)")
+    engine("aiEngine.ts<br/>(WASM)")
   end
 
   subgraph State["Derived State"]
@@ -474,8 +475,8 @@ flowchart LR
   handler -->|"dispatch<br/>HUMAN_MOVE"| reducer
   reducer --> raw
   raw -->|"turn = CPU"| cpu
-  cpu -->|postMessage| worker
-  worker -->|onmessage| cpu
+  cpu -->|computeAiMove| engine
+  engine -->|"{ index, engine }"| cpu
   cpu -->|"dispatch<br/>CPU_MOVE"| reducer
   raw --> comp --> dom
 ```
@@ -587,9 +588,9 @@ stateDiagram-v2
         MountProviders: ThemeProvider → SoundProvider → ErrorBoundary
         MountProviders --> InitHooks
         InitHooks: useTicTacToe · useSeries · useAutoReset<br/>useNotificationQueue · useGameOrchestration
-        InitHooks --> SpawnWorker
-        SpawnWorker: ai.worker.ts (Web Worker)
-        SpawnWorker --> CoinFlip
+        InitHooks --> InitWasm
+        InitWasm: aiEngine.ts (WASM init)
+        InitWasm --> CoinFlip
     }
 
     state CoinFlip {
@@ -614,9 +615,9 @@ stateDiagram-v2
         ApplyHumanMove --> CheckGameOver1: getGameState()
         CheckGameOver1 --> CpuTurn: Game continues
 
-        CpuTurn: Post board to Web Worker
-        CpuTurn --> WorkerCompute: AI computes move
-        WorkerCompute --> CpuDelay: CPU_DELAY_MS (400 ms)
+        CpuTurn: computeAiMove (WASM)
+        CpuTurn --> AiCompute: AI computes move (<1 ms)
+        AiCompute --> CpuDelay: CPU_DELAY_MS (400 ms)
         CpuDelay --> ApplyCpuMove: dispatch CPU_MOVE
         ApplyCpuMove: Board updated · playMove()
         ApplyCpuMove --> CheckGameOver2: getGameState()
@@ -682,7 +683,7 @@ stateDiagram-v2
 
 ### Game Turn Sequence Diagram
 
-A single human turn followed by a CPU response, showing data flow across components, hooks, reducer, and the Web Worker.
+A single human turn followed by a CPU response, showing data flow across components, hooks, reducer, and the AI engine.
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'actorBkg': '#e8daf5', 'actorBorder': '#9370DB', 'actorTextColor': '#2d2d2d', 'activationBkgColor': '#f0e6ff', 'activationBorderColor': '#9370DB', 'signalColor': '#7c5cbf', 'signalTextColor': '#2d2d2d', 'noteBkgColor': '#f0e6ff', 'noteBorderColor': '#9370DB', 'noteTextColor': '#2d2d2d', 'fontFamily': 'system-ui'}, 'sequence': {'boxMargin': 10, 'noteMargin': 15, 'messageMargin': 40, 'actorMargin': 60}}}%%
@@ -692,7 +693,7 @@ sequenceDiagram
     participant Hook as useTicTacToe
     participant Reducer as useGameBoard
     participant Domain as board.ts / rules.ts
-    participant Worker as ai.worker.ts
+    participant Engine as aiEngine.ts
     participant Sound as SoundProvider
 
     User->>UI: Click cell 4
@@ -704,9 +705,9 @@ sequenceDiagram
     Domain-->>Reducer: { winner: null, isDraw: false }
     Reducer-->>Hook: state update (turn = CPU)
     Hook->>Sound: playMoveSound()
-    Hook->>Worker: postMessage({ board, difficulty, cpuToken, humanToken })
-    Worker->>Worker: minimax / heuristic
-    Worker-->>Hook: { index: 6 }
+    Hook->>Engine: computeAiMove(board, difficulty, O, X)
+    Engine->>Engine: WASM findBestMove / JS fallback
+    Engine-->>Hook: { index: 6, engine: 'wasm' }
     Note over Hook: wait CPU_MOVE_DELAY_MS (400 ms)
     Hook->>Reducer: dispatch(CPU_MOVE, 6)
     Reducer->>Domain: applyMove(board, 6, O)
@@ -755,8 +756,8 @@ pnpm install
 # Start development server (accessible on LAN via 0.0.0.0)
 # Both dev and build wipe node_modules and reinstall to guarantee
 # correct platform-specific native binaries (esbuild, lightningcss, etc.)
-pnpm start          # quick-start — vite --host (skips reinstall)
-pnpm dev            # clean reinstall + vite --host
+pnpm start          # clear vite cache + vite --host (forced dep re-optimization)
+pnpm dev            # clear vite cache + vite --host (same as start)
 
 # Build for production
 pnpm build          # clean reinstall + vite build
@@ -817,18 +818,18 @@ The app will be available at `http://localhost:5173`
 
 ```bash
 # Development: launches Vite + Electron together
-pnpm electron:dev
+pnpm desktop:dev
 
 # Preview production build in Electron (build + launch)
-pnpm electron:preview
+pnpm desktop:preview
 
 # Production build: creates distributable for current platform in release/
-pnpm electron:build
+pnpm desktop:build
 
 # Platform-specific builds
-pnpm electron:build:win     # Windows .exe
-pnpm electron:build:linux   # Linux .AppImage
-pnpm electron:build:mac     # macOS .dmg
+pnpm windows:build           # Windows .exe
+pnpm linux:build             # Linux .AppImage
+pnpm mac:build               # macOS .dmg
 ```
 
 Electron wraps the same web app in a native desktop window. In dev mode it connects to the Vite dev server (`localhost:5173`); in production it loads the built `dist/` files directly.
@@ -839,22 +840,23 @@ Electron wraps the same web app in a native desktop window. In dev mode it conne
 
 ```bash
 # Initialize native platforms (one-time setup)
-pnpm cap:init:android       # Add Android project
-pnpm cap:init:ios            # Add iOS project
+pnpm android:init            # Add Android project
+pnpm ios:init                # Add iOS project
 
-# Build web app + sync to native projects
-pnpm cap:sync
+# Build web app + sync to native project
+pnpm android:sync            # Build + sync to Android
+pnpm ios:sync                # Build + sync to iOS
 
 # Open native IDE
-pnpm cap:open:android        # Open in Android Studio
-pnpm cap:open:ios            # Open in Xcode
+pnpm android:open            # Open in Android Studio
+pnpm ios:open                # Open in Xcode
 
 # Run on connected device/emulator
-pnpm cap:run:android         # Deploy to Android device
-pnpm cap:run:ios             # Deploy to iOS device
+pnpm android:run             # Deploy to Android device
+pnpm ios:run                 # Deploy to iOS device
 
 # One-command Android APK build
-pnpm cap:build:android       # Build web → sync → assemble debug APK
+pnpm android:build           # Build web → sync → assemble debug APK
 ```
 
 Capacitor wraps the same Vite `dist/` output in native Android and iOS app shells. The web code runs in a native WebView — no code changes needed.
@@ -892,7 +894,7 @@ getGameState(board: Board): GameState // → { winner, winLine, isDraw, isOver }
 chooseCpuMoveRandom(board: Board): number // Easy — random
 chooseCpuMoveMedium(board: Board, cpuToken: Token, humanToken: Token): number // Medium — win/block + random
 chooseCpuMoveSmart(board: Board, cpuToken: Token, humanToken: Token): number // Hard — priority-based
-chooseCpuMoveUnbeatable(board: Board, cpuToken: Token, humanToken: Token): number // Unbeatable — minimax (Web Worker)
+chooseCpuMoveUnbeatable(board: Board, cpuToken: Token, humanToken: Token): number // Unbeatable — minimax (WASM)
 
 // Sound effects (Web Audio API)
 playMoveSound() // short 600Hz pop on move placement
@@ -929,7 +931,7 @@ DEFAULT_SETTINGS // { colorTheme: 'highcontrast', mode: 'system', colorblind: 'n
 ### Unbeatable AI Strategy (Minimax)
 
 - **Algorithm**: Minimax with alpha-beta pruning
-- **Execution**: Web Worker off-main-thread (`src/workers/ai.worker.ts`)
+- **Execution**: Main-thread WASM via `aiEngine.ts` (AssemblyScript-compiled, <1 ms per move)
 - **Move ordering**: Center → corners → edges (accelerates pruning)
 - **Complexity**: O(9! / (2^k)) calls with pruning; ~100K–500K evaluations per move
 - **Strength**: Perfect play against optimal defense; guaranteed draw if human also plays optimally
@@ -937,7 +939,7 @@ DEFAULT_SETTINGS // { colorTheme: 'highcontrast', mode: 'system', colorblind: 'n
 
 ### AI Decision Flowchart
 
-How each difficulty level selects its move. All four strategies funnel through the Web Worker.
+How each difficulty level selects its move. All four strategies run through the WASM AI engine on the main thread.
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e8daf5', 'primaryTextColor': '#2d2d2d', 'primaryBorderColor': '#9370DB', 'lineColor': '#7c5cbf', 'secondaryColor': '#f0e6ff', 'tertiaryColor': '#f8f2ff', 'fontFamily': 'system-ui'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 50, 'padding': 20, 'htmlLabels': true}}}%%
@@ -972,7 +974,7 @@ flowchart TD
     h4 -->|No| he("Take edge")
     he --> done
 
-    diff -->|Unbeatable| u1("Post to Web Worker")
+    diff -->|Unbeatable| u1("WASM findBestMove")
     u1 --> u2("Minimax + α-β pruning")
     u2 --> u3("Evaluate all game trees")
     u3 --> u4("Return optimal move")
@@ -996,6 +998,7 @@ flowchart TD
 | [Husky](https://github.com/typicode/husky)                                | 9       | Git hooks (pre-commit lint + format)         |
 | [pnpm](https://github.com/pnpm/pnpm)                                      | 10      | Fast, disk-efficient package manager         |
 | [Node.js](https://github.com/nodejs/node)                                 | 24      | Runtime (pinned via `.nvmrc`)                |
+| [AssemblyScript](https://github.com/AsSemblyScript/assemblyscript)        | 0.28    | WASM compiler for AI engine (2.4 KB binary)  |
 
 ### Build Output
 
@@ -1005,7 +1008,7 @@ flowchart TD
 | `vendor-react`    | React + ReactDOM                                     | Cached independently from app code |
 | CSS               | Styles + theme base                                  | 33.40 kB raw (7.51 kB gzip)        |
 | Theme chunks (×6) | Ocean, Sunset, Forest, Rose, Midnight, High Contrast | ~0.5–1 kB each (gzip), lazy-loaded |
-| `ai.worker`       | Minimax AI (Web Worker)                              | ~1.2 kB gzip, loaded on demand     |
+| WASM AI binary    | AssemblyScript AI engine (all 4 difficulties)        | 2.4 KB embedded as base64          |
 | Sounds            | Web Audio API synthesis                              | ~3 kB lazy chunk                   |
 
 ### Deployment Targets
@@ -1034,7 +1037,7 @@ graph LR
 
 | Browser | Minimum Version | Notes                                                          |
 | ------- | --------------- | -------------------------------------------------------------- |
-| Chrome  | 80+             | Full support including Web Audio API, CSS Modules, Web Workers |
+| Chrome  | 80+             | Full support including Web Audio API, CSS Modules, WebAssembly |
 | Firefox | 80+             | Full support including `color-mix()`, CSS `forced-colors`      |
 | Safari  | 14+             | Full support; requires WebKit prefix for some animations       |
 | Edge    | 80+             | Chromium-based; feature parity with Chrome                     |

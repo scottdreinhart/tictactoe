@@ -31,9 +31,17 @@ ReactDOM.createRoot(rootElement).render(
   </React.StrictMode>,
 )
 
-/* Register service worker for offline / instant-repeat-visit caching */
+/* ── Service Worker registration (anti-cache mode disables it) ─────────── */
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-  })
+  if (import.meta.env.VITE_NO_CACHE === 'true') {
+    // Anti-cache: unregister all SWs and purge all caches
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) => registrations.forEach((r) => r.unregister()))
+    caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)))
+  } else {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+    })
+  }
 }

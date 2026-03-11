@@ -1,7 +1,91 @@
 import { chooseCpuMoveMedium, chooseCpuMoveRandom, chooseCpuMoveSmart } from '../domain/ai.ts'
 import { getEmptyCells } from '../domain/board.ts'
 import { getWinnerToken } from '../domain/rules.ts'
-import type { Board, Token, WorkerMessage, WorkerResponse } from '../domain/types.ts'
+import type { Board, CellValue, Token, WorkerMessage, WorkerResponse } from '../domain/types.ts'
+import { AI_WASM_BASE64 } from '../wasm/ai-wasm.ts'
+
+// ============================================================================
+// WASM AI Engine — loaded on startup, falls back to JS on failure
+// ============================================================================
+
+/** Signature shared by findSmartMove and findBestMove (11 i32 params) */
+type WasmMoveFn11 = (
+  c0: number,
+  c1: number,
+  c2: number,
+  c3: number,
+  c4: number,
+  c5: number,
+  c6: number,
+  c7: number,
+  c8: number,
+  cpuToken: number,
+  humanToken: number,
+) => number
+
+/** findRandomMove: 9 cells + 1 rand = 10 params */
+type WasmMoveFn10 = (
+  c0: number,
+  c1: number,
+  c2: number,
+  c3: number,
+  c4: number,
+  c5: number,
+  c6: number,
+  c7: number,
+  c8: number,
+  rand: number,
+) => number
+
+/** findMediumMove: 9 cells + cpuToken + humanToken + rand = 12 params */
+type WasmMoveFn12 = (
+  c0: number,
+  c1: number,
+  c2: number,
+  c3: number,
+  c4: number,
+  c5: number,
+  c6: number,
+  c7: number,
+  c8: number,
+  cpuToken: number,
+  humanToken: number,
+  rand: number,
+) => number
+
+let wasmFindRandomMove: WasmMoveFn10 | null = null
+let wasmFindMediumMove: WasmMoveFn12 | null = null
+let wasmFindSmartMove: WasmMoveFn11 | null = null
+let wasmFindBestMove: WasmMoveFn11 | null = null
+
+/** Decode base64 WASM binary and instantiate the module */
+async function initWasm(): Promise<void> {
+  try {
+    const binary = atob(AI_WASM_BASE64)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i)
+    }
+    const imports = { env: { abort: () => {} } }
+    const { instance } = await WebAssembly.instantiate(bytes, imports)
+    wasmFindRandomMove = instance.exports.findRandomMove as WasmMoveFn10
+    wasmFindMediumMove = instance.exports.findMediumMove as WasmMoveFn12
+    wasmFindSmartMove = instance.exports.findSmartMove as WasmMoveFn11
+    wasmFindBestMove = instance.exports.findBestMove as WasmMoveFn11
+  } catch {
+    // WASM unavailable — JS fallback will be used silently
+  }
+}
+
+// Fire-and-forget: WASM loads in background while worker waits for first message
+initWasm().then(() => {
+  console.error('[worker] WASM init done. Exports loaded:', {
+    random: !!wasmFindRandomMove,
+    medium: !!wasmFindMediumMove,
+    smart: !!wasmFindSmartMove,
+    best: !!wasmFindBestMove,
+  })
+})
 
 // ============================================================================
 // PHASE C: Minimax AI with Alpha-Beta Pruning (Unbeatable)
@@ -110,29 +194,85 @@ const chooseCpuMoveUnbeatable = (board: Board, cpuToken: Token, humanToken: Toke
 
 declare const self: Worker
 
+// ============================================================================
+// WASM-accelerated AI (all difficulty levels)
+// ============================================================================
+
+/** Convert board token to numeric value for WASM: null→0, 'X'→1, 'O'→2 */
+const cellToNum = (cell: CellValue): number => {
+  if (cell === 'X') return 1
+  if (cell === 'O') return 2
+  return 0
+}
+
+/** Convert token character to numeric value for WASM */
+const tokenToNum = (token: Token): number => (token === 'X' ? 1 : 2)
+
+/** Spread board cells as 9 numeric arguments */
+const boardNums = (
+  board: Board,
+): [number, number, number, number, number, number, number, number, number] => [
+  cellToNum(board[0] ?? null),
+  cellToNum(board[1] ?? null),
+  cellToNum(board[2] ?? null),
+  cellToNum(board[3] ?? null),
+  cellToNum(board[4] ?? null),
+  cellToNum(board[5] ?? null),
+  cellToNum(board[6] ?? null),
+  cellToNum(board[7] ?? null),
+  cellToNum(board[8] ?? null),
+]
+
 /**
  * Main worker message handler
  * Receives: { board, difficulty, cpuToken, humanToken }
- * Sends back: { index } or { error }
+ * Sends back: { index, engine } or { error }
  */
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
+  console.error('[worker] Message received:', event.data?.difficulty, 'wasm?', !!wasmFindMediumMove)
   try {
     const { board, difficulty, cpuToken, humanToken } = event.data
 
-    let chooseFn: (board: Board, cpuToken: Token, humanToken: Token) => number
-    if (difficulty === 'unbeatable') {
-      chooseFn = chooseCpuMoveUnbeatable
-    } else if (difficulty === 'hard') {
-      chooseFn = chooseCpuMoveSmart
+    let index: number
+    let engine: 'wasm' | 'js' = 'js'
+    const cells = boardNums(board)
+
+    if (difficulty === 'easy') {
+      if (wasmFindRandomMove) {
+        const rand = (Math.random() * 9) | 0
+        index = wasmFindRandomMove(...cells, rand)
+        engine = 'wasm'
+      } else {
+        index = chooseCpuMoveRandom(board)
+      }
     } else if (difficulty === 'medium') {
-      chooseFn = chooseCpuMoveMedium
+      if (wasmFindMediumMove) {
+        const rand = (Math.random() * 9) | 0
+        index = wasmFindMediumMove(...cells, tokenToNum(cpuToken), tokenToNum(humanToken), rand)
+        engine = 'wasm'
+      } else {
+        index = chooseCpuMoveMedium(board, cpuToken, humanToken)
+      }
+    } else if (difficulty === 'hard') {
+      if (wasmFindSmartMove) {
+        index = wasmFindSmartMove(...cells, tokenToNum(cpuToken), tokenToNum(humanToken))
+        engine = 'wasm'
+      } else {
+        index = chooseCpuMoveSmart(board, cpuToken, humanToken)
+      }
+    } else if (wasmFindBestMove) {
+      // unbeatable — WASM
+      index = wasmFindBestMove(...cells, tokenToNum(cpuToken), tokenToNum(humanToken))
+      engine = 'wasm'
     } else {
-      chooseFn = chooseCpuMoveRandom
+      // unbeatable — JS fallback
+      index = chooseCpuMoveUnbeatable(board, cpuToken, humanToken)
     }
 
-    const index = chooseFn(board, cpuToken, humanToken)
-    self.postMessage({ index } as WorkerResponse)
+    console.error('[worker] Computed move:', index, 'engine:', engine)
+    self.postMessage({ index, engine } as WorkerResponse)
   } catch (error) {
+    console.error('[worker] ERROR:', (error as Error).message)
     self.postMessage({ error: (error as Error).message } as WorkerResponse)
   }
 }

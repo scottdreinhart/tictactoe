@@ -64,4 +64,5 @@ export interface WorkerMessage {
 export interface WorkerResponse {
   index?: number
   error?: string
+  engine?: 'wasm' | 'js'
 }
