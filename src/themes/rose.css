@@ -1,7 +1,6 @@
 /* Rose — light */
 [data-theme='rose'] {
   --bg: #be123c;
-  --bg-image: url('/backgrounds/laser.png');
   --accent: #f43f5e;
   --accent-glow: rgba(244, 63, 94, 0.4);
   --cell-hover-bg: #fff1f2;

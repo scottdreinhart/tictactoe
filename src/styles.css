@@ -19,6 +19,10 @@
 [data-theme='classic'] {
   --bg: #667eea;
   --bg-image: url('/backgrounds/matrix.png');
+  /* Layer Manager defaults (overridden by JS per theme) */
+  --layer-board-image-opacity: 0.9;
+  --layer-board-image-blend: normal;
+  --layer-board-image-visible: block;
   --card-bg: #ffffff;
   --card-shadow: rgba(0, 0, 0, 0.25);
   --text-primary: #1a1a2e;

@@ -1,7 +1,6 @@
 /* Midnight — light */
 [data-theme='midnight'] {
   --bg: #312e81;
-  --bg-image: url('/backgrounds/circuit.png');
   --accent: #a78bfa;
   --accent-glow: rgba(167, 139, 250, 0.4);
   --cell-hover-bg: #ede9fe;

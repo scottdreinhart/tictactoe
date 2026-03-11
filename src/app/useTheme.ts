@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { getLayerStack, layerStackToCssVars } from '../domain/layers.ts'
+import { getBackgroundCssValue, preloadAllSprites } from '../domain/sprites.ts'
 import { COLOR_THEMES, DEFAULT_SETTINGS } from '../domain/themes.ts'
 import type { ThemeSettings } from '../domain/types.ts'
 import { load, save } from './storageService.ts'
@@ -83,6 +85,15 @@ const applyToDOM = (settings: ThemeSettings): void => {
   } else {
     root.setAttribute('data-colorblind', settings.colorblind)
   }
+
+  // Sprite Manager — set background image from central registry
+  root.style.setProperty('--bg-image', getBackgroundCssValue(settings.colorTheme))
+
+  // Layer Manager — apply layer stack CSS custom properties
+  const layerVars = layerStackToCssVars(getLayerStack(settings.colorTheme))
+  for (const [prop, value] of Object.entries(layerVars)) {
+    root.style.setProperty(prop, value)
+  }
 }
 
 interface UseThemeReturn {
@@ -97,6 +108,7 @@ const useTheme = (): UseThemeReturn => {
 
   useEffect(() => {
     preloadAllThemes()
+    preloadAllSprites()
   }, [])
 
   useEffect(() => {

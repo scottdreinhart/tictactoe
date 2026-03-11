@@ -1,7 +1,6 @@
 /* Forest — light */
 [data-theme='forest'] {
   --bg: #166534;
-  --bg-image: url('/backgrounds/matrix.png');
   --accent: #22c55e;
   --accent-glow: rgba(34, 197, 94, 0.4);
   --cell-hover-bg: #f0fdf4;
