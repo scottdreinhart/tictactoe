@@ -46,7 +46,9 @@ src/
 │   ├── rules.test.ts                 # Unit tests for game rules
 │   ├── ai.ts                         # CPU move selection (random / medium / smart / minimax unbeatable)
 │   ├── ai.test.ts                    # Unit tests for AI strategies (51 tests)
-│   └── themes.ts                     # Color theme, mode & colorblind definitions + DEFAULT_SETTINGS
+│   ├── themes.ts                     # Color theme, mode & colorblind definitions + DEFAULT_SETTINGS
+│   ├── layers.ts                     # LayerManager — visual layer stack config (opacity, blend, visibility)
+│   └── sprites.ts                    # SpriteManager — centralized sprite/asset registry per theme
 ├── app/
 │   ├── haptics.ts                    # Vibration API wrapper (tick, tap, heavy feedback)
 │   ├── sounds.ts                     # Web Audio API synthesized SFX + jingles
@@ -391,7 +393,7 @@ graph TD
 
   subgraph DOMAIN["domain/ — Pure Business Logic"]
     direction TB
-    core("board.ts · rules.ts · ai.ts<br/>types.ts · constants.ts · themes.ts")
+    core("board.ts · rules.ts · ai.ts<br/>types.ts · constants.ts · themes.ts<br/>layers.ts · sprites.ts")
   end
 
   subgraph WASM["wasm/ — AI Binary"]
