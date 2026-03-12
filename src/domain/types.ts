@@ -66,3 +66,10 @@ export interface WorkerResponse {
   error?: string
   engine?: 'wasm' | 'js'
 }
+
+export interface GameStats {
+  wins: number
+  losses: number
+  streak: number
+  bestStreak: number
+}

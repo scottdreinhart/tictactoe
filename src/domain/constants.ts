@@ -1,4 +1,4 @@
-import type { Token } from './types.ts'
+import type { GameStats, Token } from './types.ts'
 
 export const TOKENS: { readonly HUMAN: Token; readonly CPU: Token } = {
   HUMAN: 'X',
@@ -18,3 +18,10 @@ export const WIN_LINES: readonly number[][] = [
   [0, 4, 8],
   [2, 4, 6], // diagonals
 ]
+
+export const DEFAULT_STATS: GameStats = {
+  wins: 0,
+  losses: 0,
+  streak: 0,
+  bestStreak: 0,
+}
