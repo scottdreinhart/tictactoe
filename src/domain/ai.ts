@@ -9,7 +9,9 @@ export const chooseCpuMoveRandom = (board: Board): number => {
   }
   const randomIdx = Math.floor(Math.random() * empty.length)
   const move = empty[randomIdx]
-  if (move === undefined) throw new Error('Index out of bounds')
+  if (move === undefined) {
+    throw new Error('Index out of bounds')
+  }
   return move
 }
 
@@ -32,19 +34,29 @@ export const chooseCpuMoveSmart = (board: Board, cpuToken: Token, humanToken: To
   }
 
   const winMove = findWinningMove(board, cpuToken)
-  if (winMove !== null) return winMove
+  if (winMove !== null) {
+    return winMove
+  }
 
   const blockMove = findWinningMove(board, humanToken)
-  if (blockMove !== null) return blockMove
+  if (blockMove !== null) {
+    return blockMove
+  }
 
-  if (empty.includes(4)) return 4
+  if (empty.includes(4)) {
+    return 4
+  }
 
   const corners = [0, 2, 6, 8]
   const availableCorner = corners.find((idx) => empty.includes(idx))
-  if (availableCorner !== undefined) return availableCorner
+  if (availableCorner !== undefined) {
+    return availableCorner
+  }
 
   const firstEmpty = empty[0]
-  if (firstEmpty === undefined) throw new Error('No empty cells')
+  if (firstEmpty === undefined) {
+    throw new Error('No empty cells')
+  }
   return firstEmpty
 }
 
@@ -55,14 +67,20 @@ export const chooseCpuMoveMedium = (board: Board, cpuToken: Token, humanToken: T
   }
 
   const winMove = findWinningMove(board, cpuToken)
-  if (winMove !== null) return winMove
+  if (winMove !== null) {
+    return winMove
+  }
 
   const blockMove = findWinningMove(board, humanToken)
-  if (blockMove !== null) return blockMove
+  if (blockMove !== null) {
+    return blockMove
+  }
 
   const randomIdx = Math.floor(Math.random() * empty.length)
   const move = empty[randomIdx]
-  if (move === undefined) throw new Error('Index out of bounds')
+  if (move === undefined) {
+    throw new Error('Index out of bounds')
+  }
   return move
 }
 

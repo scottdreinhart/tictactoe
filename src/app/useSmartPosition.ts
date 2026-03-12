@@ -20,7 +20,9 @@ const useSmartPosition = ({
   const [alignment, setAlignment] = useState<Alignment>(preferredAlignment)
 
   useEffect(() => {
-    if (!trigger?.current || !panel?.current) return
+    if (!trigger?.current || !panel?.current) {
+      return
+    }
 
     const triggerRect = trigger.current.getBoundingClientRect()
 

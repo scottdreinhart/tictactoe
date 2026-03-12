@@ -14,7 +14,9 @@ export const cx = (
 ): string => {
   return args
     .flatMap((arg) => {
-      if (typeof arg === 'string') return arg
+      if (typeof arg === 'string') {
+        return arg
+      }
       if (typeof arg === 'object' && arg !== null && !Array.isArray(arg)) {
         return Object.entries(arg)
           .filter(([, value]) => value)

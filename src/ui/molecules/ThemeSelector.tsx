@@ -99,7 +99,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = React.memo(
                     onClick={() => onMode(m)}
                     aria-pressed={settings.mode === m}
                   >
-                    {/* eslint-disable-next-line no-nested-ternary */}
+                    {}
                     {m === 'system' ? '⚙️' : m === 'light' ? '☀️' : '🌙'}{' '}
                     {m.charAt(0).toUpperCase() + m.slice(1)}
                   </button>

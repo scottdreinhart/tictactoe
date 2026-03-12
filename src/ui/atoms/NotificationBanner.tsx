@@ -26,7 +26,9 @@ const NotificationBanner: React.FC<NotificationBannerProps> = ({
       timerRef.current = null
     }
 
-    if (!nId || nDuration <= 0) return
+    if (!nId || nDuration <= 0) {
+      return
+    }
 
     timerRef.current = setTimeout(onDismiss, nDuration)
 
@@ -38,7 +40,9 @@ const NotificationBanner: React.FC<NotificationBannerProps> = ({
     }
   }, [nId, nDuration, onDismiss])
 
-  if (!notification) return null
+  if (!notification) {
+    return null
+  }
 
   return (
     <div

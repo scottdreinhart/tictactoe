@@ -26,6 +26,8 @@ export function SoundProvider({ children }: { children: ReactNode }) {
  */
 export function useSoundContext(): UseSoundEffectsReturn {
   const ctx = useContext(SoundContext)
-  if (!ctx) throw new Error('useSoundContext must be used within a <SoundProvider>')
+  if (!ctx) {
+    throw new Error('useSoundContext must be used within a <SoundProvider>')
+  }
   return ctx
 }

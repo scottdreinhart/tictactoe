@@ -145,7 +145,9 @@ const minimax = (
       const moveScore = minimax(newBoard, depth + 1, alpha, beta, false, cpuToken, humanToken)
       maxScore = Math.max(maxScore, moveScore)
       alpha = Math.max(alpha, moveScore)
-      if (beta <= alpha) break // Beta cutoff (prune branch)
+      if (beta <= alpha) {
+        break
+      } // Beta cutoff (prune branch)
     }
     return maxScore
   }
@@ -158,7 +160,9 @@ const minimax = (
     const moveScore = minimax(newBoard, depth + 1, alpha, beta, true, cpuToken, humanToken)
     minScore = Math.min(minScore, moveScore)
     beta = Math.min(beta, moveScore)
-    if (beta <= alpha) break // Alpha cutoff (prune branch)
+    if (beta <= alpha) {
+      break
+    } // Alpha cutoff (prune branch)
   }
   return minScore
 }
@@ -168,7 +172,9 @@ const minimax = (
  */
 const chooseCpuMoveUnbeatable = (board: Board, cpuToken: Token, humanToken: Token): number => {
   const empty = getEmptyCells(board)
-  if (empty.length === 0) throw new Error('No empty cells available')
+  if (empty.length === 0) {
+    throw new Error('No empty cells available')
+  }
 
   // Move ordering: prioritize center and corners for faster pruning
   const prioritized = [4, 0, 2, 6, 8, 1, 3, 5, 7].filter((idx) => empty.includes(idx))
@@ -188,7 +194,9 @@ const chooseCpuMoveUnbeatable = (board: Board, cpuToken: Token, humanToken: Toke
     }
   }
 
-  if (bestMove === undefined) throw new Error('No valid move found')
+  if (bestMove === undefined) {
+    throw new Error('No valid move found')
+  }
   return bestMove
 }
 
@@ -200,8 +208,12 @@ declare const self: Worker
 
 /** Convert board token to numeric value for WASM: null→0, 'X'→1, 'O'→2 */
 const cellToNum = (cell: CellValue): number => {
-  if (cell === 'X') return 1
-  if (cell === 'O') return 2
+  if (cell === 'X') {
+    return 1
+  }
+  if (cell === 'O') {
+    return 2
+  }
   return 0
 }
 

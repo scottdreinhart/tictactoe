@@ -32,10 +32,14 @@ const useCoinFlipAnimation = ({
   callbackRef.current = onComplete
 
   const stopFlip = useCallback(() => {
-    if (!isFlippingRef.current) return
+    if (!isFlippingRef.current) {
+      return
+    }
     isFlippingRef.current = false
 
-    if (flipTimerRef.current) clearTimeout(flipTimerRef.current)
+    if (flipTimerRef.current) {
+      clearTimeout(flipTimerRef.current)
+    }
     setIsFlipping(false)
 
     const isXFirst = Math.random() > 0.5
@@ -52,15 +56,21 @@ const useCoinFlipAnimation = ({
   }, [])
 
   useEffect(() => {
-    if (!ready) return
+    if (!ready) {
+      return
+    }
 
     flipTimerRef.current = setTimeout(() => {
       stopFlip()
     }, autoStopMs)
 
     return () => {
-      if (flipTimerRef.current) clearTimeout(flipTimerRef.current)
-      if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
+      if (flipTimerRef.current) {
+        clearTimeout(flipTimerRef.current)
+      }
+      if (resultTimerRef.current) {
+        clearTimeout(resultTimerRef.current)
+      }
     }
   }, [ready, autoStopMs, stopFlip])
 

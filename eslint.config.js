@@ -2,8 +2,7 @@ import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import reactPlugin from 'eslint-plugin-react'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
-import jsxA11y from 'eslint-plugin-jsx-a11y'
-import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y'
 import prettierConfig from 'eslint-config-prettier'
 import boundaries from 'eslint-plugin-boundaries'
 
@@ -16,8 +15,7 @@ export default [
       '@typescript-eslint': tseslint.plugin,
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
-      'jsx-a11y': jsxA11y,
-      'simple-import-sort': simpleImportSort,
+      'jsx-a11y': jsxA11yPlugin,
       boundaries,
     },
     languageOptions: {
@@ -28,77 +26,75 @@ export default [
         ecmaFeatures: { jsx: true },
       },
     },
+    settings: {
+      react: { version: 'detect' },
+      'boundaries/elements': [
+        { type: 'domain', pattern: 'src/domain/*' },
+        { type: 'app', pattern: 'src/app/*' },
+        { type: 'ui', pattern: 'src/ui/*' },
+        { type: 'workers', pattern: 'src/workers/*' },
+        { type: 'themes', pattern: 'src/themes/*' },
+      ],
+    },
     rules: {
       // ── React ──
       'react/jsx-uses-vars': 'error',
       'react/react-in-jsx-scope': 'off',
-      'react/jsx-no-target-blank': 'error',
-      'react/jsx-curly-brace-presence': ['warn', { props: 'never', children: 'never' }],
-      'react/self-closing-comp': 'warn',
-      'react/jsx-boolean-value': ['warn', 'never'],
-      'react/jsx-no-useless-fragment': 'warn',
+      'react/no-unescaped-entities': 'error',
+      'react/prop-types': 'off', // Using TS
 
-      // ── React Hooks ──
+      // ── Hooks ──
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
 
-      // ── TypeScript ──
+      // ── Accessibility (WCAG 2.1+) ──
+      ...jsxA11yPlugin.flatConfigs.recommended.rules,
+      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/anchor-has-content': 'error',
+      'jsx-a11y/aria-activedescendant-has-tabindex': 'error',
+      'jsx-a11y/aria-props': 'error',
+      'jsx-a11y/aria-proptypes': 'error',
+      'jsx-a11y/aria-role': 'error',
+      'jsx-a11y/aria-unsupported-elements': 'error',
+      'jsx-a11y/click-events-have-key-events': 'error',
+      'jsx-a11y/heading-has-content': 'error',
+      'jsx-a11y/html-has-lang': 'error',
+      'jsx-a11y/iframe-has-title': 'error',
+      'jsx-a11y/img-redundant-alt': 'warn',
+      'jsx-a11y/interactive-supports-focus': 'error',
+      'jsx-a11y/label-has-associated-control': ['error', { assert: 'either' }],
+      'jsx-a11y/lang': 'error',
+      'jsx-a11y/media-has-caption': 'warn',
+      'jsx-a11y/mouse-events-have-key-events': 'error',
+      'jsx-a11y/no-access-key': 'error',
+      'jsx-a11y/no-autofocus': 'warn',
+      'jsx-a11y/no-distracting-elements': 'error',
+      'jsx-a11y/no-interactive-element-to-noninteractive-role': 'error',
+      'jsx-a11y/no-noninteractive-element-interactions': 'warn',
+      'jsx-a11y/no-noninteractive-element-to-interactive-role': 'error',
+      'jsx-a11y/no-noninteractive-tabindex': 'error',
+      'jsx-a11y/no-onchange': 'off',
+      'jsx-a11y/no-redundant-roles': 'error',
+      'jsx-a11y/no-static-element-interactions': 'warn',
+      'jsx-a11y/role-has-required-aria-props': 'error',
+      'jsx-a11y/role-supports-aria-props': 'error',
+      'jsx-a11y/scope': 'error',
+      'jsx-a11y/tabindex-no-positive': 'error',
+
+      // ── Code Quality ──
       'no-undef': 'off',
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^[A-Z_]' }],
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-non-null-assertion': 'error',
-      '@typescript-eslint/consistent-type-imports': ['warn', { prefer: 'type-imports', fixStyle: 'inline-type-imports' }],
-      '@typescript-eslint/no-inferrable-types': 'warn',
-      '@typescript-eslint/no-empty-object-type': 'error',
-      '@typescript-eslint/no-wrapper-object-types': 'error',
-      '@typescript-eslint/no-duplicate-enum-values': 'error',
-
-      // ── Code quality ──
-      'no-console': ['warn', { allow: ['error', 'warn'] }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^[A-Z_]' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'prefer-const': 'error',
       'no-var': 'error',
       eqeqeq: ['error', 'always'],
-      curly: ['warn', 'multi-line'],
-      'no-throw-literal': 'error',
-      'no-param-reassign': ['error', { props: false }],
-      'no-nested-ternary': 'warn',
-      'no-else-return': 'warn',
-      'no-lonely-if': 'warn',
-      'prefer-template': 'warn',
-      'object-shorthand': 'warn',
-      'no-useless-rename': 'warn',
-      'no-useless-computed-key': 'warn',
-      'no-useless-concat': 'warn',
-      'no-unneeded-ternary': 'warn',
-      'prefer-destructuring': ['warn', { object: true, array: false }],
-      'prefer-spread': 'warn',
-      'prefer-rest-params': 'error',
-      'no-array-constructor': 'error',
-      'no-new-wrappers': 'error',
-      'no-eval': 'error',
-      'no-implied-eval': 'error',
-      'no-new-func': 'error',
-      'no-with': 'error',
-      'no-label-var': 'error',
-      'no-shadow': 'off',
-      '@typescript-eslint/no-shadow': 'warn',
-      'no-return-assign': ['error', 'always'],
-      'no-sequences': 'error',
-      'no-self-compare': 'error',
-      'no-extend-native': 'error',
-      'no-iterator': 'error',
-      'no-proto': 'error',
-      'no-multi-assign': 'error',
-
-      // ── Import hygiene ──
-      'no-duplicate-imports': 'error',
-      'sort-imports': ['warn', { ignoreCase: true, ignoreDeclarationSort: true }],
-      'simple-import-sort/imports': 'warn',
-      'simple-import-sort/exports': 'warn',
-
-      // ── Accessibility (jsx-a11y) ──
-      ...jsxA11y.flatConfigs.recommended.rules,
+      curly: ['error', 'all'],
 
       // ── CLEAN Architecture Boundaries ──
       'boundaries/element-types': [
@@ -115,18 +111,8 @@ export default [
         },
       ],
     },
-    settings: {
-      react: { version: 'detect' },
-      'boundaries/elements': [
-        { type: 'domain', pattern: 'src/domain/**' },
-        { type: 'app', pattern: 'src/app/**' },
-        { type: 'ui', pattern: 'src/ui/**' },
-        { type: 'workers', pattern: 'src/workers/**' },
-        { type: 'themes', pattern: 'src/themes/**' },
-      ],
-    },
   },
   {
-    ignores: ['dist/', 'node_modules/', 'assembly/', 'build/', 'scripts/'],
+    ignores: ['dist/', 'node_modules/', 'electron/', 'android/'],
   },
 ]

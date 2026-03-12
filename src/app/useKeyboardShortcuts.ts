@@ -12,7 +12,9 @@ const useKeyboardShortcuts = (shortcuts: ShortcutDescriptor[]): void => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       for (const s of shortcuts) {
-        if (s.enabled === false) continue
+        if (s.enabled === false) {
+          continue
+        }
 
         const keyMatch = e.key.toLowerCase() === s.key.toLowerCase()
         const ctrlMatch = s.ctrl ? e.ctrlKey || e.metaKey : true

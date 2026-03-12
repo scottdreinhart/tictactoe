@@ -50,9 +50,13 @@ const useNotificationQueue = (): UseNotificationQueueReturn => {
 
   const updateCurrent = useCallback((updates: Partial<Notification>) => {
     setQueue((prev) => {
-      if (prev.length === 0) return prev
+      if (prev.length === 0) {
+        return prev
+      }
       const head = prev[0]
-      if (!head) return prev
+      if (!head) {
+        return prev
+      }
       const rest = prev.slice(1)
       const updated: Notification = {
         id: updates.id ?? head.id,

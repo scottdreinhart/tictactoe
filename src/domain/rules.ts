@@ -6,7 +6,9 @@ export const getWinner = (board: Board): WinResult | null => {
     const a = line[0]
     const b = line[1]
     const c = line[2]
-    if (a === undefined || b === undefined || c === undefined) continue
+    if (a === undefined || b === undefined || c === undefined) {
+      continue
+    }
     if (board[a] !== null && board[a] === board[b] && board[b] === board[c]) {
       return { token: board[a] as Token, line }
     }

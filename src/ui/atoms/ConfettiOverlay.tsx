@@ -35,12 +35,18 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ onDone, className }) 
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {
+      return
+    }
 
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx) {
+      return
+    }
     const parent = canvas.parentElement
-    if (!parent) return
+    if (!parent) {
+      return
+    }
     const dpr = window.devicePixelRatio || 1
     let animId: number | null = null
 
@@ -85,7 +91,9 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ onDone, className }) 
         p.opacity = Math.max(0, 1 - frame / maxFrames)
         p.vx *= 0.99
 
-        if (p.opacity <= 0) continue
+        if (p.opacity <= 0) {
+          continue
+        }
         alive++
 
         ctx.save()
@@ -99,13 +107,17 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ onDone, className }) 
 
       if (alive > 0 && frame < maxFrames) {
         animId = requestAnimationFrame(animate)
-      } else if (onDone) onDone()
+      } else if (onDone) {
+        onDone()
+      }
     }
 
     animId = requestAnimationFrame(animate)
 
     return () => {
-      if (animId) cancelAnimationFrame(animId)
+      if (animId) {
+        cancelAnimationFrame(animId)
+      }
     }
   }, [onDone])
 

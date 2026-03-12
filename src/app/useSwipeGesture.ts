@@ -13,33 +13,49 @@ const useSwipeGesture = (
 
   useEffect(() => {
     const el = ref.current
-    if (!el) return
+    if (!el) {
+      return
+    }
 
     const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches.length !== 1) return
+      if (e.touches.length !== 1) {
+        return
+      }
       const touch = e.touches[0]
-      if (!touch) return
+      if (!touch) {
+        return
+      }
       startRef.current = { x: touch.clientX, y: touch.clientY, t: Date.now() }
     }
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (!startRef.current) return
-      if (e.changedTouches.length !== 1) return
+      if (!startRef.current) {
+        return
+      }
+      if (e.changedTouches.length !== 1) {
+        return
+      }
 
       const touch = e.changedTouches[0]
-      if (!touch) return
+      if (!touch) {
+        return
+      }
       const dx = touch.clientX - startRef.current.x
       const dy = touch.clientY - startRef.current.y
       const dt = Date.now() - startRef.current.t
 
       startRef.current = null
 
-      if (dt > SWIPE_TIMEOUT) return
+      if (dt > SWIPE_TIMEOUT) {
+        return
+      }
 
       const absDx = Math.abs(dx)
       const absDy = Math.abs(dy)
 
-      if (absDx < SWIPE_THRESHOLD && absDy < SWIPE_THRESHOLD) return
+      if (absDx < SWIPE_THRESHOLD && absDy < SWIPE_THRESHOLD) {
+        return
+      }
 
       if (absDx > absDy) {
         onSwipe(dx > 0 ? 'right' : 'left')

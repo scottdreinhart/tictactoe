@@ -21,7 +21,9 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ children }) => {
 
   // Compute fixed position from button bounding rect, aligned to board's right edge
   useLayoutEffect(() => {
-    if (!open || !btnRef.current) return
+    if (!open || !btnRef.current) {
+      return
+    }
     const rect = btnRef.current.getBoundingClientRect()
     // Find the board grid element to align the panel's right edge with the board's right edge
     const boardEl = document.getElementById('game-board')
@@ -33,7 +35,9 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ children }) => {
     // Align panel's right edge to the board's right edge
     let left = boardRect.right - panelWidth
     // If that overflows left of the board, clamp to board's left edge
-    if (left < boardRect.left + pad) left = boardRect.left + pad
+    if (left < boardRect.left + pad) {
+      left = boardRect.left + pad
+    }
     setPanelPos({ top: rect.bottom + 8, left })
   }, [open])
 

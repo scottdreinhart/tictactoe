@@ -25,9 +25,15 @@ const useSeries = (gameState: GameState): UseSeriesReturn => {
   const prevGameOver = usePrevious(gameState.isOver)
 
   useEffect(() => {
-    if (seriesLength === 0) return
-    if (!gameState.isOver || prevGameOver) return
-    if (seriesWinner) return
+    if (seriesLength === 0) {
+      return
+    }
+    if (!gameState.isOver || prevGameOver) {
+      return
+    }
+    if (seriesWinner) {
+      return
+    }
 
     setGamesPlayed((prev) => prev + 1)
 
@@ -39,8 +45,11 @@ const useSeries = (gameState: GameState): UseSeriesReturn => {
           [winner]: prev[winner] + 1,
         }
         const needed = Math.ceil(seriesLength / 2)
-        if (next[TOKENS.HUMAN] >= needed) setSeriesWinner(TOKENS.HUMAN)
-        else if (next[TOKENS.CPU] >= needed) setSeriesWinner(TOKENS.CPU)
+        if (next[TOKENS.HUMAN] >= needed) {
+          setSeriesWinner(TOKENS.HUMAN)
+        } else if (next[TOKENS.CPU] >= needed) {
+          setSeriesWinner(TOKENS.CPU)
+        }
         return next
       })
     }

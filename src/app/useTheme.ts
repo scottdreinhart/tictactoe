@@ -17,7 +17,9 @@ let activeThemeStyle: HTMLStyleElement | null = null
 const preloadedThemes = new Map<string, string>()
 
 const preloadTheme = async (themeId: string): Promise<void> => {
-  if (preloadedThemes.has(themeId) || themeId === 'classic') return
+  if (preloadedThemes.has(themeId) || themeId === 'classic') {
+    return
+  }
 
   const loader = themeLoaders[`../themes/${themeId}.css`]
   if (loader) {
@@ -43,12 +45,16 @@ const applyThemeCSS = async (themeId: string): Promise<void> => {
     activeThemeStyle.remove()
     activeThemeStyle = null
   }
-  if (themeId === 'classic') return
+  if (themeId === 'classic') {
+    return
+  }
 
   let css = preloadedThemes.get(themeId)
   if (!css) {
     const loader = themeLoaders[`../themes/${themeId}.css`]
-    if (!loader) return
+    if (!loader) {
+      return
+    }
     css = await loader()
   }
 
@@ -61,7 +67,9 @@ const applyThemeCSS = async (themeId: string): Promise<void> => {
 
 const loadSettings = (): ThemeSettings => {
   const parsed = load<ThemeSettings>(STORAGE_KEY)
-  if (parsed) return { ...DEFAULT_SETTINGS, ...parsed }
+  if (parsed) {
+    return { ...DEFAULT_SETTINGS, ...parsed }
+  }
   return { ...DEFAULT_SETTINGS }
 }
 

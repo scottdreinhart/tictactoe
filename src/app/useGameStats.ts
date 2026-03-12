@@ -25,7 +25,9 @@ const useGameStats = (
   useEffect(() => {
     const justEnded = gameState.isOver && !prevGameOver
 
-    if (!justEnded) return
+    if (!justEnded) {
+      return
+    }
 
     const undoHappened = prevHistoryIndex !== undefined && historyIndex < prevHistoryIndex
 

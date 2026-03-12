@@ -53,8 +53,12 @@ const gameReducer = (state: GameBoardState, action: GameAction): GameBoardState 
   switch (action.type) {
     case ACTIONS.HUMAN_MOVE: {
       const { index } = action.payload as { index: number }
-      if (state.turn !== TOKENS.HUMAN) return state
-      if (!isCellEmpty(state.board, index)) return state
+      if (state.turn !== TOKENS.HUMAN) {
+        return state
+      }
+      if (!isCellEmpty(state.board, index)) {
+        return state
+      }
 
       const board = applyMove(state.board, index, TOKENS.HUMAN)
       const { isOver } = getGameState(board)
@@ -72,7 +76,9 @@ const gameReducer = (state: GameBoardState, action: GameAction): GameBoardState 
     }
 
     case ACTIONS.CPU_MOVE: {
-      if (state.turn !== TOKENS.CPU) return state
+      if (state.turn !== TOKENS.CPU) {
+        return state
+      }
       const { index } = action.payload as { index: number }
       const board = applyMove(state.board, index, TOKENS.CPU)
 
@@ -90,15 +96,21 @@ const gameReducer = (state: GameBoardState, action: GameAction): GameBoardState 
 
     case ACTIONS.SET_FOCUSED_INDEX: {
       const idx = action.payload as number
-      if (idx < 0 || idx >= 9) return state
+      if (idx < 0 || idx >= 9) {
+        return state
+      }
       return { ...state, focusedIndex: idx }
     }
 
     case ACTIONS.UNDO: {
-      if (state.historyIndex <= 0) return state
+      if (state.historyIndex <= 0) {
+        return state
+      }
       const newIndex = state.historyIndex - 1
       const board = state.history[newIndex]
-      if (!board) return state
+      if (!board) {
+        return state
+      }
       return {
         ...state,
         board,
@@ -108,10 +120,14 @@ const gameReducer = (state: GameBoardState, action: GameAction): GameBoardState 
     }
 
     case ACTIONS.REDO: {
-      if (state.historyIndex >= state.history.length - 1) return state
+      if (state.historyIndex >= state.history.length - 1) {
+        return state
+      }
       const newIndex = state.historyIndex + 1
       const board = state.history[newIndex]
-      if (!board) return state
+      if (!board) {
+        return state
+      }
       return {
         ...state,
         board,
@@ -121,7 +137,9 @@ const gameReducer = (state: GameBoardState, action: GameAction): GameBoardState 
     }
 
     case ACTIONS.SET_GAME_START_TIME: {
-      if (state.gameStartTime !== null) return state
+      if (state.gameStartTime !== null) {
+        return state
+      }
       return { ...state, gameStartTime: action.payload as number }
     }
 
@@ -129,7 +147,9 @@ const gameReducer = (state: GameBoardState, action: GameAction): GameBoardState 
       return createInitialState()
 
     case ACTIONS.SET_FIRST_PLAYER: {
-      if (state.history.length > 1) return state
+      if (state.history.length > 1) {
+        return state
+      }
       return { ...state, turn: action.payload as Token }
     }
 
@@ -172,8 +192,12 @@ const useGameBoard = (): UseGameBoardReturn => {
   }, [state.history.length, state.gameStartTime])
 
   const status = useMemo(() => {
-    if (gameState.winner) return `${gameState.winner} wins!`
-    if (gameState.isDraw) return 'Draw!'
+    if (gameState.winner) {
+      return `${gameState.winner} wins!`
+    }
+    if (gameState.isDraw) {
+      return 'Draw!'
+    }
     return `${state.turn}'s turn`
   }, [gameState, state.turn])
 

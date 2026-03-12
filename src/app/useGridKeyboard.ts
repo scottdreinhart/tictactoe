@@ -65,7 +65,9 @@ const useGridKeyboard = (
         const next = getNextIndex(focusedRef.current, key)
         if (next !== focusedRef.current) {
           focusChangeRef.current(next)
-          if (navRef.current) navRef.current()
+          if (navRef.current) {
+            navRef.current()
+          }
         }
         return
       }

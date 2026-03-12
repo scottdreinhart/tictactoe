@@ -90,9 +90,15 @@ export const ensureWasmReady = (): Promise<void> => initPromise
 
 const evaluateBoard = (board: Board, cpuToken: Token, humanToken: Token): number | null => {
   const winner = getWinnerToken(board)
-  if (winner === cpuToken) return 10
-  if (winner === humanToken) return -10
-  if (getEmptyCells(board).length === 0) return 0
+  if (winner === cpuToken) {
+    return 10
+  }
+  if (winner === humanToken) {
+    return -10
+  }
+  if (getEmptyCells(board).length === 0) {
+    return 0
+  }
   return null
 }
 
@@ -106,7 +112,9 @@ const minimax = (
   humanToken: Token,
 ): number => {
   const score = evaluateBoard(board, cpuToken, humanToken)
-  if (score !== null) return isMaximizing ? score + depth : score - depth
+  if (score !== null) {
+    return isMaximizing ? score + depth : score - depth
+  }
 
   let alpha = initialAlpha
   let beta = initialBeta
@@ -120,7 +128,9 @@ const minimax = (
       const moveScore = minimax(newBoard, depth + 1, alpha, beta, false, cpuToken, humanToken)
       maxScore = Math.max(maxScore, moveScore)
       alpha = Math.max(alpha, moveScore)
-      if (beta <= alpha) break
+      if (beta <= alpha) {
+        break
+      }
     }
     return maxScore
   }
@@ -132,14 +142,18 @@ const minimax = (
     const moveScore = minimax(newBoard, depth + 1, alpha, beta, true, cpuToken, humanToken)
     minScore = Math.min(minScore, moveScore)
     beta = Math.min(beta, moveScore)
-    if (beta <= alpha) break
+    if (beta <= alpha) {
+      break
+    }
   }
   return minScore
 }
 
 const chooseCpuMoveUnbeatable = (board: Board, cpuToken: Token, humanToken: Token): number => {
   const empty = getEmptyCells(board)
-  if (empty.length === 0) throw new Error('No empty cells available')
+  if (empty.length === 0) {
+    throw new Error('No empty cells available')
+  }
   const prioritized = [4, 0, 2, 6, 8, 1, 3, 5, 7].filter((idx) => empty.includes(idx))
 
   let bestMove = prioritized[0]
@@ -155,15 +169,21 @@ const chooseCpuMoveUnbeatable = (board: Board, cpuToken: Token, humanToken: Toke
     }
   }
 
-  if (bestMove === undefined) throw new Error('No valid move found')
+  if (bestMove === undefined) {
+    throw new Error('No valid move found')
+  }
   return bestMove
 }
 
 // ── WASM helpers ─────────────────────────────────────────────────────────────
 
 const cellToNum = (cell: CellValue): number => {
-  if (cell === 'X') return 1
-  if (cell === 'O') return 2
+  if (cell === 'X') {
+    return 1
+  }
+  if (cell === 'O') {
+    return 2
+  }
   return 0
 }
 

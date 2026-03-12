@@ -20,9 +20,15 @@ const bestPlacement = (btnRect: DOMRect): Placement => {
 
   const max = Math.max(above, below, left, right)
 
-  if (max === below) return 'below'
-  if (max === above) return 'above'
-  if (max === right) return 'right'
+  if (max === below) {
+    return 'below'
+  }
+  if (max === above) {
+    return 'above'
+  }
+  if (max === right) {
+    return 'right'
+  }
   return 'left'
 }
 

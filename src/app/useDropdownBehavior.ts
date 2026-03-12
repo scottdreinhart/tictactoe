@@ -19,7 +19,9 @@ const useDropdownBehavior = ({
   onCloseRef.current = onClose
 
   useEffect(() => {
-    if (!open) return
+    if (!open) {
+      return
+    }
 
     const handleOutside = (e: Event) => {
       const target = e.target as Node

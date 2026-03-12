@@ -38,27 +38,39 @@ const useSoundEffects = (): UseSoundEffectsReturn => {
   }, [])
 
   const playMove = useCallback(() => {
-    if (shouldPlay()) getSounds().then((m) => m.playMoveSound())
+    if (shouldPlay()) {
+      getSounds().then((m) => m.playMoveSound())
+    }
   }, [shouldPlay])
 
   const playNav = useCallback(() => {
-    if (shouldPlay()) getSounds().then((m) => m.playNavSound())
+    if (shouldPlay()) {
+      getSounds().then((m) => m.playNavSound())
+    }
   }, [shouldPlay])
 
   const playTap = useCallback(() => {
-    if (shouldPlay()) getSounds().then((m) => m.playTapSound())
+    if (shouldPlay()) {
+      getSounds().then((m) => m.playTapSound())
+    }
   }, [shouldPlay])
 
   const playWin = useCallback(() => {
-    if (shouldPlay()) getSounds().then((m) => m.playWinMusic())
+    if (shouldPlay()) {
+      getSounds().then((m) => m.playWinMusic())
+    }
   }, [shouldPlay])
 
   const playLoss = useCallback(() => {
-    if (shouldPlay()) getSounds().then((m) => m.playLossMusic())
+    if (shouldPlay()) {
+      getSounds().then((m) => m.playLossMusic())
+    }
   }, [shouldPlay])
 
   const playDraw = useCallback(() => {
-    if (shouldPlay()) getSounds().then((m) => m.playDrawSound())
+    if (shouldPlay()) {
+      getSounds().then((m) => m.playDrawSound())
+    }
   }, [shouldPlay])
 
   return { soundEnabled, toggleSound, playMove, playNav, playTap, playWin, playLoss, playDraw }

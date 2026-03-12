@@ -26,11 +26,15 @@ const WinLine: React.FC<WinLineProps> = ({ winLine, boardRef }) => {
     const board = boardRef.current
     const boardRect = board.getBoundingClientRect()
     const cells = board.querySelectorAll('button')
-    if (cells.length < 9) return
+    if (cells.length < 9) {
+      return
+    }
 
     const center = (idx: number) => {
       const cell = cells[idx]
-      if (!cell) return { x: 0, y: 0 }
+      if (!cell) {
+        return { x: 0, y: 0 }
+      }
       const r = cell.getBoundingClientRect()
       return {
         x: ((r.left + r.width / 2 - boardRect.left) / boardRect.width) * 100,
@@ -40,7 +44,9 @@ const WinLine: React.FC<WinLineProps> = ({ winLine, boardRef }) => {
 
     const startIdx = winLine[0]
     const endIdx = winLine[2]
-    if (startIdx === undefined || endIdx === undefined) return
+    if (startIdx === undefined || endIdx === undefined) {
+      return
+    }
     const start = center(startIdx)
     const end = center(endIdx)
 
@@ -59,7 +65,9 @@ const WinLine: React.FC<WinLineProps> = ({ winLine, boardRef }) => {
     })
   }, [winLine, boardRef])
 
-  if (!coords) return null
+  if (!coords) {
+    return null
+  }
 
   return (
     <svg className={styles.root} viewBox="0 0 100 100" aria-hidden="true">

@@ -30,7 +30,9 @@ const useAutoReset = (isGameOver: boolean, onReset: () => void): UseAutoResetRet
 
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => {
-          if (prev === null || prev <= 1) return 0
+          if (prev === null || prev <= 1) {
+            return 0
+          }
           return prev - 1
         })
       }, 1000)

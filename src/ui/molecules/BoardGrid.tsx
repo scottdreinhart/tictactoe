@@ -53,10 +53,15 @@ const BoardGrid: React.FC<BoardGridProps> = ({
       const currCol = focusedIndex % BOARD_SIZE
 
       let direction: SwipeDirection | null = null
-      if (currRow < prevRow) direction = 'up'
-      else if (currRow > prevRow) direction = 'down'
-      else if (currCol < prevCol) direction = 'left'
-      else if (currCol > prevCol) direction = 'right'
+      if (currRow < prevRow) {
+        direction = 'up'
+      } else if (currRow > prevRow) {
+        direction = 'down'
+      } else if (currCol < prevCol) {
+        direction = 'left'
+      } else if (currCol > prevCol) {
+        direction = 'right'
+      }
 
       setFocusDirection(direction)
     }
@@ -103,7 +108,9 @@ const BoardGrid: React.FC<BoardGridProps> = ({
   )
 
   useEffect(() => {
-    if (prevBoard === undefined) return
+    if (prevBoard === undefined) {
+      return
+    }
     const hadMarks = prevBoard.some((cell: CellValue) => cell !== null)
     const nowEmpty = board.every((cell: CellValue) => cell === null)
     if (hadMarks && nowEmpty) {

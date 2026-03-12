@@ -1,7 +1,9 @@
 export const load = <T>(key: string, fallback: T | null = null): T | null => {
   try {
     const raw = localStorage.getItem(key)
-    if (raw !== null) return JSON.parse(raw) as T
+    if (raw !== null) {
+      return JSON.parse(raw) as T
+    }
   } catch {
     /* corrupt JSON or storage unavailable */
   }

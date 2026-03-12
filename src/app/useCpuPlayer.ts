@@ -32,8 +32,12 @@ const useCpuPlayer = ({
   }, [])
 
   useEffect(() => {
-    if (turn !== TOKENS.CPU) return
-    if (isGameOver) return
+    if (turn !== TOKENS.CPU) {
+      return
+    }
+    if (isGameOver) {
+      return
+    }
 
     const { index } = computeAiMove(board, difficulty, TOKENS.CPU, TOKENS.HUMAN)
 

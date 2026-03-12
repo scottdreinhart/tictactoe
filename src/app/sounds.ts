@@ -8,7 +8,9 @@ const getContext = (): AudioContext => {
   if (!audioCtx) {
     const W = window as WebkitWindow
     const Ctor = window.AudioContext || W.webkitAudioContext
-    if (!Ctor) throw new Error('AudioContext not supported')
+    if (!Ctor) {
+      throw new Error('AudioContext not supported')
+    }
     audioCtx = new Ctor()
   }
   if (audioCtx.state === 'suspended') {

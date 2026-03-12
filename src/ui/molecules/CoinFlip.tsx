@@ -14,7 +14,9 @@ export const CoinFlip: React.FC<CoinFlipProps> = ({ onFlipComplete }) => {
     onComplete: onFlipComplete,
   })
 
-  if (!ready) return null
+  if (!ready) {
+    return null
+  }
 
   return (
     <div className={styles.container}>
@@ -26,7 +28,9 @@ export const CoinFlip: React.FC<CoinFlipProps> = ({ onFlipComplete }) => {
           className={styles.coinWrapper}
           onClick={stopFlip}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') stopFlip()
+            if (e.key === 'Enter' || e.key === ' ') {
+              stopFlip()
+            }
           }}
           role="button"
           tabIndex={0}
