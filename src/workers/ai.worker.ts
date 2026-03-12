@@ -77,15 +77,8 @@ async function initWasm(): Promise<void> {
   }
 }
 
-// Fire-and-forget: WASM loads in background while worker waits for first message
-initWasm().then(() => {
-  console.error('[worker] WASM init done. Exports loaded:', {
-    random: !!wasmFindRandomMove,
-    medium: !!wasmFindMediumMove,
-    smart: !!wasmFindSmartMove,
-    best: !!wasmFindBestMove,
-  })
-})
+// Await WASM readiness before processing any message
+const wasmReady = initWasm()
 
 // ============================================================================
 // PHASE C: Minimax AI with Alpha-Beta Pruning (Unbeatable)
@@ -240,8 +233,8 @@ const boardNums = (
  * Receives: { board, difficulty, cpuToken, humanToken }
  * Sends back: { index, engine } or { error }
  */
-self.onmessage = (event: MessageEvent<WorkerMessage>) => {
-  console.error('[worker] Message received:', event.data?.difficulty, 'wasm?', !!wasmFindMediumMove)
+self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
+  await wasmReady
   try {
     const { board, difficulty, cpuToken, humanToken } = event.data
 
@@ -281,10 +274,8 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
       index = chooseCpuMoveUnbeatable(board, cpuToken, humanToken)
     }
 
-    console.error('[worker] Computed move:', index, 'engine:', engine)
     self.postMessage({ index, engine } as WorkerResponse)
   } catch (error) {
-    console.error('[worker] ERROR:', (error as Error).message)
     self.postMessage({ error: (error as Error).message } as WorkerResponse)
   }
 }

@@ -142,7 +142,7 @@ export const MoveTimeline: React.FC<MoveTimelineProps> = ({
             {moves.length === 0 ? (
               <p className={styles.empty}>No moves yet</p>
             ) : (
-              <ul className={styles.list} role="listbox" aria-label="Move history">
+              <div className={styles.list} role="listbox" aria-label="Move history">
                 {moves.map((_, moveNumber) => {
                   const moveIndex = moveNumber + 1 // account for initial board
                   const moveCount = moveNumber + 1
@@ -152,7 +152,7 @@ export const MoveTimeline: React.FC<MoveTimelineProps> = ({
                   const isCurrent = currentIndex === moveIndex
 
                   return (
-                    <li
+                    <div
                       key={moveNumber}
                       className={cx(
                         styles.move,
@@ -196,10 +196,10 @@ export const MoveTimeline: React.FC<MoveTimelineProps> = ({
                         {token}
                       </span>
                       {isCurrent && <span className={styles.indicator}>→</span>}
-                    </li>
+                    </div>
                   )
                 })}
-              </ul>
+              </div>
             )}
           </div>
 
