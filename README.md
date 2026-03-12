@@ -791,14 +791,14 @@ Rebuilds `assembly/index.ts` → `src/wasm/ai-wasm.ts` (2.4 KB base64-encoded bi
 ```bash
 # Individual tools
 pnpm lint           # ESLint — check for issues
-pnpm eslint:fix     # ESLint — auto-fix issues
-pnpm prettier:fix   # Prettier — format all source files
+pnpm lint:fix       # ESLint — auto-fix issues
+pnpm format         # Prettier — format all source files
 pnpm format:check   # Prettier — check formatting without writing
 pnpm typecheck      # TypeScript type check (tsc --noEmit)
 
 # Chains
 pnpm check          # lint + format:check + typecheck in one pass (quality gate)
-pnpm fix            # eslint:fix + prettier:fix in one pass (auto-fix everything)
+pnpm fix            # lint:fix + format in one pass (auto-fix everything)
 pnpm validate       # check + build — full pre-push validation
 ```
 ## Game Flow
@@ -1046,14 +1046,14 @@ The app is built with React + Vite. All platforms with a web browser can run the
 ```bash
 # Individual tools
 pnpm lint           # ESLint — check for issues
-pnpm eslint:fix     # ESLint — auto-fix issues
-pnpm prettier:fix   # Prettier — format all source files
+pnpm lint:fix       # ESLint — auto-fix issues
+pnpm format         # Prettier — format all source files
 pnpm format:check   # Prettier — check formatting without writing
 pnpm typecheck      # TypeScript type check (tsc --noEmit)
 
 # Chains
 pnpm check          # lint + format:check + typecheck in one pass (quality gate)
-pnpm fix            # eslint:fix + prettier:fix in one pass (auto-fix everything)
+pnpm fix            # lint:fix + format in one pass (auto-fix everything)
 pnpm validate       # check + build — full pre-push validation
 ```
 ## Future Improvements
