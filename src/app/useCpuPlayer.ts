@@ -26,27 +26,29 @@ const useCpuPlayer = ({
   const [difficulty, setDifficulty] = useState<Difficulty>('medium')
   const cpuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Ensure WASM is loaded before first AI move
   useEffect(() => {
-    ensureWasmReady()
-  }, [])
-
-  useEffect(() => {
-    if (turn !== TOKENS.CPU) {
-      return
-    }
-    if (isGameOver) {
+    if (turn !== TOKENS.CPU || isGameOver) {
       return
     }
 
-    const { index } = computeAiMove(board, difficulty, TOKENS.CPU, TOKENS.HUMAN)
+    let cancelled = false
 
-    cpuTimeoutRef.current = setTimeout(() => {
-      onCpuMove(index)
-      cpuTimeoutRef.current = null
-    }, CPU_DELAY_MS)
+    const scheduleMove = async () => {
+      await ensureWasmReady()
+      if (cancelled) {
+        return
+      }
+      const { index } = computeAiMove(board, difficulty, TOKENS.CPU, TOKENS.HUMAN)
+      cpuTimeoutRef.current = setTimeout(() => {
+        onCpuMove(index)
+        cpuTimeoutRef.current = null
+      }, CPU_DELAY_MS)
+    }
+
+    scheduleMove()
 
     return () => {
+      cancelled = true
       if (cpuTimeoutRef.current !== null) {
         clearTimeout(cpuTimeoutRef.current)
         cpuTimeoutRef.current = null
