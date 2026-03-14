@@ -1,15 +1,21 @@
 // ============================================================================
-// AI Engine — runs on main thread with WASM acceleration + JS fallback
+// AI Engine — SCALE-AWARE ASYNC ORCHESTRATION
 //
-// For a 3×3 board, minimax completes in <1ms — no Web Worker needed.
-// WASM is decoded from the base64-embedded binary on first import.
+// ARCHITECTURE:
+// - Sync mode (default): Main-thread WASM for small boards (<10ms decision time)
+// - Async mode (optional): Worker-backed computation for complex scenarios
+//
+// TICTACTOE (3×3): Minimax completes in <1ms → sync mode is optimal
+// LARGER BOARDS: Use async mode via `computeAiMoveAsync` to prevent UI blocking
+//
+// All paths provide WASM acceleration + graceful JS fallback
 // ============================================================================
 
-import { chooseCpuMoveMedium, chooseCpuMoveRandom, chooseCpuMoveSmart } from '../domain/ai.ts'
-import { getEmptyCells } from '../domain/board.ts'
-import { getWinnerToken } from '../domain/rules.ts'
-import type { Board, CellValue, Difficulty, Token } from '../domain/types.ts'
-import { AI_WASM_BASE64 } from '../wasm/ai-wasm.ts'
+import { chooseCpuMoveMedium, chooseCpuMoveRandom, chooseCpuMoveSmart } from '../domain/ai'
+import { getEmptyCells } from '../domain/board'
+import { getWinnerToken } from '../domain/rules'
+import type { Board, CellValue, Difficulty, Token } from '../domain/types'
+import { AI_WASM_BASE64 } from '../wasm/ai-wasm'
 
 // ── WASM function signatures ─────────────────────────────────────────────────
 
@@ -259,4 +265,86 @@ export const computeAiMove = (
     }
   }
   return { index: chooseCpuMoveUnbeatable(board, cpuToken, humanToken), engine: 'js' }
+}
+
+// ── Optional Async API (for larger boards or testing) ─────────────────────────
+
+export interface AiWorkerMessage {
+  board: Board
+  difficulty: Difficulty
+  cpuToken: Token
+  humanToken: Token
+}
+
+export interface AiWorkerResponse {
+  index: number
+  engine: 'wasm' | 'js'
+}
+
+let worker: Worker | null = null
+
+/**
+ * Optional async compute (uses Web Worker + same WASM/JS logic as sync path)
+ * Provides non-blocking UI for complex scenarios
+ *
+ * DECISION TREE:
+ * - 3×3 tic-tac-toe: Use sync `computeAiMove` (minimax <1ms)
+ * - Larger games: Use async `computeAiMoveAsync` to prevent UI jank
+ * - Testing: Both paths should be validated (see ai.test.ts)
+ */
+export const computeAiMoveAsync = async (
+  board: Board,
+  difficulty: Difficulty,
+  cpuToken: Token,
+  humanToken: Token,
+): Promise<AiResult> => {
+  // Try worker first, fallback to sync on any error
+  try {
+    if (!worker) {
+      worker = new Worker(new URL('../workers/ai.worker.ts', import.meta.url), {
+        type: 'module',
+      })
+    }
+
+    const activeWorker = worker
+    if (!activeWorker) {
+      return computeAiMove(board, difficulty, cpuToken, humanToken)
+    }
+
+    return await new Promise<AiResult>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('AI Worker timeout (>5s)'))
+      }, 5000)
+
+      const handleMessage = (event: MessageEvent<AiWorkerResponse>) => {
+        clearTimeout(timeout)
+        worker?.removeEventListener('message', handleMessage)
+        resolve(event.data)
+      }
+
+      const handleError = (error: ErrorEvent) => {
+        clearTimeout(timeout)
+        activeWorker.removeEventListener('error', handleError)
+        reject(error)
+      }
+
+      activeWorker.addEventListener('message', handleMessage)
+      activeWorker.addEventListener('error', handleError)
+
+      const msg: AiWorkerMessage = { board, difficulty, cpuToken, humanToken }
+      activeWorker.postMessage(msg)
+    })
+  } catch (error) {
+    // Worker unavailable — fall back to sync
+    console.warn('[aiEngine] Worker fallback:', (error as Error).message)
+    return computeAiMove(board, difficulty, cpuToken, humanToken)
+  }
+}
+
+/** Gracefully terminate worker if running (called on app unmount) */
+export const terminateAsyncAi = (): void => {
+  if (worker) {
+    worker.terminate()
+    worker = null
+  }
 }

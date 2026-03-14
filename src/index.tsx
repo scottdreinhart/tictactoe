@@ -14,7 +14,7 @@ import ReactDOM from 'react-dom/client'
 import { SoundProvider } from './app/SoundContext'
 import { ThemeProvider } from './app/ThemeContext'
 import { ErrorBoundary } from './ui/atoms/ErrorBoundary'
-import TicTacToeGame from './ui/organisms/TicTacToeGame.tsx'
+import App from './ui/organisms/App'
 
 const rootElement = document.getElementById('root')
 if (!rootElement) {
@@ -26,7 +26,7 @@ ReactDOM.createRoot(rootElement).render(
     <ThemeProvider>
       <SoundProvider>
         <ErrorBoundary>
-          <TicTacToeGame />
+          <App />
         </ErrorBoundary>
       </SoundProvider>
     </ThemeProvider>

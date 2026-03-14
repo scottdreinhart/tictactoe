@@ -3,7 +3,17 @@
  *
  * SOLID: Open/Closed Principle
  * Centralize magic strings/numbers so they can be changed in ONE place.
+ * Breakpoint values derived from the central responsive system.
  */
+
+import { RESPONSIVE_BREAKPOINTS } from '@/domain/responsive'
+
+export const BREAKPOINTS = {
+  sm: RESPONSIVE_BREAKPOINTS.sm,
+  md: RESPONSIVE_BREAKPOINTS.md,
+  lg: RESPONSIVE_BREAKPOINTS.lg,
+  xl: RESPONSIVE_BREAKPOINTS.xl,
+} as const
 
 // Menu & Dropdown Sizing
 export const MENU_PANEL_MIN_WIDTH = 240 // px

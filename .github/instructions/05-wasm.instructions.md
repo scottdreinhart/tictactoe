@@ -24,13 +24,7 @@ The WASM subsystem provides a high-performance AI engine for CPU move computatio
 
 ### Data flow
 
-```
-assembly/index.ts → (pnpm wasm:build) → build/ai.wasm → base64 → src/wasm/ai-wasm.ts
-                                                                        ↓
-                                                        src/workers/ai.worker.ts (loads at runtime)
-                                                                        ↓
-                                                        src/ui/organisms/TicTacToeGame.tsx (postMessage / onmessage)
-```
+assembly/index.ts → (pnpm wasm:build) → build/ai.wasm → base64 → src/wasm/ai-wasm.ts → src/workers/ai.worker.ts → UI organism (postMessage / onmessage)
 
 ---
 
@@ -63,7 +57,7 @@ The Web Worker (`src/workers/ai.worker.ts`) follows a WASM-first strategy:
 
 1. On startup, decode base64 → compile → instantiate WASM module
 2. If WASM is available, use it for all move computations
-3. If WASM fails (empty base64, compilation error), fall back to JS minimax (`src/domain/ai.ts`)
+3. If WASM fails (empty base64, compilation error), fall back to JS AI (`src/domain/ai.ts`)
 
 The worker communicates with the main game organism via `postMessage` / `onmessage`. All AI computation runs off the main thread.
 

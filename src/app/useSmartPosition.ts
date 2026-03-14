@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useWindowSize } from './useWindowSize'
 
 type Alignment = 'left' | 'right'
 
@@ -18,6 +19,7 @@ const useSmartPosition = ({
   preferredAlignment = 'right',
 }: UseSmartPositionConfig): Alignment => {
   const [alignment, setAlignment] = useState<Alignment>(preferredAlignment)
+  const { width } = useWindowSize()
 
   useEffect(() => {
     if (!trigger?.current || !panel?.current) {
@@ -27,7 +29,7 @@ const useSmartPosition = ({
     const triggerRect = trigger.current.getBoundingClientRect()
 
     const rightEdge = triggerRect.right + minPanelWidth
-    const wouldOverflowRight = rightEdge + viewportPadding > window.innerWidth
+    const wouldOverflowRight = rightEdge + viewportPadding > width
 
     const leftEdge = triggerRect.left - minPanelWidth
     const wouldOverflowLeft = leftEdge - viewportPadding < 0
@@ -40,7 +42,7 @@ const useSmartPosition = ({
     }
 
     setAlignment(newAlignment)
-  }, [trigger, panel, minPanelWidth, viewportPadding, preferredAlignment])
+  }, [trigger, panel, minPanelWidth, viewportPadding, preferredAlignment, width])
 
   return alignment
 }

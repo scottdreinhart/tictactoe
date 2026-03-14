@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Tic-Tac-Toe — Styles
-   • 7 color themes via data-theme attribute (including High Contrast)
+   • 8 color themes via data-theme attribute (including High Contrast + Chiba City)
    • Light / Dark mode via data-mode (falls back to prefers-color-scheme)
    • Colorblind-safe mark colors via data-colorblind
    • SVG animated marks (draw-on effect)

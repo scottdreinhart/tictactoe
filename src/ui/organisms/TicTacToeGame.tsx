@@ -1,12 +1,12 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { startTransition, useCallback, useMemo, useState } from 'react'
 
+import { useThemeContext } from '@/app'
 import useAutoReset from '../../app/useAutoReset.ts'
 import useGameOrchestration from '../../app/useGameOrchestration.ts'
-import useKeyboardShortcuts from '../../app/useKeyboardShortcuts.ts'
+import { useKeyboardControls } from '../../app/useKeyboardControls.ts'
 import useNotificationQueue from '../../app/useNotificationQueue.ts'
 import useSeries from '../../app/useSeries.ts'
 import useSoundEffects from '../../app/useSoundEffects.ts'
-import useTheme from '../../app/useTheme.ts'
 import { useTicTacToe } from '../../app/useTicTacToe.ts'
 import { TOKENS } from '../../domain/constants.ts'
 import type { Token } from '../../domain/types.ts'
@@ -22,6 +22,7 @@ import HamburgerMenu from '../molecules/HamburgerMenu.tsx'
 import Instructions from '../molecules/Instructions.tsx'
 import MoveTimeline from '../molecules/MoveTimeline.tsx'
 import Scoreboard from '../molecules/Scoreboard.tsx'
+import SplashScreen from '../molecules/SplashScreen.tsx'
 import ThemeSelector from '../molecules/ThemeSelector.tsx'
 import { cx } from '../utils/cssModules.ts'
 import styles from './TicTacToeGame.module.css'
@@ -57,7 +58,7 @@ const TicTacToeGame: React.FC = () => {
 
   const { soundEnabled, toggleSound, playMove, playNav, playTap, playWin, playLoss, playDraw } =
     useSoundEffects()
-  const { settings, setColorTheme, setMode, setColorblind } = useTheme()
+  const { settings, setColorTheme, setMode, setColorblind } = useThemeContext()
 
   // Series mode — Best-of-N tracking
   const { seriesLength, seriesScore, seriesWinner, gamesPlayed, setSeriesLength, resetSeries } =
@@ -75,6 +76,21 @@ const TicTacToeGame: React.FC = () => {
     resetSeries()
     handleReset()
   }, [resetSeries, handleReset])
+
+  const [showSplash, setShowSplash] = useState(true)
+  const [showCoinFlip, setShowCoinFlip] = useState(false)
+
+  const handleSplashBeginTransition = useCallback(() => {
+    startTransition(() => {
+      setShowCoinFlip(true)
+    })
+  }, [])
+
+  const handleSplashComplete = useCallback(() => {
+    startTransition(() => {
+      setShowSplash(false)
+    })
+  }, [])
 
   // Coin flip state - show at app startup
   const [coinFlipDone, setCoinFlipDone] = useState(false)
@@ -141,18 +157,40 @@ const TicTacToeGame: React.FC = () => {
   })
 
   // Keyboard shortcuts for undo/redo
-  const shortcuts = useMemo(
+  const keyboardBindings = useMemo(
     () => [
-      { key: 'z', ctrl: true, shift: false, handler: handleUndo, enabled: canUndo },
-      { key: 'y', ctrl: true, handler: handleRedo, enabled: canRedo },
-      { key: 'z', ctrl: true, shift: true, handler: handleRedo, enabled: canRedo },
+      {
+        action: 'undo',
+        keys: ['Ctrl+KeyZ'],
+        onTrigger: handleUndo,
+        enabled: canUndo,
+      },
+      {
+        action: 'redo-y',
+        keys: ['Ctrl+KeyY'],
+        onTrigger: handleRedo,
+        enabled: canRedo,
+      },
+      {
+        action: 'redo-z',
+        keys: ['Ctrl+Shift+KeyZ'],
+        onTrigger: handleRedo,
+        enabled: canRedo,
+      },
     ],
     [canUndo, canRedo, handleUndo, handleRedo],
   )
-  useKeyboardShortcuts(shortcuts)
+  useKeyboardControls(keyboardBindings)
 
   return (
     <div className={styles.page}>
+      {showSplash && (
+        <SplashScreen
+          onBeginTransition={handleSplashBeginTransition}
+          onComplete={handleSplashComplete}
+        />
+      )}
+
       <header className={styles.appBar}>
         <h1 className={styles.title}>Tic Tac Toe</h1>
         <HamburgerMenu>
@@ -196,7 +234,7 @@ const TicTacToeGame: React.FC = () => {
       />
 
       <div className={containerClass}>
-        {!coinFlipDone && <CoinFlip onFlipComplete={handleCoinFlipComplete} />}
+        {showCoinFlip && !coinFlipDone && <CoinFlip onFlipComplete={handleCoinFlipComplete} />}
         <a href="#game-board" className={styles.skipToContent}>
           Skip to game board
         </a>

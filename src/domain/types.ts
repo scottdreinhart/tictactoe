@@ -67,6 +67,10 @@ export interface WorkerResponse {
   engine?: 'wasm' | 'js'
 }
 
+export interface GameOutcome {
+  result: 'human-win' | 'ai-win' | 'draw'
+}
+
 export interface GameStats {
   wins: number
   losses: number

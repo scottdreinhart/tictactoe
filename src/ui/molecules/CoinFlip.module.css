@@ -7,14 +7,22 @@
   z-index: 1000;
   border-radius: inherit;
   overflow: hidden;
+  animation: overlayEnter 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px);
+  background:
+    radial-gradient(
+      circle at top,
+      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+      transparent 44%
+    ),
+    rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(4px);
   border-radius: inherit;
+  animation: backdropEnter 560ms ease both;
 }
 
 .content {
@@ -24,6 +32,17 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  width: min(100%, 360px);
+  padding: clamp(20px, 4vw, 28px);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 24px 64px rgba(0, 0, 0, 0.4),
+    0 0 28px color-mix(in srgb, var(--accent) 12%, transparent);
+  backdrop-filter: blur(16px) saturate(1.1);
+  animation: panelEnter 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .title {
@@ -47,6 +66,7 @@
   width: 120px;
   height: 120px;
   cursor: pointer;
+  animation: coinDock 760ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
 .coinStatic {
@@ -164,9 +184,54 @@
   }
 }
 
+@keyframes overlayEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropEnter {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes panelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes coinDock {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.88);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
 @media (max-height: 500px) {
   .content {
     gap: 0.5rem;
+    padding: 16px 18px;
   }
 
   .coinWrapper {
@@ -185,5 +250,16 @@
 
   .result {
     font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .backdrop,
+  .content,
+  .coinWrapper,
+  .coinFlipping,
+  .result {
+    animation: none;
   }
 }

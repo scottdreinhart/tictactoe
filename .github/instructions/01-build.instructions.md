@@ -11,12 +11,11 @@
 |---|---|---|
 | `pnpm build` | Vite production build → `dist/` | Bash (WSL: Ubuntu) |
 | `pnpm build:preview` | Build + local preview server | Bash (WSL: Ubuntu) |
-| `pnpm desktop:build` | Vite build + electron-builder for current platform → `release/` | Platform-dependent (see below) |
-| `pnpm windows:build` | Windows `.exe` (portable) → `release/` | **PowerShell** |
-| `pnpm linux:build` | Linux `.AppImage` → `release/` | Bash (WSL: Ubuntu) |
-| `pnpm mac:build` | macOS `.dmg` → `release/` | **macOS / Apple** |
-| `pnpm android:sync` | Vite build + Capacitor sync to Android | Bash (WSL: Ubuntu) |
-| `pnpm ios:sync` | Vite build + Capacitor sync to iOS | Bash (WSL: Ubuntu) |
+| `pnpm electron:build` | Vite build + electron-builder for current platform → `release/` | Platform-dependent (see below) |
+| `pnpm electron:build:win` | Windows `.exe` (portable) → `release/` | **PowerShell** |
+| `pnpm electron:build:linux` | Linux `.AppImage` → `release/` | Bash (WSL: Ubuntu) |
+| `pnpm electron:build:mac` | macOS `.dmg` → `release/` | **macOS / Apple** |
+| `pnpm cap:sync` | Vite build + Capacitor sync to native projects | Bash (WSL: Ubuntu) |
 | `pnpm wasm:build` | AssemblyScript → WASM → base64 | Bash (WSL: Ubuntu) |
 | `pnpm wasm:build:debug` | WASM debug build | Bash (WSL: Ubuntu) |
 
@@ -26,13 +25,11 @@
 
 | Environment | Tasks |
 |---|---|
-| **Bash (WSL: Ubuntu)** | `pnpm install`, `pnpm dev`, `pnpm build`, `pnpm check`, `pnpm fix`, `pnpm validate`, `pnpm test`, `pnpm linux:build`, `pnpm android:sync`, `pnpm ios:sync`, `pnpm wasm:build` |
-| **PowerShell** | `pnpm windows:build` only |
-| **macOS / Apple** | `pnpm mac:build`, `pnpm ios:open`, `pnpm ios:run` |
+| **Bash (WSL: Ubuntu)** | `pnpm install`, `pnpm dev`, `pnpm build`, `pnpm check`, `pnpm fix`, `pnpm validate`, `pnpm electron:build:linux`, `pnpm cap:sync`, `pnpm wasm:build` |
+| **PowerShell** | `pnpm electron:build:win` only |
+| **macOS / Apple** | `pnpm electron:build:mac`, `pnpm cap:open:ios`, `pnpm cap:run:ios` |
 
 **Default**: Bash (WSL: Ubuntu) for everything unless the task explicitly targets Windows packaging or Apple platforms.
-
-Do not default to PowerShell for ordinary development.
 
 ---
 
@@ -50,9 +47,6 @@ Defined in `package.json` under the `"build"` key:
 | `mac.target` | `dmg` |
 | `linux.target` | `AppImage` |
 
-- Windows builds set `signAndEditExecutable: false` (no code signing).
-- All Electron builds require a prior `vite build` (the scripts chain this automatically).
-
 ---
 
 ## Output Directories
@@ -60,7 +54,7 @@ Defined in `package.json` under the `"build"` key:
 | Directory | Contents | Gitignored |
 |---|---|---|
 | `dist/` | Vite production build output | Yes |
-| `release/` | Electron Builder distributables (`.exe`, `.dmg`, `.AppImage`) | Yes |
+| `release/` | Electron Builder distributables | Yes |
 | `node_modules/` | Dependencies | Yes |
 
 ---
@@ -69,8 +63,8 @@ Defined in `package.json` under the `"build"` key:
 
 | Script | Effect |
 |---|---|
-| `pnpm clean:dist` | Removes `dist/` and `release/` |
-| `pnpm clean` | Removes `node_modules/` |
+| `pnpm clean` | Removes `dist/` and `release/` |
+| `pnpm clean:node` | Removes `node_modules/` |
 | `pnpm clean:all` | Removes `dist/`, `release/`, and `node_modules/` |
 | `pnpm reinstall` | `clean:all` + `pnpm install` |
 
@@ -88,10 +82,6 @@ Defined in `package.json` under the `"build"` key:
 | `pnpm check` | `lint` + `format:check` + `typecheck` |
 | `pnpm fix` | `lint:fix` + `format` |
 | `pnpm validate` | `check` + `build` (full pre-push gate) |
-| `pnpm test` | Run Vitest tests |
-| `pnpm test:watch` | Run Vitest in watch mode |
-| `pnpm test:ci` | Run Vitest with coverage (CI mode) |
-| `pnpm test:coverage` | Run Vitest with coverage report |
 
 Always run `pnpm validate` before pushing changes.
 

@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-import { tap, tick } from '../../app/haptics.ts'
+import { tap } from '../../app/haptics.ts'
 import useGridKeyboard from '../../app/useGridKeyboard.ts'
 import usePrevious from '../../app/usePrevious.ts'
-import useSwipeGesture from '../../app/useSwipeGesture.ts'
+// TODO: Fix useSwipe import - hook not found in app directory
+// import { useSwipe } from '../../app/useSwipe.ts'
 import { BOARD_SIZE } from '../../domain/constants.ts'
 import type { Board, CellValue, SwipeDirection } from '../../domain/types.ts'
 import CellButton from '../atoms/CellButton.tsx'
@@ -67,36 +68,15 @@ const BoardGrid: React.FC<BoardGridProps> = ({
     }
   }, [focusedIndex, prevFocused])
 
-  const handleSwipe = useCallback(
-    (direction: SwipeDirection) => {
-      const row = Math.floor(focusedIndex / BOARD_SIZE)
-      const col = focusedIndex % BOARD_SIZE
-      let next = focusedIndex
-
-      switch (direction) {
-        case 'up':
-          next = row > 0 ? focusedIndex - BOARD_SIZE : focusedIndex
-          break
-        case 'down':
-          next = row < BOARD_SIZE - 1 ? focusedIndex + BOARD_SIZE : focusedIndex
-          break
-        case 'left':
-          next = col > 0 ? focusedIndex - 1 : focusedIndex
-          break
-        case 'right':
-          next = col < BOARD_SIZE - 1 ? focusedIndex + 1 : focusedIndex
-          break
-      }
-
-      if (next !== focusedIndex) {
-        onFocusChange(next)
-        onNav?.()
-        tick()
-      }
-    },
-    [focusedIndex, onFocusChange, onNav],
-  )
-  useSwipeGesture(gridRef, handleSwipe)
+  // TODO: Re-enable useSwipe call once hook is properly defined
+  // const handleSwipe = useCallback(
+  //   (direction: SwipeDirection) => {
+  //     ...
+  //   },
+  //   [focusedIndex, onFocusChange, onNav],
+  // )
+  // TODO: Re-enable useSwipe call once hook is properly defined
+  // useSwipe(gridRef, handleSwipe)
 
   const handleSelect = useCallback(
     (index: number) => {
