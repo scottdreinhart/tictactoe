@@ -79,7 +79,9 @@ export const usePerformanceMetrics = () => {
  * Call this at app root (usually in useEffect)
  */
 export const logWebVitals = () => {
-  if (typeof window === 'undefined') {return}
+  if (typeof window === 'undefined') {
+    return
+  }
 
   window.addEventListener('beforeunload', () => {
     const metrics = window.webVitals || {}
